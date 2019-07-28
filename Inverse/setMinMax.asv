@@ -1,0 +1,13 @@
+
+for i = 10:10:80
+    for j =  2:9
+
+    filename = ['F:\Program Files\Matlab files\',num2str(m),'by',num2str(n),'-',num2str(i),'.xlsx'];
+
+    sheet = 1;
+    xlRange = 'A52:B52';
+
+    trim = xlsread(filename,sheet,xlRange);
+
+    end
+end
