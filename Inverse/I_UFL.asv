@@ -83,7 +83,7 @@ for w =1:m
     for p =1:n
         model.A(p+n*(w-1),w) = 1;         % 第一组约束
         
-        model.A(p+n*(w-1),m+p+(w-1)*n) = -1;  %一定要注意这里是 m+m*n列  注意循环顺序
+        model.A(p+n*(w-1),m+p+(w-1)*n) = -1;  %yi'd
     end
 end
 

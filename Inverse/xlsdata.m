@@ -6,7 +6,7 @@ for i = 10:10:70
     
     for j =  2:10
 
-    filename = ['F:\Program Files\Matlab files\Inv_data\',num2str(i),'by',num2str(i),'-',num2str(j),'.xlsx'];
+    filename = ['F:\Program Files\Matlab files\',num2str(i),'by',num2str(2*i),'-',num2str(j),'.xlsx'];
     
     sheet = 1;
     xlRange = 'A51:C51';

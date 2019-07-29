@@ -1,4 +1,4 @@
-% 本函数用于生成任意稀疏度 的 UFL逆优化 计算结果
+% 本函数用于生成 m数值较小 n数值较大 的 UFL逆优化 计算结果
 
 % 给定任意稀疏度 如何生成 trans-cost 矩阵（即必须满足每一列都至少有一个不为M的值）是一个有意思的问题
 
@@ -6,8 +6,10 @@
 
 %  本程序思路是 对于 每一类限制条件 使用一个向量来表示  
 
-for m = 10:10:70
-    myfun(m,2*m,50);
+for m = 10:10:60
+    for j = 3:10
+        myfun(m,j*m,50);
+    end
 end
 
 % This function is used to get excel to show the specific data result.
@@ -16,23 +18,21 @@ function myfun(m,n,k)
 
 theresult=zeros(k+1,3);
 
-for j = 2:10   % j is multiplier
 
-    for i=1:k 
+for i=1:k 
     
-        [a,b] = fun1(m,n,j);  % 重复调用  b 为最优值
-        theresult(i,:) = [a,b,(a-0)/b];  % gap  最优  比值
-         
-    end
+    [a,b] = fun1(m,n,5);  % 重复调用  b 为最优值   mul = 5
+    theresult(i,:) = [a,b,(a-0)/b];  % gap  最优  比值         
+end
+
 theresult(k+1,:) = [mean(theresult(1:k,1)),mean(theresult(1:k,2)),mean(theresult(1:k,3))];
 
-filename = ['F:\Program Files\Matlab files\',num2str(m),'by',num2str(n),'-',num2str(j),'.xlsx'];
+filename = ['F:\Program Files\Matlab files\',num2str(m),'by',num2str(n),'.xlsx'];
 
 xlswrite(filename,theresult);
 
 end
 
-end
 
 
 

@@ -1,4 +1,4 @@
-% 本函数用于生成任意稀疏度 的 UFL逆优化 计算结果
+% 本函数用于生成 m数值较小 n数值较大 的 UFL逆优化 计算结果
 
 % 给定任意稀疏度 如何生成 trans-cost 矩阵（即必须满足每一列都至少有一个不为M的值）是一个有意思的问题
 
@@ -6,33 +6,34 @@
 
 %  本程序思路是 对于 每一类限制条件 使用一个向量来表示  
 
-for m = 10:10:70
-    myfun(m,2*m,50);
+for m = 10:10:60
+    for j = 3:10
+        myfun(m,j*m,50);
+    end
 end
 
 % This function is used to get excel to show the specific data result.
+
 function myfun(m,n,k)   
 % (m,n) 问题规模  k 为调用函数次数 默认 k=50;
 
 theresult=zeros(k+1,3);
 
-for j = 2:10   % j is multiplier
 
-    for i=1:k 
+for i=1:k 
     
-        [a,b] = fun1(m,n,j);  % 重复调用  b 为最优值
-        theresult(i,:) = [a,b,(a-0)/b];  % gap  最优  比值
-         
-    end
+    [a,b] = fun1(m,n,5);  % 重复调用  b 为最优值   mul = 5
+    theresult(i,:) = [a,b,(a-0)/b];  % gap  最优  比值         
+end
+
 theresult(k+1,:) = [mean(theresult(1:k,1)),mean(theresult(1:k,2)),mean(theresult(1:k,3))];
 
-filename = ['F:\Program Files\Matlab files\',num2str(m),'by',num2str(n),'-',num2str(j),'.xlsx'];
+filename = ['F:\Program Files\Matlab files\',num2str(m),'by',num2str(n),'.xlsx'];
 
 xlswrite(filename,theresult);
 
 end
 
-end
 
 
 
@@ -46,7 +47,7 @@ function [gap,opt1] = fun1(m,n,mul)  % 返回原UFL的最优值 和 本 LP 计算得到的 gap
 
 fi = round(rand(1,m)*10*mul)';    % 可以调整 fi 与 rik 之间的比例 查看gap变化 
 % rik = round(rand(1,m*n)*10)'; % 注意是列向量  （随机1-10,1-100,1-1000）
-rik = fun3(m,n,round(m*n*0.25));
+rik = fun3(m,n,round(m*n*0.5));
 
 
 [opt1,opt2] = fun2(fi,rik);  % V_UFL 为 UFL最优值 
@@ -261,3 +262,28 @@ opt2 = res.x;
 % Print solution
 
 end
+
+
+count = 1;   % This function is used to integrate all the data from excels.
+
+result = zeros(48,3);
+
+for i = 10:10:60
+    
+    for j =  3:10
+
+    filename = ['F:\Program Files\Matlab files\',num2str(i),'by',num2str(j*i),'.xlsx'];
+    
+    sheet = 1;
+    xlRange = 'A51:C51';
+
+    result(count,:) = xlsread(filename,sheet,xlRange);
+    count = count+1;
+    end
+    
+end
+
+filename1 = ['F:\Program Files\Matlab files\theresult.xlsx'];
+
+
+xlswrite(filename1,result');

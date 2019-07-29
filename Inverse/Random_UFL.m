@@ -7,7 +7,8 @@ function [gap,opt1] = Random_UFL(m,n,mul)  % 返回原UFL的最优值 和 本 LP 计算得到
 % 对应限制条件数量 为 （2mn+2m+2）个  变量有（5mn+3m+n) 个
 
 fi = round(rand(1,m)*10*mul)';    % 可以调整 fi 与 rik 之间的比例 查看gap变化 
-rik = round(rand(1,m*n)*10)'; % 注意是列向量  （随机1-10）
+rik = round(rand(1,m*n)*10)'; % 注意是列向量  （随机1-10，1-100）  此举相当于改变rik的稀疏度
+%在后面实验中，只要注意 mul 即可，因为已加入了稀疏度的考虑
  
 [opt1,opt2] = I_UFL(fi,rik);  % V_UFL 为 UFL最优值 
 V_UFL = opt1;
