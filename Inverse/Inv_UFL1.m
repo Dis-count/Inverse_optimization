@@ -1,4 +1,4 @@
-function Inv_UFL1()    % 有四重循环，需要进一步优化 
+function Inv_UFL1()    % 有四重循环，且只针对m=n=4的情况，需要进一步优化 
 %  x_0 为给定服务对象以及是否开启 Facility  v_0 为目标值
 fixed = 30;
 

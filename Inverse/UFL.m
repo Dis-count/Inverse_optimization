@@ -1,45 +1,36 @@
-%  本程序思路是 对于 每一类限制条件 使用一个向量来表示  
-function UFL(m,n)
-% 给出 Facility 数量 m  Player 数量 n 
 
-% 对应限制条件数量 为 （2mn+2m+2）个  变量有（5mn+3m+n) 个
+function [opt1,opt2] = I_UFL(fi,rik)   % fi rik 为列向量   求出给定 costs 时  UFL的最优值
+% 给出 Facility 数量 m  Player 数量 n
 
-V_UFL = 29;  % V_UFL 为 给定 目标值
+% 对应限制条件数量 为 （mn+m）个  变量有（mn+m) 个
 
-fi  = [10; 10; 10; 10];   
+m = length(fi) ;
+n = length(rik)/m ;
 
 
-% v_1 = 10; v_2 = 10; v_3 = 10; v_4 = 10;  v_i 为初始值
+% disp(fi');
 
-M = 30;    % define M= a bigger integer.
+%fprintf('Facility Costs: %g\n', fi);
+
+% disp(rik');
+
+%fprintf('Trans Costs: %f\n', rik);
+
+% fi  = [10; 10; 10; 10];
+
+% M = 100;    % define M= a bigger integer.
 
 % 注意这里应该使用循环生成向量； 但这里为了计算简单的例子（n=4)，我们直接手动添加变量。
 
 
-rik  = [ 3; 3; M; 2;
-         M; 1; 4; M;
-         3; M; 3; 4;
-         M; 2; M; 1;];
-    
-
-% u_11 = 3; u_12 = 3; u_13 = M; u_14 = 2;
-% 
-% u_21 = M; u_22 = 1; u_23 = 4; u_24 = M;
-% 
-% u_31 = 3; u_32 = M; u_33 = 3; u_34 = 4;
-% 
-% u_41 = M; u_42 = 2; u_43 = M; u_44 = 1;
+% rik  = [ 3; 3; M; 2;
+%          M; 1; 4; M;
+%          3; M; 3; 4;
+%          M; 2; M; 1;];
 
 
-vi = [0 ; 0 ; 1 ; 1]; 
+% 产生一个 长度为 （mn+m) 的向量，每一个限制条件 产生 一个向量。
 
-uik = [ 0 ; 0 ; 0 ; 0 ;
-        0 ; 0 ; 0 ; 0 ;
-        1 ; 0 ; 1 ; 0 ; 
-        0 ; 1 ; 0 ; 1 ;];
-
-% 产生一个 长度为 （6mn+4m+n) 的向量，每一个限制条件 产生 一个向量。
-    
 
 % Facility location: a company currently ships its product from 5 plants
 % to 4 warehouses. It is considering closing some plants to reduce
@@ -50,41 +41,26 @@ uik = [ 0 ; 0 ; 0 ; 0 ;
 % it does not work with sparse data, lists are a reasonable option.
 
 
-% define primitive data
-% nPlants     = m;
-% nWarehouses = n;
-
-
-% Fixed costs for each plant
-% FixedCosts  = [12000; 15000; 17000; 13000; 16000];
-
-% Transportation costs per thousand units
-% TransCosts  = [
-%     4000; 2000; 3000; 2500; 4500;
-%     2500; 2600; 3400; 3000; 4000;
-%     1200; 1800; 2600; 4100; 3000;
-%     2200; 2600; 3100; 3700; 3200];
-
 % Index helper function
 %flowidx = @(w, p)  n* p + w;
 
 % Build model
-model.modelname = 'UFL';
+model.modelname = 'I_UFL';
 model.modelsense = 'min';
 
 % Set data for variables
-ncol = 5*m*n + 3*m + n;
+ncol = m*n + m ;
 
-% 先试试变量大于零的情况 
-model.lb    = zeros(ncol, 1);
-model.ub    = [inf(ncol, 1)];
-model.obj   = [zeros(n+m+3*m*n,1); ones(2*m + 2*m*n,1); ];
+model.vtype = 'B';
+
+model.obj   = [fi; rik];
+
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nWarehouses, 1)];
-% 
+%
 % for p = 1:nPlants
 %     model.varnames{p} = sprintf('Open%d', p);
 % end
-% 
+%
 % for w = 1:nWarehouses
 %     for p = 1:nPlants
 %         v = flowidx(w, p);
@@ -93,62 +69,31 @@ model.obj   = [zeros(n+m+3*m*n,1); ones(2*m + 2*m*n,1); ];
 % end
 
 % Set data for constraints and matrix
-nrow = 2*m*n+2*m+2;
+
+nrow = m*n + n;
 
 model.A     = sparse(nrow, ncol);
 
+model.rhs   = [zeros(m*n, 1); ones(n,1)];
 
-model.rhs   = [V_UFL; zeros(m + m*n, 1); V_UFL; fi; rik];
-model.sense = [repmat('>', 1, 1); repmat('=', 2*m*n + 2*m + 1, 1)];
+model.sense = [repmat('>', m*n , 1); repmat('=', n , 1)];
 
 
-model.A(1,1:n) = 1;  % 第一类约束
+for w =1:m
+    for p =1:n
+        model.A(p+n*(w-1),w) = 1;         % 第一组约束
 
-for p = 1:m
-    for w = 1:n
-        model.A(p+1, n*p+w) = 1;
+        model.A(p+n*(w-1),m+p+(w-1)*n) = -1;  %一定要注意这里是 m+m*n列  注意循环顺序
     end
-    model.A(p+1, n+n*m+p) = -1;
-%    model.constrnames{p} = sprintf('Capacity%d', p);
 end
 
-% 第二类约束
-
-for p = 1:m
-    for w = 1:n
-        model.A((p-1)*n+w+m+1,[w,m*n+m+p*n+w]) = 1;
-        
-        model.A((p-1)*n+w+m+1,[p*n+w,2*m*n+m+p*n+w]) = -1;
-    end
-end   % 第三类约束
-
-for p = 1:m
-    for w = 1:n
-    model.A(m*n+m+2,m+2*m*n+p*n+w) = uik((p-1)*n+w);
-
-    end
-    model.A(m*n+m+2,n+m*n+p) = vi(p);
-%    model.constrnames{nPlants+w} = sprintf('Demand%d', w);
-end   % 第四个约束
-
-
-for p = 1:m
-    model.A(m*n+m+2+p,n+m+3*m*n+p) = -1;
-    model.A(m*n+m+2+p,[n+m*n+p,n+2*m+3*m*n+p]) = 1;   % 保持右侧约束为正的fi 下同
-end   % 第五个约束
-    
-
-for p = 1:m
-    for w = 1:n
-        model.A((p-1)*n+m*n+2*m+2+w, 3*m+3*m*n+p*n+w) = -1;
-        
-        model.A((p-1)*n+m*n+2*m+2+w, [m+2*m*n+p*n+w,3*m+4*m*n+p*n+w]) = 1;
-    end
-end  % 第六个约束
+for p = 1:n
+    model.A(p+m*n, n*(0:(m-1))+m+p) = 1; % 第二组约束
+end
 
 
 % Save model
-gurobi_write(model,'UFL.lp');
+gurobi_write(model,'I_UFL.lp');
 
 
 % Guess at the starting point: close the plant with the highest fixed
@@ -163,7 +108,10 @@ gurobi_write(model,'UFL.lp');
 
 % Optimize
 % res = gurobi(model, params);
-gurobi(model);
+% res = gurobi(model);
+% opt1 = res.objval;
+% opt2 = res.x;
+
 
 % Print solution
 
@@ -185,4 +133,3 @@ gurobi(model);
 % end
 
 end
-
