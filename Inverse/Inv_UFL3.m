@@ -33,7 +33,6 @@ Costs =[FC;TC];    % Cost 为给定
 
 V_0 = x_0'*Costs;    %  原最优解 
 
-
 % Index helper function
 % flowidx = @(w, p) nPlants * w + p;
 

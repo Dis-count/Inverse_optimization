@@ -14,7 +14,7 @@ u_ij = [0;0;0;0;
 
 x_0 = [v_i;u_ij];
 
-x0 =[x_0;x_0*(-1)];   % double the matrix    
+x0 =[x_0;x_0*(-1)];   % double the matrix
 
 % define primitive data
 m = 4;   % Facility
