@@ -104,6 +104,6 @@ model.A(1,:) = x0;
 model.rhs(1) = V_UFL-V_0;
 
 for i=1:length(v1)
-    % 即需要找到 i 所在行的 rik 为 1 的最大值
+    % 即需要找到 i 所在行的 uik 为 1 的最大值
     max(  )
     model.A(1+i,:) =
