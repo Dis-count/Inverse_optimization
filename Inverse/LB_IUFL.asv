@@ -35,21 +35,20 @@ u1 = cell(v1,2);
 
 ui = reshape(uik,3,3)';   % 转置 得到uik 的 解矩阵
 
-s = 0; %  用于记录 vi 中 rik==1 个数为1 的数量 
-
 for i = v1'  % v1 需要是行向量
     t=1;
-    
+    s = 0; %  用于记录 vi 中 rik==1 个数为1 的数量 
     
     u1{t,1} = i;  % 单元数组 第一列里面存放 vi为 1的坐标  
     u1{t,2} = find(ui(t,:) == 1);  %单元数组 第二列里面存放中 rik 对应行中 为1 的坐标   
     
     if length(find(ui(t,:) == 1))==1
         s=s+1;
-    end
+        
         
     t=t+1;
 end
+
 
 
 u0 = cell(m-length(v1),2);  % 此处 重新定义 一个类似的单元数组 存放为0 的部分
@@ -62,6 +61,7 @@ for i = v0'  % v1 需要是行向量
     
     t=t+1;
 end
+
 
 fi;
 
@@ -87,7 +87,7 @@ model.obj = [obj; obj];   % norm-1 c-Costs  均为正
 % 
 % Set data for constraints and matrix
 
-nrow = m + n + length(v1) - s + 1  ; % 前两个约束加起来为 m 个；第三个约束有 n 个；
+nrow = m + n + 1  ; % 前两个约束加起来为 m 个；第三个约束有 n 个；
 % 第四个约束有 vi=1 对应行中 rik==1 个数大于 1 的个数 加 一个等式
 
 model.A     = sparse(nrow, ncol);
