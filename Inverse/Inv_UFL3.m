@@ -31,7 +31,7 @@ n = length(u_ij)/m;
 %          M; 2; M; 1;];
 Costs =[FC;TC];    % Cost 为给定
 
-V_0 = x_0'*Costs;    %  原最优解 
+V_0 = x_0'*Costs;    %  给定的最优解向量 对应的原成本矩阵的花费值 
 
 % Index helper function
 % flowidx = @(w, p) nPlants * w + p;
