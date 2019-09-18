@@ -5,12 +5,12 @@ V_UFL = 28;   % ¸ø¶¨µÄ×îÓÅÖµ£¨Ä¿±êÖµ£©
 
 vi = [1 ; 1 ; 0;];
 
-uik = [ 1; 0 ; 1 ; 
-        0; 1 ; 0 ;  
+uik = [ 1; 0 ; 1 ;
+        0; 1 ; 0 ;
         0; 0 ; 0 ;];
 
-m = length(vi);  
-n = length(uik)/m;    
+m = length(vi);
+n = length(uik)/m;
 
 x_0 = [vi;uik];
 x0 =[x_0;x_0*(-1)];  %Çó½âĞèÒªµÄdoubleÏòÁ¿
@@ -19,8 +19,8 @@ x0 =[x_0;x_0*(-1)];  %Çó½âĞèÒªµÄdoubleÏòÁ¿
 
 FC    = [5; 6; 7;];
 
-TC    = [11; 4; 8; 
-         5; 7; 10; 
+TC    = [11; 4; 8;
+         5; 7; 10;
          19; 6; 3;];
 
 Costs =[FC;TC];
@@ -33,21 +33,24 @@ v0 = find(vi == 0);
 
 u1 = cell(v1,2);
 
-ui = reshape(uik,3,3)';   % ×ªÖÃ µÃµ½uik µÄ ½â¾ØÕó
+ui = reshape(uik,m,n)';   % ×ªÖÃ µÃµ½uik µÄ ½â¾ØÕó
 
-s = 0; %  ÓÃÓÚ¼ÇÂ¼ vi ÖĞ rik==1 ¸öÊıÎª1 µÄÊıÁ¿ 
+TCi = reshape(TC,m,n)';   % µÃµ½¾ØÕó
+
+s = 0; %  ÓÃÓÚ¼ÇÂ¼ vi ÖĞ rik==1 ¸öÊıÎª1 µÄÊıÁ¿
 
 for i = v1'  % v1 ĞèÒªÊÇĞĞÏòÁ¿
     t=1;
-    
-    
-    u1{t,1} = i;  % µ¥ÔªÊı×é µÚÒ»ÁĞÀïÃæ´æ·Å viÎª 1µÄ×ø±ê  
-    u1{t,2} = find(ui(t,:) == 1);  %µ¥ÔªÊı×é µÚ¶şÁĞÀïÃæ´æ·ÅÖĞ rik ¶ÔÓ¦ĞĞÖĞ Îª1 µÄ×ø±ê   
-    
+
+    [umax,in] = max(TCi(t,:));
+
+    u1{t,1} = i;  % µ¥ÔªÊı×é µÚÒ»ÁĞÀïÃæ´æ·Å viÎª 1µÄ ×ø±ê ¶ÔÓ¦ĞĞµÄ ×îĞ¡ÖµºÍ×î´óÖµ
+    u1{t,2} = find(ui(t,:) == 1);  %µ¥ÔªÊı×é µÚ¶şÁĞÀïÃæ´æ·ÅÖĞ rik ¶ÔÓ¦ĞĞÖĞ Îª1 µÄ×ø±ê
+
     if length(find(ui(t,:) == 1))==1
         s=s+1;
     end
-        
+
     t=t+1;
 end
 
@@ -56,10 +59,10 @@ u0 = cell(m-length(v1),2);  % ´Ë´¦ ÖØĞÂ¶¨Òå Ò»¸öÀàËÆµÄµ¥ÔªÊı×é ´æ·ÅÎª0 µÄ²¿·Ö
 
 for i = v0'  % v1 ĞèÒªÊÇĞĞÏòÁ¿
     t=1;
-    
-    u1{t,1} = i;  % µ¥ÔªÊı×é µÚÒ»ÁĞÀïÃæ´æ·Å viÎª 1µÄ×ø±ê  
-    u1{t,2} = find(ui(t,:) == 0);  %µ¥ÔªÊı×é µÚ¶şÁĞÀïÃæ´æ·ÅÖĞ rik ¶ÔÓ¦ĞĞÖĞ Îª0 µÄ×ø±ê   
-    
+
+    u1{t,1} = i;  % µ¥ÔªÊı×é µÚÒ»ÁĞÀïÃæ´æ·Å viÎª 1µÄ×ø±ê
+    u1{t,2} = find(ui(t,:) == 0);  %µ¥ÔªÊı×é µÚ¶şÁĞÀïÃæ´æ·ÅÖĞ rik ¶ÔÓ¦ĞĞÖĞ Îª0 µÄ×ø±ê
+
     t=t+1;
 end
 
@@ -79,12 +82,12 @@ ncol = (m + m * n)*2 ;
 model.lb    = zeros(ncol, 1);
 model.ub    = inf(ncol, 1);
 
-obj = ones(m + m * n ,1); 
+obj = ones(m + m * n ,1);
 
 model.obj = [obj; obj];   % norm-1 c-Costs  ¾ùÎªÕı
 
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nplayers, 1)];
-% 
+%
 % Set data for constraints and matrix
 
 nrow = m + n + length(v1) - s + 1  ; % Ç°Á½¸öÔ¼Êø¼ÓÆğÀ´Îª m ¸ö£»µÚÈı¸öÔ¼ÊøÓĞ n ¸ö£»
@@ -92,9 +95,14 @@ nrow = m + n + length(v1) - s + 1  ; % Ç°Á½¸öÔ¼Êø¼ÓÆğÀ´Îª m ¸ö£»µÚÈı¸öÔ¼ÊøÓĞ n ¸
 
 model.A     = sparse(nrow, ncol);
 
-model.sense = [repmat('=', 1, 1); repmat('>', m^n, 1)];
+model.sense = [repmat('=', 1, 1); repmat('<', nrow-1, 1)];
 
 % Production constraints   ×¢ÒâÏŞÖÆÌõ¼şĞèÒª±éÀú  ÕâÒ»µã·Ç³£¸´ÔÓ
 
 model.A(1,:) = x0;
 
+model.rhs(1) = V_UFL-V_0;
+
+for i=1:length(v1)
+    % ¼´ĞèÒªÕÒµ½ i ËùÔÚĞĞµÄ rik Îª 1 µÄ×î´óÖµ
+    max()
