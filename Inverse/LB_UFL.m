@@ -31,7 +31,7 @@ v1 = find(vi == 1);   % v1记录 vi=1 的横坐标 的 列向量   要分别找�
 
 v0 = find(vi == 0);
 
-u1 = cell(v1,2);
+u1 = cell(length(v1),2);
 
 ui = reshape(uik,m,n)';   % 转置 得到uik 的 解矩阵
 
@@ -40,28 +40,37 @@ TCi = reshape(TC,m,n)';   % 得到矩阵
 s = 0; %  用于记录 vi 中 rik==1 个数为1 的数量
 
 for i = v1'  % v1 需要是行向量
+
     t=1;
 
-    [umax,in] = max(TCi(t,:));
+    [umax,in] = max(TCi(i,:));
 
-    u1{t,1} = i;  % 单元数组 第一列里面存放 vi为 1的 坐标 对应行的 最小值和最大值
-    u1{t,2} = find(ui(t,:) == 1);  %单元数组 第二列里面存放中 rik 对应行中 为1 的坐标
+    [umin,ni] = min(TCi(i,:));
 
-    if length(find(ui(t,:) == 1))==1
+    u1{t,1} = [i,[umax, in, umin, ni]];  % 单元数组 第一列里面存放 vi为 1的 坐标 对应行的 最小值和最大值
+
+    u1{t,2} = find(ui(i,:) == 1);  % 单元数组 第二列里面存放中 rik 对应行中 为1 的坐标
+
+    if length(find(ui(i,:) == 1))==1
+
         s=s+1;
+
     end
 
     t=t+1;
 end
-
 
 u0 = cell(m-length(v1),2);  % 此处 重新定义 一个类似的单元数组 存放为0 的部分
 
 for i = v0'  % v1 需要是行向量
     t=1;
 
-    u1{t,1} = i;  % 单元数组 第一列里面存放 vi为 1的坐标
-    u1{t,2} = find(ui(t,:) == 0);  %单元数组 第二列里面存放中 rik 对应行中 为0 的坐标
+    [umax,in] = max(TCi(i,:));
+
+    [umin,ni] = min(TCi(i,:));
+
+    u0{t,1} = [i,[umax, in, umin, ni]];  % 单元数组 第一列里面存放 vi为 1的坐标
+    u0{t,2} = find(ui(i,:) == 0);  %单元数组 第二列里面存放中 rik 对应行中 为0 的坐标
 
     t=t+1;
 end
@@ -77,17 +86,18 @@ rik;
 model.modelname = 'LB_Inv_UFL';
 model.modelsense = 'min';
 
-ncol = (m + m * n)*2 ;
+col = m + m * n;
+ncol = col * 2 ;
 
 model.lb    = zeros(ncol, 1);
 model.ub    = inf(ncol, 1);
 
-obj = ones(m + m * n ,1);
+obj = ones(col ,1);
 
 model.obj = [obj; obj];   % norm-1 c-Costs  均为正
 
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nplayers, 1)];
-%
+
 % Set data for constraints and matrix
 
 nrow = m + n + length(v1) - s + 1  ; % 前两个约束加起来为 m 个；第三个约束有 n 个；
@@ -103,7 +113,46 @@ model.A(1,:) = x0;
 
 model.rhs(1) = V_UFL-V_0;
 
+
+%  第一个约束
 for i=1:length(v1)
-    % 即需要找到 i 所在行的 uik 为 1 的最大值
-    max(  )
-    model.A(1+i,:) =
+    % 即需要找到 i 所在行的 uik 为 1 的最大值  % 需要给出下标
+
+    index = zeros(col,1);
+
+    % u1{t,1}()  从 cell 中取出元素
+
+    index((u1{i,1}(1)-1)*n + m + u1{i,1}(3)) = 1;  % max-index
+    index((u1{i,1}(1)-1)*n + m + u1{i,1}(5)) = -1; % min-index
+
+    indexd = [index;index*(-1)];
+
+    rhs = (-1)* u1{i,1}(2)+ u1{i,1}(4);
+
+    model.A(1+i,:) = indexd;
+
+    model.rhs(1+i) = rhs;
+
+end
+
+%  第二个约束
+for i=1:length(v0)
+
+    index = zeros(col,1);
+
+    index(v0(i)) = -1 % fi==0
+    index((u1{i,1}(1)-1)*n + m + u1{i,1}(5)) = -1
+
+
+    index((u1{i,1}(1)-1)*n + m + u1{i,1}(3)) = 1;
+
+    indexd = [index;index*(-1)];
+
+    rhs = (-1)* u1{i,1}(2)+ u1{i,1}(4);
+
+    model.A(1+i,:) = indexd;
+
+    model.rhs(1+i) = rhs;
+
+
+end
