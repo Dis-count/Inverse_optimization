@@ -12,8 +12,8 @@ uik = [ 1; 0 ; 1 ;
 m = length(vi);
 n = length(uik)/m;
 
-x_0 = [vi;uik];
-x0 =[x_0;x_0*(-1)];  %求解需要的double向量
+x_0 = [vi; uik];
+x0 =[x_0; x_0*(-1)];  %求解需要的double向量
 
 % 给定的原问题Costs
 
@@ -31,57 +31,93 @@ v1 = find(vi == 1);   % v1记录 vi=1 的横坐标 的 列向量   要分别找�
 
 v0 = find(vi == 0);
 
-u1 = cell(length(v1),2);
+v1num = length(v1);
+
+u1 = cell(v1num,3);  % 只记录 不确定长度的 vi=1 的 位置及相应的TC值 需要删掉剩下 v1num-sss
+
+u11 = zeros(v1num,5);  % 记录最大最小坐标
 
 ui = reshape(uik,m,n)';   % 转置 得到uik 的 解矩阵
 
 TCi = reshape(TC,m,n)';   % 得到矩阵
 
-s = 0; %  用于记录 vi 中 rik==1 个数为1 的数量
+s = 0;  % 用于记录 vi 中 rik==1 个数为1 的数量
 
-for i = v1'  % v1 需要是行向量
+sss = 0;
+
+v1min = max(TCi(1,:));  % 记录 全局最小值
+
+Loc =zeros(1,2);  % 记录 最小值位置
+
+loc = zeros(v1num,3);  % 记录只有一个vi的 行 纵 坐标 和 值  需要删掉剩下 v1num-s 个 约束3用到
+
+for i = v1'  % v1 需要是行向量 % 循环 每一行
 
     t=1;
 
-    [umax,in] = max(TCi(i,:));
+    a1 = find(ui(i,:) == 1);
+    a0 = find(ui(i,:) == 0);
 
-    [umin,ni] = min(TCi(i,:));
+    b = TCi(i,:);  % 找出TC中对应 ui 为 1 的部分
 
-    u1{t,1} = [i,[umax, in, umin, ni]];  % 单元数组 第一列里面存放 vi为 1的 坐标 对应行的 最小值和最大值
+    [umax,in] = max(b(a1));
 
-    u1{t,2} = find(ui(i,:) == 1);  % 单元数组 第二列里面存放中 rik 对应行中 为1 的坐标
+    [umin,ni] = min(b(a0));
 
-    if length(find(ui(i,:) == 1))==1
+    % a1(in)  得到筛选过后 的 最大值坐标索引
 
-        s=s+1;
+    if length(a1)==1
+
+        s = s + 1;
+
+        loc(s,:) = [i,a1,b(a1)];   % 记录只有一个 vi=1 的 行纵值
+
+    else
+        sss = sss + 1;  % 1的值为两个及以上
+
+        u1{sss,1} = i;  % 记录 行号
+
+        u1{sss,3} = b(a1);  % 第三列 存储 uik 为 1 的部分对应 TC 的值
+
+        u1{sss,2} = a1;  % 单元数组 第二列里面存放中 rik 对应行中 为1 的坐标
+
+    end
+
+    u11(t,:) = [i,[umax, a1(in), umin, a0(ni)]];  % 里面存放 vi为 1的 坐标 对应行的 最小值和最大值
+
+    if umin < v1min
+
+      Loc = [i,a0(ni)];  % 记录  行 和 列
+
+      v1min = umin;  % 更新全局 uik 最小值
 
     end
 
     t=t+1;
 end
 
-u0 = cell(m-length(v1),2);  % 此处 重新定义 一个类似的单元数组 存放为0 的部分
+% 删除 0 向量
+loc(s+1:end,:)=[];
+u1(sss+1:end,:)=[];
 
-for i = v0'  % v1 需要是行向量
-    t=1;
+u0 = zeros(m-v1num,5);  % 此处 重新定义 一个类似的单元数组 存放为0 的部分
+
+for i = v0'  % v0 需要是行向量
+
+    t = v1num + 1;
 
     [umax,in] = max(TCi(i,:));
 
     [umin,ni] = min(TCi(i,:));
 
-    u0{t,1} = [i,[umax, in, umin, ni]];  % 单元数组 第一列里面存放 vi为 1的坐标
-    u0{t,2} = find(ui(i,:) == 0);  %单元数组 第二列里面存放中 rik 对应行中 为0 的坐标
+    u0(t-v1num,:) = [i,umax, in, umin, ni];  % 单元数组 第一列里面存放 vi为 1的坐标
 
     t=t+1;
 end
 
-fi;
-
 % 需要给出 vi 为1的下标  以及 为0 的下标
 
-rik;
-
-[h l] = max(reshape(TC,m,n), [], 2);   % 给出每一行的最大值列向量m 以及 下标向量l。  注意1 为每列， 2 为每行。
+% [h l] = max(reshape(TC,m,n), [], 2);   % 给出每一行的最大值列向量h 以及 下标向量l。  注意1 为每列， 2 为每行。
 
 model.modelname = 'LB_Inv_UFL';
 model.modelsense = 'min';
@@ -89,8 +125,8 @@ model.modelsense = 'min';
 col = m + m * n;
 ncol = col * 2 ;
 
-model.lb    = zeros(ncol, 1);
-model.ub    = inf(ncol, 1);
+model.lb  = zeros(ncol, 1);
+model.ub  = inf(ncol, 1);
 
 obj = ones(col ,1);
 
@@ -100,7 +136,7 @@ model.obj = [obj; obj];   % norm-1 c-Costs  均为正
 
 % Set data for constraints and matrix
 
-nrow = m + n + length(v1) - s + 1  ; % 前两个约束加起来为 m 个；第三个约束有 n 个；
+nrow = m + n + v1num - s + 1; % 前两个约束加起来为 m 个；第三个约束有 n 个；
 % 第四个约束有 vi=1 对应行中 rik==1 个数大于 1 的个数 加 一个等式
 
 model.A     = sparse(nrow, ncol);
@@ -114,45 +150,130 @@ model.A(1,:) = x0;
 model.rhs(1) = V_UFL-V_0;
 
 
-%  第一个约束
-for i=1:length(v1)
-    % 即需要找到 i 所在行的 uik 为 1 的最大值  % 需要给出下标
+%  第一类约束
+% for i = 1:v1num
+%     % 即需要找到 i 所在行的 uik 为 1 的最大值  % 需要给出下标
+%
+%     inde = zeros(col,1);
+%
+%     % u1{t,1}()  从 cell 中取出元素
+%
+%     inde((u11(1)-1)*n + m + u11(3)) = 1;  % max-index
+%     inde((u11(1)-1)*n + m + u11(5)) = -1; % min-index
+%
+%     indexd = [inde;inde*(-1)];
+%
+%     rhs = (-1)* u11(2)+ u11(4);
+%
+%     model.A(1+i,:) = indexd;  % 有问题
+%
+%     model.rhs(1+i) = rhs;
+%
+% end
 
-    index = zeros(col,1);
+%  第二类约束
+for i=1:(m-v1num)
 
-    % u1{t,1}()  从 cell 中取出元素
+    inde = zeros(col,1);
 
-    index((u1{i,1}(1)-1)*n + m + u1{i,1}(3)) = 1;  % max-index
-    index((u1{i,1}(1)-1)*n + m + u1{i,1}(5)) = -1; % min-index
+    inde(u0(i,1)) = -1; % fi==0
 
-    indexd = [index;index*(-1)];
+    a = v0(i);
 
-    rhs = (-1)* u1{i,1}(2)+ u1{i,1}(4);
+    inde((u0(i,1)-1)*n + m + u0(i,5)) = -1;
 
-    model.A(1+i,:) = indexd;
+    inde((Loc(1)-1)*n + m + Loc(2)) = 1;
 
-    model.rhs(1+i) = rhs;
+    indexd = [inde; inde*(-1)];
+
+    rhs = u0(i,4) + FC(a) - v1min;
+
+    model.A(v1num + i, :) = indexd;
+
+    model.rhs(v1num + i) = rhs;
 
 end
 
-%  第二个约束
-for i=1:length(v0)
+% 第三类约束
 
-    index = zeros(col,1);
+for i = 1 : v1num
 
-    index(v0(i)) = -1 % fi==0
-    index((u1{i,1}(1)-1)*n + m + u1{i,1}(5)) = -1
+   inde = zeros(col,1);
 
+   inde(loc(i,1)) = 1;   % 有问题
 
-    index((u1{i,1}(1)-1)*n + m + u1{i,1}(3)) = 1;
+   inde((loc(i,1)-1)*n + m + loc(i,2)) = 1;
 
-    indexd = [index;index*(-1)];
+   [mi,mindex] = min(TCi(cell2mat(u1(:,1)),loc(i,2))); % 最小值索引即为行号
 
-    rhs = (-1)* u1{i,1}(2)+ u1{i,1}(4);
+   inde((mindex-1)*n + m + loc(i,2)) = -1;
 
-    model.A(1+i,:) = indexd;
+   indexd = [inde; inde*(-1)];
 
-    model.rhs(1+i) = rhs;
+   rhs = -loc(i,3) - FC(loc(i,1)) + mi;
 
+   model.A(m + i, :) = indexd;
+
+   model.rhs(m + i) = rhs;
 
 end
+
+
+% for i = 1 : (n-v1num)
+%   inde = zeros(col,1);
+
+  % inde(cell2mat(u1(i,1))) = 1;
+  %
+  % in = cell2mat(u1(i,2))+ m + (cell2mat(u1(i,1))-1)*n; % 列向量
+  %
+  % inde(in) = 1;
+  %
+  % new = TCi(loc(1:s,1),cell2mat(u1(i,2)));
+  %
+  % [mii,ind] = min(sum(new,2));  % 对 行 求和  得到 最小值 和 行索引
+  %
+  % inde((ind-1)*n + m + cell2mat(u1(i,2))) = -1;
+  %
+  % indexd = [inde; inde*(-1)];
+  %
+  % rhs = - sum(cell2mat(u1(i,3))) - FC(cell2mat(u1(i,1))) + mii;
+  %
+  % model.A(m + i, :) = indexd;
+  %
+  % model.rhs(m + i) = rhs;
+%
+% end
+
+
+% 第四类约束
+for i = 1 : (v1num-s)
+
+  inde = zeros(col,1);
+
+  inde(cell2mat(u1(i,1))) = 1;
+
+  in = cell2mat(u1(i,2))+ m + (cell2mat(u1(i,1))-1)*n; % 列向量
+
+  inde(in) = 1;
+
+  new = TCi(loc(1:s,1),cell2mat(u1(i,2)));
+
+  [mii,ind] = min(sum(new,2));  % 对 行 求和  得到 最小值 和 行索引
+
+  inde((ind-1)*n + m + cell2mat(u1(i,2))) = -1;
+
+  indexd = [inde; inde*(-1)];
+
+  rhs = - sum(cell2mat(u1(i,3))) - FC(cell2mat(u1(i,1))) + mii;
+
+  model.A(m + i, :) = indexd;
+
+  model.rhs(m + i) = rhs;
+
+end
+
+
+
+gurobi_write(model,'LB_UFL.lp');
+
+res = gurobi(model);
