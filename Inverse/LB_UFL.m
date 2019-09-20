@@ -47,9 +47,10 @@ sss = 0;
 
 v1min = max(TCi(1,:));  % 记录 全局最小值
 
-Loc =zeros(1,2);  % 记录 最小值位置
+Loc =zeros(1,2);  % 记录 最小值位置  约束2用不到了
 
-loc = zeros(v1num,3);  % 记录只有一个vi的 行 纵 坐标 和 值  需要删掉剩下 v1num-s 个 约束3用到
+loc = zeros(v1num,3);  % 记录只有一个vi的 行 纵 坐标 和 值  需要删掉剩下 v1num-s 个
+% 约束3用到   约束2也用到
 
 for i = v1'  % v1 需要是行向量 % 循环 每一行
 
@@ -83,7 +84,7 @@ for i = v1'  % v1 需要是行向量 % 循环 每一行
 
     end
 
-    u11(t,:) = [i,[umax, a1(in), umin, a0(ni)]];  % 里面存放 vi为 1的 坐标 对应行的 最小值和最大值
+    u11(t,:) = [i, umax, a1(in), umin, a0(ni)];  % 里面存放 vi为 1的 坐标 对应行的 最小值和最大值
 
     if umin < v1min
 
@@ -95,6 +96,12 @@ for i = v1'  % v1 需要是行向量 % 循环 每一行
 
     t=t+1;
 end
+
+% num_row =  cell2mat(u1(:,1));   % 记录行号 形成向量
+
+% num_col =  cell2mat(u1(:,2));   % 记录列值 形成向量
+
+% num_value = cell2mat(u1(:,3));  % 记录 相应 TC
 
 % 删除 0 向量
 loc(s+1:end,:)=[];
@@ -136,8 +143,10 @@ model.obj = [obj; obj];   % norm-1 c-Costs  均为正
 
 % Set data for constraints and matrix
 
-nrow = m + n + v1num - s + 1; % 前两个约束加起来为 m 个；第三个约束有 n 个；
+% nrow = m + n + v1num - s + 1; % 前两个约束加起来为 m 个；第三个约束有 n 个；
 % 第四个约束有 vi=1 对应行中 rik==1 个数大于 1 的个数 加 一个等式
+
+nrow = m + v1num + 1;
 
 model.A     = sparse(nrow, ncol);
 
@@ -151,52 +160,92 @@ model.rhs(1) = V_UFL-V_0;
 
 
 %  第一类约束
-% for i = 1:v1num
-%     % 即需要找到 i 所在行的 uik 为 1 的最大值  % 需要给出下标
-%
-%     inde = zeros(col,1);
-%
-%     % u1{t,1}()  从 cell 中取出元素
-%
-%     inde((u11(1)-1)*n + m + u11(3)) = 1;  % max-index
-%     inde((u11(1)-1)*n + m + u11(5)) = -1; % min-index
-%
-%     indexd = [inde;inde*(-1)];
-%
-%     rhs = (-1)* u11(2)+ u11(4);
-%
-%     model.A(1+i,:) = indexd;  % 有问题
-%
-%     model.rhs(1+i) = rhs;
-%
-% end
-
-%  第二类约束
-for i=1:(m-v1num)
+for i = 1:v1num
+    % 即需要找到 i 所在行的 uik 为 1 的最大值  % 需要给出下标
 
     inde = zeros(col,1);
 
-    inde(u0(i,1)) = -1; % fi==0
+    % u1{t,1}()  从 cell 中取出元素
 
-    a = v0(i);
-
-    inde((u0(i,1)-1)*n + m + u0(i,5)) = -1;
-
-    inde((Loc(1)-1)*n + m + Loc(2)) = 1;
+    inde((u11(i,1)-1)*n + m + u11(i,3)) = 1;  % max-index
+    inde((u11(i,1)-1)*n + m + u11(i,5)) = -1; % min-index
 
     indexd = [inde; inde*(-1)];
 
-    rhs = u0(i,4) + FC(a) - v1min;
+    rhs = (-1)* u11(i,2)+ u11(i,4);
+
+    model.A(1 + i, :) = indexd;  % 有问题
+
+    model.rhs(1 + i) = rhs;
+
+end
+
+%  第二类约束
+for k= 1:(m-v1num)
+
+  for i=1:s
+
+    inde = zeros(col,1);
+
+    inde(u0(k,1)) = -1; % fi==0的横坐标
+
+    a = v0(k);
+
+    inde((u0(k,1)-1)*n + m + loc(i,2)) = -1;  % 使用 s 的 纵坐标
+
+    inde((loc(i,1)-1)*n + m + loc(i,2)) = 1;  % 对应列 rik
+
+    inde(loc(i,1)) = 1;
+
+    indexd = [inde; inde*(-1)];
+
+    rhs = TC((u0(k,1)-1)*n + loc(i,2)) + FC(a) - FC(loc(i,1)) - loc(i,3) ;
 
     model.A(v1num + i, :) = indexd;
 
     model.rhs(v1num + i) = rhs;
 
+  end
+
 end
+
+
+for k= 1:(m-v1num)
+
+  for i = 1 : sss  % 行数
+
+    for j = cell2mat(u1{i,2})
+
+      inde = zeros(col,1);
+
+      inde(u0(k,1)) = -1; % fi==0的横坐标
+
+      a = v0(k);
+
+      inde((u0(k,1)-1)*n + m + j) = -1;  % 使用 s 的 纵坐标
+
+      inde((cell2mat(u1{i,1})-1)*n + m + j) = 1;  % 对应列 rik
+
+      indexd = [inde; inde*(-1)];
+
+      num_value = cell2mat(u1{i,3});
+
+      rhs = TC((u0(k,1)-1)*n + j) + FC(a) - num_value(j) ;
+
+      model.A(v1num + i, :) = indexd;
+
+      model.rhs(v1num + i) = rhs;
+
+    end
+
+  end
+
+end
+
 
 % 第三类约束
 
-for i = 1 : v1num
+for i = 1 : s
 
    inde = zeros(col,1);
 
@@ -204,9 +253,11 @@ for i = 1 : v1num
 
    inde((loc(i,1)-1)*n + m + loc(i,2)) = 1;
 
-   [mi,mindex] = min(TCi(cell2mat(u1(:,1)),loc(i,2))); % 最小值索引即为行号
+   mmi = cell2mat(u1(:,1);
 
-   inde((mindex-1)*n + m + loc(i,2)) = -1;
+   [mi,mindex] = min(TCi(mmi,loc(i,2)); % 最小值索引即为行号
+
+   inde((mmi(mindex)-1)*n + m + loc(i,2)) = -1;  %index 有问题
 
    indexd = [inde; inde*(-1)];
 
@@ -219,30 +270,35 @@ for i = 1 : v1num
 end
 
 
-% for i = 1 : (n-v1num)
-%   inde = zeros(col,1);
+for i = 1 : sss  % 行数
 
-  % inde(cell2mat(u1(i,1))) = 1;
-  %
-  % in = cell2mat(u1(i,2))+ m + (cell2mat(u1(i,1))-1)*n; % 列向量
-  %
-  % inde(in) = 1;
-  %
-  % new = TCi(loc(1:s,1),cell2mat(u1(i,2)));
-  %
-  % [mii,ind] = min(sum(new,2));  % 对 行 求和  得到 最小值 和 行索引
-  %
-  % inde((ind-1)*n + m + cell2mat(u1(i,2))) = -1;
-  %
-  % indexd = [inde; inde*(-1)];
-  %
-  % rhs = - sum(cell2mat(u1(i,3))) - FC(cell2mat(u1(i,1))) + mii;
-  %
-  % model.A(m + i, :) = indexd;
-  %
-  % model.rhs(m + i) = rhs;
-%
-% end
+  for j = cell2mat(u1{i,2})
+
+    inde = zeros(col,1);
+
+    inde((cell2mat(u1{i,1})-1)*n + m + j) = 1;   % 对应列 rik
+
+    num_value = cell2mat(u1{i,3});
+
+    mmi = loc(:,1);
+
+    [mi,mindex] = min(TCi(mmi, j));   % 一个的行  多个的对应列
+
+    inde((mmi(mindex)-1)*n + m + j) = -1;
+
+    rhs = mi - num_value(j) ;
+
+    indexd = [inde; inde*(-1)];
+
+    model.A(v1num + i, :) = indexd;
+
+    model.rhs(v1num + i) = rhs;
+
+  end
+
+end
+
+
 
 
 % 第四类约束
