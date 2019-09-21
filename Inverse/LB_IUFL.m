@@ -10,18 +10,16 @@ function res = LB_IUFL(V_UFL,vi,uik,FC,TC)
 % FC TC  ��? 原矩阵�??
 
 m = length(vi);
-
 n = length(uik)/m;
 
 x_0 = [vi; uik];
-
-x0 = [x_0; x_0*(-1)];  %求解��?要的double向量
+x0 =[x_0; x_0*(-1)];  %求解��?要的double向量
 
 % 给定的原问题Costs
 
 Costs =[FC;TC];
 
-V_0 = x_0'*Costs;    %  给定的最优解向量 对应的原成本矩阵的花费�??
+V_0 = (x_0')*Costs;    %  给定的最优解向量 对应的原成本矩阵的花费�??
 
 v1 = find(vi == 1);   % v1记录 vi=1 的横坐标 ��? 列向��?   要分别找到vi��? 0 ��? 1 的下��?
 
@@ -53,14 +51,26 @@ t=1;
 for i = v1'  % v1 ��?要是行向��? % 循环 每一��?
 
     a1 = find(ui(i,:) == 1);
-    a0 = find(ui(i,:) == 0);
 
     b = TCi(i,:);  % 找出TC中对��? ui ��? 1 的部��?
 
     [umax,in] = max(b(a1));
 
+    a0 = find(ui(i,:) == 0);
+
+    if length(a0) > 0
+
     [umin,ni] = min(b(a0));
 
+    else
+
+      umin = 0;
+
+      ni = 1;
+
+      a0(ni) = 1;
+
+    end
     % a1(in)  得到筛�?�过��? ��? ��?大�?�坐标索��?
 
     u11(t,:) = [i, umax, a1(in), umin, a0(ni)];  % 里面存放 vi��? 1��? 坐标 对应行的 ��?小�?�和��?大�??
@@ -107,6 +117,8 @@ u0 = zeros(m-v1num,5);  % 此处 重新定义 ��?个类似的单元数组 �
 
 t = v1num + 1;
 
+if length(v0) >0
+
 for i = v0'  % v0 ��?要是行向��?
 
     [umax,in] = max(TCi(i,:));
@@ -116,8 +128,10 @@ for i = v0'  % v0 ��?要是行向��?
     u0(t-v1num,:) = [i,umax, in, umin, ni];  % 单元数组 第一列里面存��? vi��? 1的坐��?
 
     t=t+1;
+
 end
 
+end
 % ��?要给��? vi ��?1的下��?  以及 ��?0 的下��?
 
 % [h l] = max(reshape(TC,m,n), [], 2);   % 给出每一行的��?大�?�列向量h 以及 下标向量l��?  注意1 为每列， 2 为每行�??
@@ -141,8 +155,15 @@ model.obj = [obj; obj];   % norm-1 c-Costs  均为��?
 
 % nrow = m + n + v1num - s + 1; % 前两个约束加起来��? m 个；第三个约束有 n 个；
 % 第四个约束有 vi=1 对应行中 rik==1 个数大于 1 的个��? ��? ��?个等��?
+if s > 0
+  nrow = v1num + (m - v1num)*n + n + 1 + (v1num-s) ;
 
-nrow = v1num + (m - v1num)*n + n + 1 + (v1num-s) ;
+else
+
+  nrow = v1num + (m - v1num)*n + n + 1 ;
+
+end
+
 
 model.A     = sparse(nrow, ncol);
 
@@ -178,34 +199,40 @@ for i = 1 : v1num
 end
 
 %  第二类约��?   % 这里��?  (m-v1num)*s��?
-for k= 1:(m - v1num)
+if (m - v1num) > 0
+  if s > 0
 
-  for i=1:s
+  for k= 1:(m - v1num)
 
-    inde = zeros(col,1);
+    for i=1:s
 
-    inde(u0(k,1)) = -1; % fi==0的横坐标
+      inde = zeros(col,1);
 
-    a = v0(k);
+      inde(u0(k,1)) = -1; % fi==0的横坐标
 
-    inde((u0(k,1)-1)*n + m + loc(i,2)) = -1;  % 使用 s ��? 纵坐��?
+      a = v0(k);
 
-    inde((loc(i,1)-1)*n + m + loc(i,2)) = 1;  % 对应��? rik
+      inde((u0(k,1)-1)*n + m + loc(i,2)) = -1;  % 使用 s ��? 纵坐��?
 
-    inde(loc(i,1)) = 1;
+      inde((loc(i,1)-1)*n + m + loc(i,2)) = 1;  % 对应��? rik
 
-    indexd = [inde; inde*(-1)];
+      inde(loc(i,1)) = 1;
 
-    rhs = TC((u0(k,1)-1)*n + loc(i,2)) + FC(a) - FC(loc(i,1)) - loc(i,3);
+      indexd = [inde; inde*(-1)];
 
-    model.A(v1num + 1 + i + (k-1)*s, :) = indexd;
+      rhs = TC((u0(k,1)-1)*n + loc(i,2)) + FC(a) - FC(loc(i,1)) - loc(i,3);
 
-    model.rhs(v1num + 1 + i + (k-1)*s) = rhs;
+      model.A(v1num + 1 + i + (k-1)*s, :) = indexd;
+
+      model.rhs(v1num + 1 + i + (k-1)*s) = rhs;
+
+    end
 
   end
 
-end
+  end
 
+if sss > 0
 
 for k= 1:(m-v1num)  % 这里��?  (m-v1num)*(n-s) ��?
 
@@ -248,7 +275,13 @@ for k= 1:(m-v1num)  % 这里��?  (m-v1num)*(n-s) ��?
 
 end
 
+end
+
+end
+
 % 第三类约��?   % 这里��?  (s) ��?
+if s > 0
+
 for i = 1 : s
 
    inde = zeros(col,1);
@@ -257,11 +290,11 @@ for i = 1 : s
 
    inde((loc(i,1)-1)*n + m + loc(i,2)) = 1;
 
-   mmi = cell2mat(u1(:,1));
+   % mmi = cell2mat(u1(:,1));
 
-   [mi,mindex] = min(TCi(mmi,loc(i,2))); % ��?小�?�索引即为行��?
+   [mi,mindex] = min(TCi(v1,loc(i,2))); % ��?小�?�索引即为行��?
 
-   inde((mmi(mindex)-1)*n + m + loc(i,2)) = -1;  %index 有问��?
+   inde((v1(mindex)-1)*n + m + loc(i,2)) = -1;  %index 有问��?
 
    indexd = [inde; inde*(-1)];
 
@@ -273,7 +306,11 @@ for i = 1 : s
 
 end
 
+end
+
 tt = 1;
+
+if sss > 0
 
 for i = 1 : sss  % sss行数   % 这里��? (n-s) ��?
 
@@ -287,13 +324,13 @@ for i = 1 : sss  % sss行数   % 这里��? (n-s) ��?
 
     num_value = cell2mat(u1(i,3));
 
-    mmi = loc(:,1);
+    % mmi = loc(:,1);
 
-    [mi,mindex] = min(TCi(mmi, j));   % ��?个的��?  多个的对应列
+    [mi,mindex] = min(TCi(v1, j));   % ��?个的��?  多个的对应列   这里是所��?
 
-    inde((mmi(mindex)-1)*n + m + j) = -1;
+    inde((v1(mindex)-1)*n + m + j) = -1;
 
-    rhs = mi - num_value(t) ;
+    rhs = mi - num_value(t);
 
     indexd = [inde; inde*(-1)];
 
@@ -309,41 +346,51 @@ for i = 1 : sss  % sss行数   % 这里��? (n-s) ��?
 
 end
 
+end
+
 % 第四类约��?
-for i = 1 : (v1num-s)
+if (v1num-s) > 0
 
-  inde = zeros(col,1);
+  if s >0
 
-  inde(cell2mat(u1(i,1))) = 1;
+  for i = 1 : (v1num-s)
 
-  in = cell2mat(u1(i,2))+ m + (cell2mat(u1(i,1))-1)*n; %  位置
+    inde = zeros(col,1);
+
+    inde(cell2mat(u1(i,1))) = 1;
+
+    in = cell2mat(u1(i,2))+ m + (cell2mat(u1(i,1))-1)*n; %  位置
 
   % cell2mat(u1(i,2)) ��? ��? 形成的向��?
 
-  inde(in) = 1;
+    inde(in) = 1;
 
-  new = TCi(loc(1:s,1),cell2mat(u1(i,2)));   % 找到 相应��?
+    new = TCi(loc(1:s,1),cell2mat(u1(i,2)));   % 找到 相应��?
 
-  aa = loc(:,1);
+    aa = loc(:,1);
 
-  [mii,ind] = min(sum(new,2));  % ��? ��? 求和  得到 ��?小�?? ��? 行索��?
+    [mii,ind] = min(sum(new,2));  % ��? ��? 求和  得到 ��?小�?? ��? 行索��?
 
-  inde((aa(ind)-1)*n + m + cell2mat(u1(i,2))) = -1;
+    inde((aa(ind)-1)*n + m + cell2mat(u1(i,2))) = -1;
 
-  indexd = [inde; inde*(-1)];
+    indexd = [inde; inde*(-1)];
 
-  rhs = - sum(cell2mat(u1(i,3))) - FC(cell2mat(u1(i,1))) + mii ;
+    rhs = - sum(cell2mat(u1(i,3))) - FC(cell2mat(u1(i,1))) + mii ;
 
-  model.A(v1num + (m-v1num) * n + 1 + n + i, :) = indexd;
+    model.A(v1num + (m-v1num) * n + 1 + n + i, :) = indexd;
 
-  model.rhs(v1num + (m-v1num) * n + 1 + n + i) = rhs;
+    model.rhs(v1num + (m-v1num) * n + 1 + n + i) = rhs;
+
+  end
+
+  end
 
 end
 
 % gurobi_write(model,'LB_UFL.lp');
 
-result = gurobi(model);
+result1 = gurobi(model);
 
-res = result.objval;
+res = result1.objval;
 
 end

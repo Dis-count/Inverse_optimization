@@ -1,7 +1,7 @@
 m = 4;
 
 n = 4;
-k = 1;
+k = 10;
 
 res = zeros(1,k);
 
@@ -30,9 +30,9 @@ for j = 1:k
 
     end
 
-    uik = reshape(cee, m*n, 1); % 直接 按列 reshape 所以不用再转置
+    uik = reshape(cee, m*n, 1); % 直接 按列 reshape ��?以不用再转置
 
-    v_UFL = round((-0.5+rand(1,1))*20); % (-1,1)取值 最优值的漂移量
+    v_UFL = round((-0.5+rand(1,1))*20); % (-1,1)取�?? ��?优�?�的漂移��?
 
     FC = round(10 + rand(m,1)*50);
 
@@ -42,10 +42,13 @@ for j = 1:k
 
     LB_res = LB_IUFL(v_UFL + opt1, vi, uik, FC, TC);
 
-    L_res = L_IUFL(v_UFL + opt1, vi, uik, FC, TC);
+    % L_res = L_IUFL(v_UFL + opt1, vi, uik, FC, TC);
 
-    res(j) = L_res - LB_res;
+    Inv_res = Inv_UFL3(v_UFL+opt1, vi, uik, FC, TC);
+
+    res(j) = (- Inv_res + LB_res)/ Inv_res;
 
 end
 
 res
+res1 = mean(abs(res))
