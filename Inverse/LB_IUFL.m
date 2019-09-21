@@ -156,6 +156,7 @@ model.obj = [obj; obj];   % norm-1 c-Costs  均为��?
 % nrow = m + n + v1num - s + 1; % 前两个约束加起来��? m 个；第三个约束有 n 个；
 % 第四个约束有 vi=1 对应行中 rik==1 个数大于 1 的个��? ��? ��?个等��?
 if s > 0
+
   nrow = v1num + (m - v1num)*n + n + 1 + (v1num-s) ;
 
 else
@@ -163,7 +164,6 @@ else
   nrow = v1num + (m - v1num)*n + n + 1 ;
 
 end
-
 
 model.A     = sparse(nrow, ncol);
 
