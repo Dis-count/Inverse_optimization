@@ -1,12 +1,12 @@
 
-function [opt1,opt2] = I_UFL(fi,rik)   % fi rik 为列向量   求出给定 costs 时  UFL的最优值
+function [opt1,opt2] = UFL(fi,rik)   % fi rik 为列向量  求出给定 costs 时  UFL的最优值
 % 给出 Facility 数量 m  Player 数量 n
 
 % 对应限制条件数量 为 （mn+m）个  变量有（mn+m) 个
 
 m = length(fi) ;
-n = length(rik)/m ;
 
+n = length(rik)/m ;
 
 % disp(fi');
 
@@ -22,12 +22,10 @@ n = length(rik)/m ;
 
 % 注意这里应该使用循环生成向量； 但这里为了计算简单的例子（n=4)，我们直接手动添加变量。
 
-
 % rik  = [ 3; 3; M; 2;
 %          M; 1; 4; M;
 %          3; M; 3; 4;
 %          M; 2; M; 1;];
-
 
 % 产生一个 长度为 （mn+m) 的向量，每一个限制条件 产生 一个向量。
 
@@ -78,7 +76,6 @@ model.rhs   = [zeros(m*n, 1); ones(n,1)];
 
 model.sense = [repmat('>', m*n , 1); repmat('=', n , 1)];
 
-
 for w =1:m
     for p =1:n
         model.A(p+n*(w-1),w) = 1;         % 第一组约束
@@ -91,10 +88,8 @@ for p = 1:n
     model.A(p+m*n, n*(0:(m-1))+m+p) = 1; % 第二组约束
 end
 
-
 % Save model
-gurobi_write(model,'I_UFL.lp');
-
+% gurobi_write(model,'UFL.lp');
 
 % Guess at the starting point: close the plant with the highest fixed
 % costs; open all others first open all plants
@@ -108,10 +103,12 @@ gurobi_write(model,'I_UFL.lp');
 
 % Optimize
 % res = gurobi(model, params);
-% res = gurobi(model);
-% opt1 = res.objval;
-% opt2 = res.x;
 
+res = gurobi(model);
+
+opt1 = res.objval;
+
+opt2 = res.x;
 
 % Print solution
 

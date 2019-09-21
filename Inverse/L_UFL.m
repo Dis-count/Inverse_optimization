@@ -98,10 +98,8 @@ nrow = 2*m*n+2*m+2;
 
 model.A     = sparse(nrow, ncol);
 
-
 model.rhs   = [V_UFL; zeros(m + m*n, 1); V_UFL; fi; rik];
 model.sense = [repmat('>', 1, 1); repmat('=', 2*m*n + 2*m + 1, 1)];
-
 
 model.A(1,1:n) = 1;  % 第一类约束
 

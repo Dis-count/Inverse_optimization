@@ -1,4 +1,4 @@
-function Inv_UFL3(fixed,v_i,u_ij,FC,TC)    % Inv_UFL1 中有四重循环，需要进一步优化 
+function Inv_UFL3(fixed,v_i,u_ij,FC,TC)    % Inv_UFL1 中有四重循环，已优化 
 % 该函数 功能 给定任意 m,n 可以得到UFL的 逆优化结果
 % 解决了需要 n 重循环的问题
 %  x_0 为给定服务对象以及是否开启 Facility  v_0 为原问题最优值  fixed 为目标值
@@ -18,6 +18,7 @@ x0 =[x_0;x_0*(-1)];   % double the matrix
 
 % define primitive data
 m = length(v_i);  
+
 n = length(u_ij)/m; 
 
 % 给出原问题的C_0
@@ -38,6 +39,7 @@ V_0 = x_0'*Costs;    %  给定的最优解向量 对应的原成本矩阵的花费值
 
 % Build model
 model.modelname = 'Inv_facility';
+
 model.modelsense = 'min';
 
 % Set data for variables
@@ -58,7 +60,6 @@ model.sense = [repmat('=', 1, 1); repmat('>', m^n, 1)];
 
 % Production constraints   注意限制条件需要遍历  这一点非常复杂
 
-
 model.A(1,:) = x0;
 
 model.rhs(1) = fixed- V_0;
@@ -68,7 +69,6 @@ a = eye(m);
 % f = zeros(m^n,m+m*n);
 
 s = 2;  
-
 
 % varRange中数组取值对顺序敏感。
 % 循环变量遍历集若是整体(而不是标量数字，或者单个字符等）构成，那么需要用花括号括起来。
@@ -126,7 +126,6 @@ for k = 1:size(iter,1)  % 一次循环替代嵌套
     
 end
 
-
 gurobi_write(model,'Inv_UFL3.lp');
 
 % Guess at the starting point: close the plant with the highest fixed
@@ -134,8 +133,6 @@ gurobi_write(model,'Inv_UFL3.lp');
 % model.start = [ones(nPlants, 1); inf(nPlants * nplayers, 1)];
 % [~, idx] = max(FC);
 % model.start(idx) = 0;
-
-
 
 % Optimize
 res = gurobi(model);
