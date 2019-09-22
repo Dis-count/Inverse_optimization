@@ -157,11 +157,11 @@ sum2 = 0;
 
 % last_item = length(cell2mat(u1(:,1)));  % 记录 ��?后一��? 总数
 
+if sss > 1
+
 summ = cell2mat(u1(sss,2));
 
 sum3 = length(summ);
-
-if sss > 1
 
 for i = (sss-1): -1 : 1
 
