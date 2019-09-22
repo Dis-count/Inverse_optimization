@@ -178,7 +178,12 @@ end
 sum2 = sum2 +sum1;
 
 if s > 0
+<<<<<<< HEAD
   nrow = sum2 + (m - v1num)*n + n + 1 + (v1num-s) ;
+=======
+
+  nrow = v1num + (m - v1num)*n + n + 1 + (v1num-s) ;
+>>>>>>> 3715e0d3f9c15f79b35a074dc0f2e388276f8a1c
 
 else
 
