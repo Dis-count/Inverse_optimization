@@ -1,6 +1,6 @@
-m = 4;
+m = 5;
 
-n = 4;
+n = 5;
 k = 10;
 
 res = zeros(1,k);
@@ -42,11 +42,11 @@ for j = 1:k
 
     LB_res = LB_IUFL(v_UFL + opt1, vi, uik, FC, TC);
 
-    % L_res = L_IUFL(v_UFL + opt1, vi, uik, FC, TC);
+    L_res = L_IUFL(v_UFL + opt1, vi, uik, FC, TC);
 
-    Inv_res = Inv_UFL3(v_UFL+opt1, vi, uik, FC, TC);
+    % Inv_res = Inv_UFL3(v_UFL+opt1, vi, uik, FC, TC);
 
-    res(j) = (- Inv_res + LB_res)/ Inv_res;
+    res(j) = (- L_res + LB_res)/ L_res;
 
 end
 

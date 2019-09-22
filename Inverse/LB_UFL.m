@@ -1,21 +1,21 @@
-% 这里有四组约��?
+% 这里有四组约束条��?
 % 第一个约束确保行��? r_ik (��?1的最大�??<��?0 的最小�?? )的大小关��?
 
 V_UFL = 28;   % 给定的最优�?�（目标值）
 
-vi = [1 ; 0 ; 0;];
+vi = [1 ; 1 ; 0;];
 
-uik = [ 1; 1 ; 1 ;
-        0; 0 ; 0 ;
+uik = [ 1; 0 ; 1 ;
+        0; 1 ; 0 ;
         0; 0 ; 0 ;];
 
 m = length(vi);
 n = length(uik)/m;
 
 x_0 = [vi; uik];
-x0 =[x_0; x_0*(-1)];  %求解��?要的double向量
+x0 =[x_0; x_0*(-1)];  % 求解绝对值需要的 double 向量
 
-% 给定的原问题Costs
+% 给定的原问题 Costs
 
 FC    = [5; 6; 7;];
 
@@ -23,7 +23,7 @@ TC    = [11; 4; 8;
          5; 7; 10;
          19; 6; 3;];
 
-Costs =[FC;TC];
+Costs = [FC; TC];
 
 V_0 = x_0'*Costs;    %  给定的最优解向量 对应的原成本矩阵的花费�??
 
@@ -47,12 +47,12 @@ sss = 0;
 
 v1min = max(TCi(1,:));  % 记录 全局��?小�??
 
-Loc =zeros(1,2);  % 记录 ��?小�?�位��?  约束2用不到了
+Loc = zeros(1,2);  % 记录 ��?小�?�位��?  约束2用不到了
 
 loc = zeros(v1num,3);  % 记录只有��?个vi��? ��? ��? 坐标 ��? ��?  ��?要删掉剩��? v1num-s ��?
 % 约束3用到   约束2也用��?
 
-t=1;
+t = 1;
 
 for i = v1'  % v1 ��?要是行向��? % 循环 每一��?
 
@@ -72,7 +72,7 @@ for i = v1'  % v1 ��?要是行向��? % 循环 每一��?
 
       umin = 0;
 
-      n1 = 1;
+      ni = 1;
 
       a0(ni) = 1;
 
@@ -157,19 +157,38 @@ model.obj = [obj; obj];   % norm-1 c-Costs  均为��?
 
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nplayers, 1)];
 
-% Set data for constraints and matrix
+sum1 = (n - 1 + n - s)* s / 2;  % 只有��?��?1 ��?  的�?�约束数
 
-% nrow = m + n + v1num - s + 1; % 前两个约束加起来��? m 个；第三个约束有 n 个；
-% 第四个约束有 vi=1 对应行中 rik==1 个数大于 1 的个��? ��? ��?个等��?
-if s > 0
-  nrow = v1num + (m - v1num)*n + n + 1 + (v1num-s) ;
+sum2 = 0;
 
-else
+last_item = length(cell2mat(u1(:,1)));  % 记录 ��?后一��? 总数
 
-  nrow = v1num + (m - v1num)*n + n + 1 ;
+if last_item > 1
+
+sum3 = length(cell2mat(u1(last_item,2)));
+
+for i = (last_item-1): -1 : 1
+
+  aa = length(u1(i,2));
+
+  sum2 = sum2 + aa * sum3;   % 记录 总约束数
+
+  sum3 = sum3 + aa;   %  sum3 是一个工具计数变��?
 
 end
 
+end
+
+sum2 = sum2 +sum1;
+
+if s > 0
+  nrow = sum2 + (m - v1num)*n + n + 1 + (v1num-s) ;
+
+else
+
+  nrow = sum2 + (m - v1num)*n + n + 1 ;
+
+end
 
 model.A     = sparse(nrow, ncol);
 
@@ -183,26 +202,52 @@ model.rhs(1) = V_UFL-V_0;
 
 
 %  第一类约��?
-for i = 1 : v1num
-    % 即需要找��? i ��?在行��? uik ��? 1 的最大�??  % ��?要给出下��?
 
-    inde = zeros(col,1);
+[urow, ucol] = find(ui~=0);  % 给出非零向量
 
-    % u1{t,1}()  ��? cell 中取出元��?
+urow_col = [urow , ucol];
 
-    inde((u11(i,1)-1)*n + m + u11(i,3)) = 1;  % max-index
+uu = sortrows(urow_col,2);  % 按列排序
 
-    inde((u11(i,1)-1)*n + m + u11(i,5)) = -1; % min-index
+t = 1;  % 记录 约束��?
 
-    indexd = [inde; inde*(-1)];
+if (sss ~= 1)||(s ~= 0)
 
-    rhs = (-1)*u11(i,2) + u11(i,4);
+for i = 1 : (n-1)   % ��? 行坐��?
 
-    model.A(1 + i, :) = indexd;  % 有问��?
+    for j = (i+1) : n
 
-    model.rhs(1 + i) = rhs;
+      inde = zeros(col,1);
+
+      % u1(t,1)  cell 中取出元��?
+      if uu(i,1) ~= uu(j,1)
+
+      inde((uu(i,1)-1)*n + m + uu(i,2)) = 1;  %  r11
+
+      inde((uu(j,1)-1)*n + m + uu(i,2)) = -1; %  ri1
+
+      inde((uu(j,1)-1)*n + m + uu(j,2)) = 1;  %  ri2
+
+      inde((uu(i,1)-1)*n + m + uu(j,2)) = -1; %  r12
+
+      indexd = [inde; inde*(-1)];
+
+      rhs = - TCi(uu(j,1),uu(j,2)) - TCi(uu(i,1),uu(i,2)) + TCi(uu(j,1),uu(i,2)) + TCi(uu(i,1),uu(j,2));
+
+      model.A(1 + t, :) = indexd;  %
+
+      model.rhs(1 + t) = rhs;
+
+      t = t + 1;
+
+      end
+
+    end
+end
 
 end
+
+pt =t;
 
 %  第二类约��?   % 这里��?  (m-v1num)*s��?
 if (m - v1num) > 0
@@ -228,9 +273,9 @@ if (m - v1num) > 0
 
       rhs = TC((u0(k,1)-1)*n + loc(i,2)) + FC(a) - FC(loc(i,1)) - loc(i,3);
 
-      model.A(v1num + 1 + i + (k-1)*s, :) = indexd;
+      model.A(sum2 + 1 + i + (k-1)*s, :) = indexd;
 
-      model.rhs(v1num + 1 + i + (k-1)*s) = rhs;
+      model.rhs(sum2 + 1 + i + (k-1)*s) = rhs;
 
     end
 
@@ -267,9 +312,9 @@ for k= 1:(m-v1num)  % 这里��?  (m-v1num)*(n-s) ��?
       rhs = TC((u0(k,1)-1)*n + j) + FC(a) - num_value(t);
 
 
-      model.A(v1num + (m-v1num)*s + 1 + tt + (k-1)*(n-s), :) = indexd;
+      model.A(sum2 + (m-v1num)*s + 1 + tt + (k-1)*(n-s), :) = indexd;
 
-      model.rhs(v1num + (m-v1num)*s + 1 + tt + (k-1)*(n-s)) = rhs;
+      model.rhs(sum2 + (m-v1num)*s + 1 + tt + (k-1)*(n-s)) = rhs;
 
       t = t + 1;
 
@@ -296,19 +341,21 @@ for i = 1 : s
 
    inde((loc(i,1)-1)*n + m + loc(i,2)) = 1;
 
-   % mmi = cell2mat(u1(:,1));
+   mmi = v1;
 
-   [mi,mindex] = min(TCi(v1,loc(i,2))); % ��?小�?�索引即为行��?
+   mmi(loc(i,1)) =[];
 
-   inde((v1(mindex)-1)*n + m + loc(i,2)) = -1;  %index 有问��?
+   [mi,mindex] = min(TCi(mmi,loc(i,2))); % ��?小�?�索引即为行��?
+
+   inde((mmi(mindex)-1)*n + m + loc(i,2)) = -1;  %index 有问��?
 
    indexd = [inde; inde*(-1)];
 
    rhs = -loc(i,3) - FC(loc(i,1)) + mi;
 
-   model.A(v1num + (m-v1num) * n + 1 + i, :) = indexd;
+   model.A(sum2 + (m-v1num) * n + 1 + i, :) = indexd;
 
-   model.rhs(v1num + (m-v1num) * n + 1 + i) = rhs;
+   model.rhs(sum2 + (m-v1num) * n + 1 + i) = rhs;
 
 end
 
@@ -330,19 +377,21 @@ for i = 1 : sss  % sss行数   % 这里��? (n-s) ��?
 
     num_value = cell2mat(u1(i,3));
 
-    % mmi = loc(:,1);
+    mmt = v1;
 
-    [mi,mindex] = min(TCi(v1, j));   % ��?个的��?  多个的对应列   这里是所��?
+    mmt(cell2mat(u1(i,1))) = [];  % 将该行去��?
 
-    inde((v1(mindex)-1)*n + m + j) = -1;
+    [mi,mindex] = min(TCi(mmt, j));   % ��?个的��?  多个的对应列   这里是所��?
+
+    inde((mmt(mindex)-1)*n + m + j) = -1;
 
     rhs = mi - num_value(t);
 
     indexd = [inde; inde*(-1)];
 
-    model.A(v1num + (m-v1num) * n + 1 + s + tt, :) = indexd;
+    model.A(sum2 + (m-v1num) * n + 1 + s + tt, :) = indexd;
 
-    model.rhs(v1num + (m-v1num) * n + 1 + s + tt) = rhs;
+    model.rhs(sum2 + (m-v1num) * n + 1 + s + tt) = rhs;
 
     t = t + 1;
 
@@ -383,9 +432,9 @@ if (v1num-s) > 0
 
     rhs = - sum(cell2mat(u1(i,3))) - FC(cell2mat(u1(i,1))) + mii ;
 
-    model.A(v1num + (m-v1num) * n + 1 + n + i, :) = indexd;
+    model.A(sum2 + (m-v1num) * n + 1 + n + i, :) = indexd;
 
-    model.rhs(v1num + (m-v1num) * n + 1 + n + i) = rhs;
+    model.rhs(sum2 + (m-v1num) * n + 1 + n + i) = rhs;
 
   end
 
@@ -396,5 +445,3 @@ end
 gurobi_write(model,'LB_UFL.lp');
 
 res = gurobi(model);
-
-clear
