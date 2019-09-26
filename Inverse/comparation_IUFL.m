@@ -1,6 +1,6 @@
-m = 40;
+m = 6;
 
-n = 40;
+n = 6;
 k = 10;
 
 res = zeros(1,k);
@@ -32,7 +32,7 @@ for j = 1:k
 
     uik = reshape(cee, m*n, 1); % 直接 按列 reshape ��?以不用再转置
 
-    v_UFL = round((-0.5+rand(1,1))*20); % (-1,1)取�?? ��?优�?�的漂移��?
+    v_UFL = round((-0.5+rand(1,1))*10); % (-1,1)取�?? ��?优�?�的漂移��?
 
     FC = round(10 + rand(m,1)*50);
 
