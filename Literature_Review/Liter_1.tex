@@ -18,8 +18,8 @@
 \geometry{a4paper,scale=0.8}
 \renewcommand{\baselinestretch}{1.5}
 
-\title{The literature review of the nine papers}
-\author{Dis\cdot count}
+\title{The literature review of the papers about inverse optimization}
+\author{Li}
 % \date{Feb 2019}
 \begin{document}
 
@@ -27,7 +27,6 @@
 
 \section{Summary}
 
-There are
 
 
 
@@ -41,7 +40,7 @@ So it is called \emph{reverse} problem. For the tree network problem, use the mi
 
 \begin{table}[ht]
 
-\tabcolsep=70pt
+\tabcolsep = 40pt
 
 \small\renewcommand\arraystretch{2}
 
@@ -53,11 +52,11 @@ Paper & Content \\
 \hline
 1994 Berman et al. & reverse tree networks problem \\
 \hline
-1997  &  Inverse matroid intersection problem \\
+1997 Cai\&Li &  Inverse matroid intersection problem \\
 \hline
-1999  &  Inverse polymatroidal flow problem \\
+1999 Cai\&Yang &  Inverse polymatroidal flow problem \\
 \hline
-1998  &  A strongly polynomial algorithm for the inverse arborescence problem \\
+1998 Hu\&Liu &  A strongly polynomial algorithm for the inverse arborescence problem \\
 \hline
 1997 Yang\&Zhang & inverse maximum flow and minimum cut problems \\
 \hline
@@ -69,7 +68,8 @@ Paper & Content \\
 \hline
 1996 Zhang\&Liu & Calculating some inverse linear programming problem \\
 \hline
-[17] Zhang\&Liu & Inverse fractional matching problem
+1999 Zhang\&Liu & Inverse fractional matching problem \\
+\hline
 \end{tabular}}
 {}
 \end{table}
@@ -77,7 +77,7 @@ Paper & Content \\
 
 \section{Solving Inverse Spanning Tree Problems Through Network Flow Techniques(1999)}
 
-They ﬁrst study the inverse spanning tree problems which can be transformed to an assignment problem. So just solve the unbalaned assignment problem
+They ﬁrst study the inverse spanning tree problems which can be transformed to an assignment problem. So just solve the unbalaned assignment problem.
 
 
 \subsection{Literature}
@@ -85,7 +85,7 @@ They ﬁrst study the inverse spanning tree problems which can be transformed to
 
 \begin{table}[ht]
 
-\tabcolsep=70pt
+\tabcolsep = 40pt
 
 \small\renewcommand\arraystretch{2}
 
@@ -96,8 +96,6 @@ They ﬁrst study the inverse spanning tree problems which can be transformed to
 Paper & Content \\
 \hline
 1992\&1994 Burton\&Toint & inverse shortest path problems(L2) \\
-\hline
-1994\&1995 & some polynomially solvable inverse shortest path problems \\
 \hline
 1995 Sokkalingam & inverse minimum cost flow problems($L_1,L_2,L_\infty $) \\
 \hline
@@ -111,32 +109,7 @@ Paper & Content \\
 
 \section{Inverse Combinatorial Optimization: A Survey on Problems, Methods, and Results(2004)}
 
-This overview should be read carefully.
-
-\subsection{Literture}
-
-
-\begin{table}[ht]
-
-\tabcolsep=70pt
-
-\small\renewcommand\arraystretch{2}
-
-\caption{The paper showed in this paper.\label{tab:3}}
-
-{\begin{tabular}{lc}
-\hline
-Paper & Content \\
-\hline
-1996 &  \\
-\hline
-1999 & what \\
-\hline
-1998 & what \\
-\hline
-\end{tabular}}
-{}
-\end{table}
+Overview
 
 
 
@@ -144,16 +117,17 @@ Paper & Content \\
 
 This article shows many cases.
 
+
 \subsection{Literture}
 
 
-\begin{table}[ht]
+\begin{table}[!h]
 
-\tabcolsep=70pt
+\tabcolsep = 30pt
 
 \small\renewcommand\arraystretch{2}
 
-\caption{The literature showed in this paper.\label{tab:1}}
+\caption{The literature showed in this paper.\label{tab:4}}
 
 {\begin{tabular}{lc}
 \hline
@@ -163,15 +137,13 @@ Paper & Content \\
 \hline
 1996 Zang\&Liu &  inverse assignment and minimum cost flow problems \\
 \hline
-1997  &  Inverse maximum flow and minimum cut problem \\
-\hline
-1998  &  Inverse problem of minimum cuts \\
+1997 Yang et al. &  Inverse maximum flow and minimum cut problem \\
 \hline
 1997 Yang \& 1998 Zhang\&Cai & inverse minimum cut problems \\
 \hline
-1995 Xu\&Zhang & inverse weighted minimum cut problems \\
+1995 Xu\&Zhang & inverse weighted minimum cut problems and inverse shortest path problem\\
 \hline
-1999 Sokkalingam \& 2000 Ahuja\&Orlin & inverse spanning tree problem \\
+1999 Sokkalingam  & inverse spanning tree problem \\
 \hline
 2001 Ahuja\&Orlin & inverse sorting problem \\
 \hline
@@ -180,6 +152,8 @@ Paper & Content \\
 \end{tabular}}
 {}
 \end{table}
+
+
 
 
 \section{Inverse Polynomial Optimization(2013)}
@@ -191,22 +165,23 @@ This article provides a systematic numerical scheme to compute an inverse optima
 
 \begin{table}[ht]
 
-\tabcolsep=70pt
+\tabcolsep = 40pt
 
 \small\renewcommand\arraystretch{2}
 
-\caption{The paper showed in this paper.\label{tab:1}}
+\caption{The paper showed in this paper.\label{tab:5}}
 
 {\begin{tabular}{lc}
 \hline
 Paper & Content \\
 \hline
-Condition A & what \\
+1999 Huang\&Liu  & inverse linear programming problem and minimum weight perfect k-matching \\
 \hline
-Condition B & what \\
+1995 Zhang et al. & column generation method for inverse shortest path problem \\
 \hline
-Condition C & what \\
+2004 Schaefer & Inverse integer programming(feasible set) \\
 \hline
+
 \end{tabular}}
 {}
 \end{table}
@@ -214,17 +189,42 @@ Condition C & what \\
 
 \section{The inverse optimal value problem(2005)}
 
-This paper considers the following inverse optimization problem:given a linear program, adesired optimal objective value, and a set of feasible cost vectors, determine a cost vector such that the corresponding optimal objective value of the linear program is closest to the desired value.
-The above problem, referred here as the inverse optimal value problem, is signiﬁcantly different from standard inverse optimization problems that involve determining a cost vector for a linear program such that a prespecified solution vector is optimal. In this paper, we show that the inverse optimal value problem is NP-hard in general. We identify conditions under which the problem reduces to a concave maximization or a concave minimization problem.Weprovide sufﬁcient conditions under which the associated concave minimization problem and, correspondingly, the inverse optimal value problem is polynomially solvable. For the case when the set of feasible cost vectors is polyhedral, we describe an algorithm for the inverse optimal value problem based on solving linear and bilinear programming problems. Some preliminary computational experience is reported.
+The inverse optimal value problem is NP-hard in general. Under what conditions, the problem reduces to a concave maximization or a concave minimization problem. Under what sufﬁcient conditions the associated concave minimization problem and the inverse optimal value problem is polynomially solvable. For the case when the set of feasible cost vectors is polyhedral, find an algorithm for the inverse optimal value problem based on solving linear and bilinear programming problems.
+
+
+\subsection{Literature}
+
+\begin{table}[ht]
+
+\tabcolsep = 40pt
+
+\small\renewcommand\arraystretch{2}
+
+\caption{The literature showed in this paper.\label{tab:6}}
+
+{\begin{tabular}{lc}
+\hline
+Paper & Content \\
+\hline
+1992\&1994 Burton\&Toint & inverse shortest path problems(L2) \\
+\hline
+1996\&1999 Zhang\&Liu & inverse linear programming for the  $l_1, l_\infty$ case  \\
+\hline
+1997 Burton et al. & inverse shortest paths with upper bounds on costs \\
+\hline
+1999 Fekete et al. & similar inverse shortest path problem(complexity) \\
+\hline
+\end{tabular}}
+{}
+\end{table}
+
 
 
 \section{Inverse integer programming(2009)}
 
 Theoretical
 
-We consider the integer programming version of inverse optimization. Using superadditive duality, we provide a polyhedral description of the set of inverse feasible objectives. We then describe two algorithmic approaches for solving the inverse integer programming problem.
-
-We consider inverse integer programming, where an integer vector x0, is given, as well as a constraint matrix, right-handside and a target objective.The goal is to ﬁnd a vector d that minimizes the weighted norm from a target objective d0 such that x0 is optimal for the pure integer program deﬁned by the objective d. Algorithms for inverse linear programming have been developed and reﬁned in [1] and [8]. The inverse counterparts of various combinatorial optimization problems have been described, including shortest paths, spanning trees, and minimum cost flows. Ahuja and Orlin [1] showed that, under mild conditions, the inverse version of a polynomially solvable optimization problem under the L1 and L∞ norms are polynomially solvable. Less is known about inverse integer programming. Huang[6] showed that the inverse knapsack problem and the general inverse integer programming problem with a  ﬁxed number of rows can be solved in pseudo-polynomial time. See the recent extensive survey of inverse combinatorial optimization by Heuberger [5] for more details.
+Using superadditive duality, provide a polyhedral description of the set of inverse feasible objectives. Then describe two algorithmic approaches for solving the inverse integer programming problem.
 
 
 \subsection{Literature}
@@ -232,22 +232,21 @@ We consider inverse integer programming, where an integer vector x0, is given, a
 
 \begin{table}[ht]
 
-\tabcolsep=70pt
+\tabcolsep = 40pt
 
 \small\renewcommand\arraystretch{2}
 
-\caption{The paper showed in this paper.\label{tab:1}}
+\caption{The paper showed in this paper.\label{tab:7}}
 
 {\begin{tabular}{lc}
 \hline
 Paper & Content \\
 \hline
-Condition A & what \\
+2005 Huang & Inverse knapsack problem(pseudo-polynomial time)     \\
 \hline
-Condition B & what \\
+2005 Huang & Inverse integer programming problem with a fixed number of rows \\
 \hline
-Condition C & what \\
-\hline
+
 \end{tabular}}
 {}
 \end{table}
@@ -263,25 +262,25 @@ Theoretical
 \subsection{Literture}
 
 
-
 \begin{table}[ht]
 
-\tabcolsep=70pt
+\tabcolsep = 40pt
 
 \small\renewcommand\arraystretch{2}
 
-\caption{The paper showed in this paper.\label{tab:1}}
+\caption{The paper showed in this paper.\label{tab:8}}
 
 {\begin{tabular}{lc}
 \hline
 Paper & Content \\
 \hline
-Condition A & what \\
+1999 Yang\&Zhang  & Column generation and ellipsoid methods for inverse optimization \\
 \hline
-Condition B & what \\
+2005 Huang & Inverse mixed integer and nonlinear programming  \\
 \hline
-Condition C & what \\
+2005 Iyengar\& Kang & Inverse conic programming with applications \\
 \hline
+
 \end{tabular}}
 {}
 \end{table}
@@ -296,21 +295,21 @@ A method for solving general inverse LP problem including upper and lower bound 
 
 \begin{table}[ht]
 
-\tabcolsep=70pt
+\tabcolsep=40pt
 
 \small\renewcommand\arraystretch{2}
 
-\caption{The paper showed in this paper.\label{tab:1}}
+\caption{The paper showed in this paper.\label{tab:9}}
 
 {\begin{tabular}{lc}
 \hline
 Paper & Content \\
 \hline
-Condition A & what \\
+1994  Ma\&Xu\&Zhang & Algorithms for inverse minimum spanning tree problem \\
 \hline
-Condition B & what \\
+1995 Xu\&Zhang & inverse weighted shortest path problem \\
 \hline
-Condition C & what \\
+1995 Zhang et al. & inverse shortest path problem with $L_1$ norm and column generation \\
 \hline
 \end{tabular}}
 {}
