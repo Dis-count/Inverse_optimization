@@ -1,0 +1,263 @@
+\documentclass[UTF8]{article}
+
+\usepackage{graphicx}
+\usepackage{setspace}
+% \usepackage{ctex}
+\usepackage{amsmath}
+\usepackage{geometry}
+
+
+\newtheorem{thm}{Theorem}
+
+\newtheorem{pf}{Proof}
+\newtheorem{algorithm}{Algorithm}
+
+
+% \geometry{a4paper,left=2cm,right=2cm,top=1cm,bottom=1cm}
+% \setstretch{1.5}
+\geometry{a4paper,scale=0.8}
+\renewcommand{\baselinestretch}{1.5}
+
+\title{The literature review of the nine papers}
+\author{Dis\cdot count}
+% \date{Feb 2019}
+\begin{document}
+
+\maketitle{}
+
+\section{Summary}
+
+There are
+
+
+
+\begin{table}[ht]
+
+\tabcolsep=70pt
+
+\small\renewcommand\arraystretch{2}
+
+\caption{The paper showed in this paper.\label{tab:1}}
+
+{\begin{tabular}{lc}
+\hline
+Paper & Content \\
+\hline
+Condition A & what \\
+\hline
+Condition B & what \\
+\hline
+Condition C & what \\
+\hline
+\end{tabular}}
+{}
+\end{table}
+
+
+\section{Some reverse location problems(2000)}
+
+This article discusses about the problem of facilities locations with the fixed locations, and the optimal solution is also not the same.
+
+So it is called \emph{reverse} problem. For the tree network problem, use the minimum cut or maximum flow algorithm (strongly polynomial method) as main subroutine.
+
+\subsection{Literture}
+
+[2] 1992 Improving the location of minsum facility through network modification
+[3] 1994 Improving the location of minmax facility through network modification
+Berman et al. [2,3] discuss respectively the location problem with MinSum and MinMax objective functions.
+Berman et al. [3] discusses the reverse location problem in tree networks and formulates it as a linear program, but does not give any concrete algorithm.
+
+[6] 1997 Inverse matroid intersection problem
+[7] Inverse polymatroidal flow problem
+[8] 1998 A strongly polynomial algorithm for the inverse arborescence problem,
+[9] An inverse DEA model for inputs/outputs estimation
+[10] 1997 Inverse maximum flow and minimum cut problems
+[11] 1998 A Constrained capacity expansion problem on networks
+
+[13] 1999 Two general methods for inverse optimization problems
+[14] 1998 Inverse problem of minimum cuts
+[15] 1996 Calculating some inverse linear programming problem,
+[16] 1996 On inverse problem of minimum spanning tree with partition constraints,
+[17] Inverse fractional matching problem,
+[18] 1996 A network flow method for solving some inverse combinatorial optimization problems
+[19] 1999 Solution structure of some inverse optimization problems,
+[20] 1995 A column generation method for inverse shortest path problem,
+[21] 1997 An algorithm for inverse minimum spanning tree problem,
+Note that recently there are many papers discussing inverse optimization problems, see [4-11,13-21], in which people want to adjust the parameters (lengths, cost coefficients,
+capacities, etc.) of an optimization model as little as possible so that a given feasible solution can become an optimal solution. The problem that we are concerned with in this paper is closely related to that type of inverse problems, but is somehow different because here we do not demand node s to be the center (optimal solution) of the location problem after reducing some lengths. To distinguish our problem from those inverse problems, we use the term reverse problem in this paper.
+
+
+
+\section{Solving Inverse Spanning Tree Problems Through Network Flow Techniques(1999)}
+
+They ﬁrst study the inverse spanning tree problems which can be transformed to an assignment problem. So just solve the unbalaned assignment problem
+
+\subsection{Literature}
+
+1992 On an instance of the inverse shortest paths problem
+1994 On the use of an inverse shortest paths algorithm for recovering linearly correlated costs
+
+Inverse network optimization problems were first studied by Burton and Toint. They studied the inverse multiple-source shortest path problem in which the deviation between two vectors c and d is measured by the L2 norm. They provide applications of these problems to traffic modeling and seismic tomography, and give a nonlinear programming algorithm to solve the problem.
+
+
+1994 Inverse shortest path problems. Technical Report
+1995 An inverse problem of the weighted shortest path problems
+
+Mao-cheng and Xiao-guang and Xu and Zhang studied different inverse shortest path problems that are polynomially solvable.
+
+
+1995 The Minimum Cost Flow Problem: Primal Algorithms and Cost Perturbations. Unpublished Dissertation
+
+Inverse minimum cost flow problems with L1, L2, and $L_\infty$ norms have been studied by Sokkalingam
+
+1995 On the inverse version of the minimum cost flow problem.
+
+Huang and Liu have also studied the inverse minimum cost flow problem.
+
+
+
+\section{Inverse Combinatorial Optimization: A Survey on Problems, Methods, and Results(2004)}
+
+This overview should be read carefully.
+
+\subsection{Literture}
+
+1992 On an instance of the inverse shortest paths problem
+Burton and Toint (1992a) first investigated an inverse shortest paths problem in 1992. Since then, many problems have been considered by various authors, working at least partly independently.
+
+
+1996 “The base-matroid and inverse combinatorial optimization problems,”
+The choice of the word “inverse optimization” was motivated in part by the widespread use of inverse methods in other fields, cf. for instance Marlow or Engl et al. (1996).
+
+1999 “Minimal-revenue congestion pricing Part I: A fast algorithm for the single-origin case,”
+When modeling traffic networks, a further option is to impose tolls in order to enforce an efficient use of the network (see Dial, 1999).
+
+
+
+\section{Inverse Optimization(2001)}
+
+This article shows many cases.
+
+\subsection{Literture}
+
+Tarantola (1987) gives a comprehensive discussion of the theory of inverse problems in the geophysical sciences.
+Tarantola describes inverse problems in the following manner:
+Let S represent a physical system. Assume that we are able to define a set of model parameters which completely describe S. All these parameters may not be directly measurable (such as the radius of Earth’s metallic core). We can operationally define some observable parameters whose actual values hopefully depend on the values of the model parameters. To solve the forward problem is to predict the values of the observable parameters, given arbitrary values of the model parameters. To solve the inverse problem is to infer the values of the model parameters from given observed values of the observable parameters.
+
+
+1996 Calculating some inverse linear programming problem
+Zang and Liu (1996) studied inverse assignment and minimum cost flow problems;
+
+1997 Inverse maximum flow and minimum cut problem
+1998 Inverse problem of minimum cuts
+Yang et al. (1997) and Zhang and Cai (1998) have studied the inverse minimum cut problems;
+
+1995 An inverse problem of the weighted shortest path problem.
+Xu and Zhang (1995) have studied the inverse shortest path problem.
+
+1999 Solving inverse spanning tree problems through network flow techniques
+2000 A faster algorithm for the inverse spanning tree problem
+2001 A fast scaling algorithm for minimizing separable convex functions subject to chain constraints
+We have studied the inverse spanning tree problem (Sokkalingam et al. 1999, Ahuja and Orlin 2000) and the inverse sorting problem (Ahuja and Orlin 2001).
+
+1998 Combinatorial algorithms for inverse network flow problems.
+Ahuja and Orlin (1998) consider inverse network flow problems for the unit weight case and develop combinatorial proofs that do not rely on the inverse linear programming theory.
+
+
+
+\section{Inverse Polynomial Optimization(2013)}
+
+
+This article provides a systematic numerical scheme to compute an inverse optimal solution.
+
+\subsection{Literature}
+
+
+
+
+\section{The inverse optimal value problem(2005)}
+
+Thispaperconsidersthefollowinginverseoptimizationproblem:givenalinearprogram,adesired optimal objective value, and a set of feasible cost vectors, determine a cost vector such that the corresponding optimal objective value of the linear program is closest to the desired value.
+The above problem, referred here as the inverse optimal value problem, is signiﬁcantly different from standard inverse optimization problems thatinvolvedeterminingacostvectorforalinearprogramsuchthatapre-speciﬁedsolutionvectorisoptimal. In this paper, we show that the inverse optimal value problem is NP-hard in general. We identify conditions underwhichtheproblemreducestoaconcavemaximizationoraconcaveminimizationproblem.Weprovide sufﬁcient conditions under which the associated concave minimization problem and, correspondingly, the inverse optimal value problem is polynomially solvable. For the case when the set of feasible cost vectors is polyhedral, we describe an algorithm for the inverse optimal value problem based on solving linear and bilinear programming problems. Some preliminary computational experience is reported.
+
+
+\section{Inverse integer programming(2009)}
+
+Theoretical
+
+We consider the integer programming version of inverse optimization. Using superadditive duality, we provide a polyhedral description of the set of inverse feasible objectives. We then describe two algorithmic approaches for solving the inverse integer programming problem.
+
+We consider inverse integer programming, where an integer vector x0, is given, as well as a constraint matrix, right-handside and a target objective.The goal is to ﬁnd a vector d that minimizes the weighted norm from a target objective d0 such that x0 is optimal for the pure integer program deﬁned by the objective d. Algorithms for inverse linear programming have been developed and reﬁned in [1] and [8]. The inverse counterparts of various combinatorial optimization problems have been described, including shortest paths, spanning trees, and minimum cost flows. Ahuja and Orlin [1] showed that, under mild conditions, the inverse version of a polynomially solvable optimization problem under the L1 and L∞ norms are polynomially solvable. Less is known aboutinverseintegerprogramming.Huang[6]showedthattheinverseknapsackproblemandthegeneralinverseintegerprogrammingproblemwithaﬁxednumberofrows can be solved in pseudo-polynomial time. See the recent extensive survey of inverse combinatorial optimization by Heuberger [5] for more details.
+
+
+\subsection{Literature}
+
+[1]2001 Inverse optimization
+Ahuja and Orlin  showed that, under mild conditions, the inverse version of a polynomially solvable optimization problem under the L1 and L∞ norms are polynomially solvable.
+
+[6] 2005 Inverse problems of some NP-complete problems
+ Huang showed that the inverse knapsack problem and the general inverse integer programming problem with a fixed number of rows can be solved in pseudo-polynomial time.
+
+
+
+
+
+\section{Cutting plane algorithms for the inverse mixed integer linear programming problem(2009)}
+
+Theoretical
+
+
+\subsection{Literture}
+
+[1] 1992 On an instance of the inverse shortest paths problem,
+Burton and Toint are among the first to study InvLPs.
+[2] 1999 Two general methods for inverse optimization problems,
+ Column generation and ellipsoid methods are proposed.
+[3] 2001 Inverse optimization
+Ahuja and Orlin  prove that if an optimization problem with a linear cost function is polynomially solvable, so are its inverse problems under the weighted L1 and L1 norms. [4] Inverse combinatorial optimization: A survey on problems, methods, and results,
+A comprehensive summary of inverse combinatorial problems is given.
+[5] 2005 Inverse problems of some NP-complete problems,
+[6] 2005 Inverse conic programming with applications,
+The literature on the inverse problem of mixed integer or nonlinear programming is
+rare with noticeable exceptions of [5,6].
+
+
+
+\section{Calculating some inverse linear programming problems(1996)}
+
+A method for solving general inverse LP problem including upper and lower bound constraints is suggested which is based on the optimality conditions for LP problems. It is found that when the method is applied to \emph{inverse minimum cost flow problem} or \emph{inverse assignment problem}, we are able to obtain strongly polynomial algorithms.
+
+
+\subsection{Literature}
+
+In [2], 1992 On an instance of the inverse shortest paths problem
+
+Burton and Toint considered the computations of an inverse shortest path problem. As they use L2 norm to measure closeness between two vectors, they transform the inverse problem into a quadratic programming problem to solve.
+
+In [4] 1994 Algorithms for inverse minimum spanning tree problem
+and [6] 1996 On the inverse problem of minimum spanning tree with partition constraints
+
+Some inverse minimum spanning tree problems are studied.
+
+In [7], 1995 A column generation method for inverse shortest path problems.
+
+Zhang et al. use L1 norm and deal with the inverse shortest path problem as a special LP problem.
+
+The combinatorial structure of the feasible region for inverse shortest path problem is exposed.
+
+
+The method is based on the optimality conditions for LP problems. As some particular examples, we shall apply the method to two classes of problems: inverse minimum cost flow problem and inverse assignment problem.
+
+It will be seen that when this method is used, the calculation of the first problem is reduced to a minimum cost circulation problem, whereas the second one can be solved by calculating the original assignment problem or a minimum cost circulation problem depending on different additional requirements.
+
+In all these cases we are able to obtain strongly polynomial algorithms. This paper is organized as follows.
+
+In Section 2, we first prove equivalence of the general inverse LP problem to other two related models, from which a method for calculating inverse LP problems is derived.
+
+Section 3 is devoted to the application of the method to solve inverse minimum cost flow problems.
+
+In Section 4 we use the method to calculate inverse assignment problems. If some weights in the assignment model are not allowed to adjust, we call such problems restricted inverse assignment problems, and a special case of which is solved in Section 5.
+
+
+
+\end{document}
