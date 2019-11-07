@@ -1,6 +1,8 @@
+opt_cost = ;
 
-import ilog.concert.*;
-import ilog.cplex.IloCplex;
+mu =  ;
+
+opt_x = ; %    vector
 
 public class Subproblem {
   IloCplex cplex;
@@ -16,7 +18,8 @@ public class Subproblem {
 
     %  4个变量
     X  = new IloNumVar[4];
-    for(int i = 0; i < X.length; i++)
+    for  i = 1:length(X)
+
       X[i] = cplex.numVar(0.0, 1, IloNumVarType.Int, "X" + i);
 
     %  初始目标函数

@@ -1,4 +1,4 @@
-best_ub = 1e10;
+best_ub = 1e8;
 
 best_lb = 0;
 
@@ -6,7 +6,9 @@ best_mu = 0;
 
 best_sl = zeros(1,4);
 
+max_iter = 100;
 
+min_step_size = 0.01;
 
 function  = subsolve(min_step_size, max_iter)
 %   次梯度方法求解拉格朗日对偶
@@ -41,7 +43,7 @@ while iter < max_iter
 
     best_mu = mu;
 
-    for i = 0: length(best_sl)-1
+    for i = 1: length(best_sl)
 
       best_sl(i) = sp.opt_x(i);
 
@@ -95,7 +97,7 @@ while iter < max_iter
 
   % 迭代停止条件2和3
 
-  if (dist <= 0)||(best_lb >= best_ub-0.0000001)
+  if (mydist <= 0)||(best_lb >= best_ub-0.0000001)
 
     break;
 
@@ -110,5 +112,7 @@ while iter < max_iter
     break;
 
   end
+
+iter = iter + 1;
 
 end
