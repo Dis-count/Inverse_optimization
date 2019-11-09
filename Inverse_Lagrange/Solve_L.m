@@ -1,8 +1,8 @@
 function  Solve_L(min_step_size, max_iter)
-%   次梯度方法求解拉格朗日对偶
+%   次梯度方法求解拉格朗日对��?
   best_ub = 1e7;
 
-  best_lb = 0;
+  best_lb = -2;
 
 %   max_iter = 100;
 %   min_step_size = 0.01;
@@ -15,13 +15,13 @@ function  Solve_L(min_step_size, max_iter)
 
   max_non_improve = 3;
 
-  lambda = 2;
+  lambda = 0.8;
 
   step_size = 1;
 
   mu = 0;   % 初始化拉格朗日乘��?
 
- % 松弛第一个约束条件
+ % 松弛第一个约束条��?
 
   relax_con = [6,4,24;];
 
@@ -51,13 +51,6 @@ while iter < max_iter
 
   end
 
-  fprintf('iter: %d\n', iter);
-
-  fprintf('best lb: %f ', best_lb);
-
-  fprintf('best ub: %f ', best_ub);
-
-  fprintf('mu: %f\n\n', mu);
 
   subgradient = dot(opt_x,relax_con(1:end-1)) - relax_con(end);
 
@@ -77,6 +70,13 @@ while iter < max_iter
 
   end
 
+  fprintf('iter: %d\n', iter);
+
+  fprintf('best lb: %f ', best_lb);
+
+  fprintf('best ub: %f ', best_ub);
+
+  fprintf('mu: %f\n\n', mu);
 % 上界未更新达到一定次��?
 
   if non_improve >= max_non_improve

@@ -1,9 +1,8 @@
-function [opt_x,cost] = Sub_L(obj,relax_con,con,mu)
+function [opt_x,cost] = Lang_sub(obj,relax_con,con,mu)
 
 % obj = [5;4];
-% Notice here that relax_con have several constraints
-
-% relax_con = [6,4,24;];
+% relax_con = [6,4,24;
+%             -1,1,1 ;];
 
   model.modelname = 'Sub';
 
@@ -17,8 +16,12 @@ function [opt_x,cost] = Sub_L(obj,relax_con,con,mu)
 
   model.ub = inf(ncol,1);
 
-  model.obj = obj - relax_con(1:ncol)' *mu;
-%            [16 - 8*mu; 10 - 2*mu; -mu; 4 - 4*mu];
+for i =1 : length(relax_con(:,1))
+
+  model.obj = obj - relax_con(i,1:ncol)' * mu(i);
+%            [5 - 6*mu + nu  ; 4 - 4*mu - nu  ;];
+
+end
 
   model.vtype = repmat('C',ncol,1);
 
@@ -38,6 +41,6 @@ end
 
   opt_x = result.x;
 
-  cost = result.objval + relax_con(end)*mu ;
+  cost = result.objval + dot(relax_con(:,end),mu) ;
 
 end
