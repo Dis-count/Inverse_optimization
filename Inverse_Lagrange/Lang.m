@@ -15,16 +15,19 @@ function  Lang(min_step_size, max_iter)
 
   max_non_improve = 3;
 
-  lambda = 0.5;
-
   % 松弛两个约束条件
+  relax_con = [-1,1,1;
+                6,4,24;];
 
-   relax_con = [6,4,24;
-               -1,1, 1;];
+  % relax_con = [-1,1,2;
+  %             3,2,18;];
 
-   con = [1,2,8;];
+   con = [1,2,7;];
 
   sum_relax = length(relax_con(:,1));
+
+%  lambda = ones(sum_relax,1);
+  lambda = 0.8;
 
   subgradient = zeros(sum_relax,1);
 
@@ -41,7 +44,7 @@ while iter < max_iter
   %   disp('solve wrong!');
   %
   % end
-
+opt_x
 % 更新上界
   if opt_cost < best_ub
 
