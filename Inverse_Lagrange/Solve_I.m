@@ -30,7 +30,7 @@ function  Solve_I(min_step_size, max_iter)
 
 while iter < max_iter
 
-  [opt_x,opt_cost] = Sub(obj,relax_con,con,mu);
+  [opt_x,opt_cost] = Sub_I(obj,relax_con,con,mu);
 
   % if  sp.solve() == false
   %

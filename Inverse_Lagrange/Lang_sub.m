@@ -23,7 +23,7 @@ for i =1 : length(relax_con(:,1))
 
 end
 
-  model.vtype = repmat('C',ncol,1);
+  model.vtype = repmat('B',ncol,1);
 
   model.A = sparse(nrow,ncol);
 
@@ -37,7 +37,13 @@ end
 
   model.sense = repmat('<', nrow, 1);
 
-  result = gurobi(model);
+  gurobi_write(model,'Inv.lp');
+
+  params.outputflag = 0;
+
+  result = gurobi(model, params);
+
+%  result = gurobi(model)
 
   opt_x = result.x;
 
