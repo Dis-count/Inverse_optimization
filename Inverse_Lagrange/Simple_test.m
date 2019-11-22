@@ -1,8 +1,7 @@
-
 % The original simple inverse is stated as follows
-% min |a_1 -1| + |b_1-1| + |a_2 -6| + |b_2 -4|
-% -2a_1 + 2.5b_1 = 1
-% 2 a_2 + 2.5b_2 = 24
+% min |a_1 +1| + |b_1-1| + |a_2 -6| + |b_2 -4|
+% 2a_1 + 2.5b_1 = 1
+% 2a_2 + 2.5b_2 = 24
 
 % which can be transfer to the following formation according to the L-1 norm
 % double the variable
@@ -13,6 +12,12 @@
 % c_0 = [-1;1;6;4];
 % In fact the corresponding coefficient is A = [-2;2.5;0;0; 2;2.5;0;0]
 % b = [1;24];
+
+% Here is another example.
+% A = [4;2;4;2];
+% c_0 = [3;2;-1;1];
+% In fact the corresponding coefficient is A = [-2;2.5;0;0; 2;2.5;0;0]
+% b = [18;2];
 
 function x_0 = Simple_test(A,b,c_0)
 % Notice that A is the original left-side matrix and it's ordered by the row.
