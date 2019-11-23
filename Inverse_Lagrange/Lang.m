@@ -16,13 +16,13 @@ function  Lang(min_step_size, max_iter)
   max_non_improve = 3;
 
   % 松弛两个约束条件
-  relax_con = [-1,1,1;
-                6,4,24;];
+  % relax_con = [-1,1,1;
+  %               6,4,24;];
 
-  % relax_con = [-1,1,2;
-  %             3,2,18;];
+  relax_con = [-1,1,2;
+              3,2,16;];
 
-   con = [1,2,7;];
+   con = [1,2,8;];
 
   sum_relax = length(relax_con(:,1));
 

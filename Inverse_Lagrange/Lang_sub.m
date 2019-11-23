@@ -23,7 +23,7 @@ for i =1 : length(relax_con(:,1))
 
 end
 
-  model.vtype = repmat('B',ncol,1);
+  model.vtype = repmat('C',ncol,1);
 
   model.A = sparse(nrow,ncol);
 

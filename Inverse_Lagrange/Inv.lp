@@ -1,9 +1,8 @@
-\ Model matlab
+\ Model Sub
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Maximize
-  5 x + 4 y
+  0.5002313681009323 C0 + 1.000154245400622 C1
 Subject To
- R0: x + 2 y = 7
- R1: 2 x + 3 y = 8
+ R0: C0 + 2 C1 <= 8
 Bounds
 End
