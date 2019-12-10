@@ -1,8 +1,9 @@
-\ Model Sub
+\ Model Inv_Master_Sub
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Maximize
-  0.5006598219324161 C0 + 1.000439881288277 C1
+  24 C0 + C1
 Subject To
- R0: C0 + 2 C1 <= 8
+ R0: 6 C0 - C1 = 5
+ R1: 5.25 C0 + 0.3333333333333335 C1 = 4
 Bounds
 End

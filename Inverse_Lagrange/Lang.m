@@ -1,5 +1,5 @@
 function  Lang(min_step_size, max_iter)
-%   次梯度方法求解拉格朗日对��?
+%   次梯度方法求解拉格朗日对偶
   best_ub = 1e6;
 
   best_lb = -1;
