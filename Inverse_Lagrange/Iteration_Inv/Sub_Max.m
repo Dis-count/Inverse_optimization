@@ -41,3 +41,5 @@ x_0 = result.x;
 % function end: 'myFunction'
 
 end
+
+% 注意这里可能不存在解 需要对解进行讨论
