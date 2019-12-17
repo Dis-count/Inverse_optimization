@@ -1,35 +1,39 @@
 %  This program is designed by every constraints is expressed by a vector.
 
-function res = H_CFL(V_UFL,vi,uik,FC,TC)
+function res = H_ICFL()
 % This is a heuristic method to calculate the inverse CFL.
-% V_UFL = 28;  % V_UFL 为 给定 目标值
+V_UFL = 28;  % V_UFL ��? 给定 目标��?
 % k_i is the capacity of the facility.
 % d_i is the demand of the customer.
-% FC  = [5; 6; 7;];
+FC  = [10; 10; 10; 10;];
+M =10;
+TC  = [ 3; 3; M; 2;
+         M; 1; 4; M;
+         3; M; 3; 4;
+         M; 2; M; 1;];
 
-% TC  = [ 3; 3; M; 2;
-%          M; 1; 4; M;
-%          3; M; 3; 4;
-%          M; 2; M; 1;];
+vi = [0 ; 0 ; 1 ; 1];
 
-% vi = [0 ; 0 ; 1 ; 1];
-%
-% uik = [ 0 ; 0 ; 0 ; 0 ;
-%         0 ; 0 ; 0 ; 0 ;
-%         1 ; 0 ; 1 ; 0 ;
-%         0 ; 1 ; 0 ; 1 ;];
+uik = [ 0 ; 0 ; 0 ; 0 ;
+        0 ; 0 ; 0 ; 0 ;
+        1 ; 0 ; 1 ; 0 ;
+        0 ; 1 ; 0 ; 1 ;];
+
 % For the convinience of calculation.
-% 这里给出的是原优化问题的最优解 但只要是一个可行解就可以。
+% 这里给出的是原优化问题的��?优解 但只要是��?个可行解就可以�??
+
 m = length(vi);
 
 n = length(uik)/m;
 
-k = ones(m,1);
+% k = ones(m,1);
+k = [1; 1; 2; 2;];
 
-d = ones(n,1);
+% d = ones(n,1);
+d = [1; 1; 1; 1;];
 
 % Build model
-model.modelname = 'H_CFL';
+model.modelname = 'H_ICFL';
 model.modelsense = 'min';
 
 % Set the number of variables
@@ -59,14 +63,10 @@ model.A(1,1:n) = 1;  % The first class of constraints
 
 for p = 1:m
 
-        model.A(p+1, n+p) = k(i);
+        model.A(p+1, n+p) = k(p);
 
-    end
-
-    model.A(p+1, n+m+p) = -1;
-
+        model.A(p+1, n+m+p) = -1;
 end
-
 % The Second class of constraints
 
 for p = 1:m
@@ -75,7 +75,7 @@ for p = 1:m
 
         model.A((p-1)*n+w+m+1,m*n+2*m+p*n+w) = -1;
 
-        model.A((p-1)*n+w+m+1,n+p) = -d(k);
+        model.A((p-1)*n+w+m+1,n+p) = -d(w);
 
     end
 end   % The Third class of constraints
@@ -84,7 +84,7 @@ end   % The Third class of constraints
 for p = 1:m
     for w = 1:n
 
-    model.A(m*n+m+2,2*m+*m*n+p*n+w) = uik((p-1)*n+w);
+    model.A(m*n+m+2,2*m+m*n+p*n+w) = uik((p-1)*n+w);
 
     end
 
@@ -113,7 +113,6 @@ end  % The Sixth class of constraints
 
 % Optimize
 % res = gurobi(model, params);
-
 params.outputflag = 0;
 
 result = gurobi(model,params);
