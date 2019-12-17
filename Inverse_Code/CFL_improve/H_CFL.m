@@ -1,45 +1,36 @@
-%  本程序思路是 对于 每一类限制条件 使用一个向量来表示
-function H_UFL(m,n)
-% 给出 Facility 数量 m  Player 数量 n
+%  鏈▼搴忥拷?锟借矾锟斤拷? 瀵逛簬 姣忎竴绫婚檺鍒舵潯锟斤拷? 浣跨敤锟斤拷?涓悜閲忔潵琛ㄧず
+function H_CFL(m,n)
+% 缁欏嚭 Facility 鏁伴噺 m  Player 鏁伴噺 n
 
-% 对应限制条件数量 为 （2mn+2m+2）个  变量有（5mn+3m+n) 个
+% 瀵瑰簲闄愬埗鏉′欢鏁伴噺 锟斤拷? 锟斤拷?2mn+2m+2锛変釜  鍙橀噺鏈夛紙5mn+3m+n) 锟斤拷?
 
-V_UFL = 29;  % V_UFL 为 给定 目标值
-% 具体例子
+V_UFL = 29;  % V_UFL 锟斤拷? 缁欏畾 鐩爣锟斤拷?
+% 鍏蜂綋渚嬪瓙
 
-%  （fi,rik)为 原向量 C_0
+%  锛坒i,rik)锟斤拷? 鍘熷悜锟斤拷? C_0
 fi  = [10; 10; 10; 10];
-% fi  = [5; 6; 7;];
 
+d = ones(1,4);
+
+k = ones(1,4)*2;
 
 M = 30;    % define M= a bigger integer.
 
-% 注意这里应该使用循环生成向量； 但这里为了计算简单的例子（n=4)，我们直接手动添加变量。
+% 娉ㄦ剰杩欓噷搴旇浣跨敤寰幆鐢熸垚鍚戦噺锟斤拷? 浣嗚繖閲屼负浜嗚绠楃畝鍗曠殑渚嬪瓙锛坣=4)锛屾垜浠洿鎺ユ墜鍔ㄦ坊鍔犲彉閲忥拷??
 
 rik  = [ 3; 3; M; 2;
          M; 1; 4; M;
          3; M; 3; 4;
          M; 2; M; 1;];
-% rik  = [11; 4; 8;
-%          5; 7; 10;
-%          19; 6; 3; ];
-% 
-% vi = [1 ; 1 ; 0;];
-% 
-% uik = [ 1; 0 ; 1 ;
-%         0; 1 ; 0 ;
-%         0; 0 ; 0 ;];
-
-
 
 vi = [0 ; 0 ; 1 ; 1];
-
+%
 uik = [ 0 ; 0 ; 0 ; 0 ;
         0 ; 0 ; 0 ; 0 ;
         1 ; 0 ; 1 ; 0 ;
         0 ; 1 ; 0 ; 1 ;];
-% 这里给出的是原优化问题的最优解 但只要是一个可行解就可以。
-% 产生一个 长度为 （6mn+4m+n) 的向量，每一个限制条件 产生 一个向量。
+% 杩欓噷缁欏嚭鐨勬槸鍘熶紭鍖栭棶棰樼殑锟斤拷?浼樿В 浣嗗彧瑕佹槸锟斤拷?涓彲琛岃В灏卞彲浠ワ拷??
+% 浜х敓锟斤拷?锟斤拷? 闀垮害锟斤拷? 锟斤拷?6mn+4m+n) 鐨勫悜閲忥紝姣忎竴涓檺鍒舵潯锟斤拷? 浜х敓 锟斤拷?涓悜閲忥拷??
 
 
 % Facility location: a company currently ships its product from 5 plants
@@ -74,12 +65,12 @@ model.modelname = 'H_UFL';
 model.modelsense = 'min';
 
 % Set data for variables
-ncol = 5*m*n + 3*m + n;
+ncol = 5*m*n + 4*m + n;
 
-% 先试试变量大于零的情况
+% 鍏堣瘯璇曞彉閲忓ぇ浜庨浂鐨勬儏锟斤拷?
 model.lb    = zeros(ncol, 1);
 model.ub    = [inf(ncol, 1)];
-model.obj   = [zeros(n+m+3*m*n,1); ones(2*m + 2*m*n,1); ];
+model.obj   = [zeros(n+m+3*m*n,1); ones(2*m + 2*m*n,1); zeros(m,1);];
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nWarehouses, 1)];
 %
 % for p = 1:nPlants
@@ -101,25 +92,27 @@ model.A     = sparse(nrow, ncol);
 model.rhs   = [V_UFL; zeros(m + m*n, 1); V_UFL; fi; rik];
 model.sense = [repmat('>', 1, 1); repmat('=', 2*m*n + 2*m + 1, 1)];
 
-model.A(1,1:n) = 1;  % 第一类约束
+model.A(1,1:n) = 1;  % 绗竴绫荤害锟斤拷?
 
 for p = 1:m
     for w = 1:n
         model.A(p+1, n*p+w) = 1;
     end
     model.A(p+1, n+n*m+p) = -1;
+    model.A(p+1, 5*m*n + 3*m +n+p) = k(p)
 %    model.constrnames{p} = sprintf('Capacity%d', p);
 end
 
-% 第二类约束
+% 绗簩绫荤害锟斤拷?
 
 for p = 1:m
     for w = 1:n
         model.A((p-1)*n+w+m+1,[w,m*n+m+p*n+w]) = 1;
 
         model.A((p-1)*n+w+m+1,[p*n+w,2*m*n+m+p*n+w]) = -1;
+        model.A((p-1)*n+w+m+1, 5*m*n + 3*m +n+p) = -d(w)
     end
-end   % 第三类约束
+end   % 绗笁绫荤害锟斤拷?
 
 for p = 1:m
     for w = 1:n
@@ -128,13 +121,12 @@ for p = 1:m
     end
     model.A(m*n+m+2,n+m*n+p) = vi(p);
 %    model.constrnames{nPlants+w} = sprintf('Demand%d', w);
-end   % 第四个约束
-
+end   % 绗洓涓害锟斤拷?
 
 for p = 1:m
     model.A(m*n+m+2+p,n+m+3*m*n+p) = -1;
-    model.A(m*n+m+2+p,[n+m*n+p,n+2*m+3*m*n+p]) = 1;   % 保持右侧约束为正的fi 下同
-end   % 第五个约束
+    model.A(m*n+m+2+p,[n+m*n+p,n+2*m+3*m*n+p]) = 1;   % 淇濇寔鍙充晶绾︽潫涓烘鐨刦i 涓嬪悓
+end   % 绗簲涓害锟斤拷?
 
 
 for p = 1:m
@@ -143,11 +135,11 @@ for p = 1:m
 
         model.A((p-1)*n+m*n+2*m+2+w, [m+2*m*n+p*n+w,3*m+4*m*n+p*n+w]) = 1;
     end
-end  % 第六个约束
+end  % 绗叚涓害锟斤拷?
 
 
 % Save model
-gurobi_write(model,'UFL.lp');
+% gurobi_write(model,'UFL.lp');
 
 
 % Guess at the starting point: close the plant with the highest fixed

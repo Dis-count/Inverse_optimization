@@ -1,6 +1,6 @@
 % This function is used to get excel to show the specific data result.
 function Ran_CFL(m,n,k)
-% (m,n) 问题规模  k 为调用函数次数 默认 k=50;
+% (m,n) 问题规模  k 为调用函数次��? 默认 k=50;
 
 theresult=zeros(k,2);
 
@@ -26,15 +26,15 @@ end
 function [gap,opt1] = Fun1(m,n,mul)
 
   FC = round(rand(1,m)*10*mul)';
-  % 可以调整 fi 与 rik 之间的比例 查看gap变化
+  % 可以调整 fi ��? rik 之间的比��? 查看gap变化
   TC = round(rand(1,m*n)*10)';
 
   % ki = round(rand(1,m)*)
-  ki = ones(1,m)*2;
+  ki = ones(1,m)*100;
   % dj = round(rand(1,n)*)
   dj = ones(1,n);
 
-  [opt1,opt2] = CFL(FC,TC,ki,dj);  % V_CFL 为 CFL最优值
+  [opt1,opt2] = CFL(FC,TC,ki,dj);  % V_CFL ��? CFL��?优�??
 
   V_UFL = opt1;
 
@@ -57,7 +57,6 @@ function [gap,opt1] = Fun1(m,n,mul)
   model.obj   = [zeros(n+2*m+2*m*n,1); ones(2*m + 2*m*n,1);];
 
   % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nWarehouses, 1)];
-  %
 
   % Set the number of constraints.
 
