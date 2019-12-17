@@ -4,7 +4,7 @@ function res = H_IUFL(V_UFL,vi,uik,FC,TC)
 % This is a heuristic method to calculate the inverse UFL.
 % V_UFL = 28;  % V_UFL 为 给定 目标值
 
-% FC  = [5; 6; 7;];
+% FC  = [10; 10; 10; 10;];
 
 % 注意这里应该使用循环生成向量； 但这里为了计算简单的例子（n=4)，我们直接手动添加变量。
 

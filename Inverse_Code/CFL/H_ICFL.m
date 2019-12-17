@@ -27,7 +27,7 @@ m = length(vi);
 n = length(uik)/m;
 
 % k = ones(m,1);
-k = [1; 1; 2; 2;];
+k = [2; 2; 2; 2;];
 
 % d = ones(n,1);
 d = [1; 1; 1; 1;];
