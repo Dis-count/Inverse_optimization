@@ -2,6 +2,8 @@
 function [opt1,opt2] = UFL(fi,rik)   % fi rik 为列向量  求出给定 costs 时  UFL的最优值
 % 给出 Facility 数量 m  Player 数量 n
 
+% The basic UFL solution.
+
 % 对应限制条件数量 为 （mn+m）个  变量有（mn+m) 个
 
 m = length(fi) ;
