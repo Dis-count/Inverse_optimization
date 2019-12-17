@@ -1,21 +1,20 @@
-%  本程序思路是 对于 每一类限制条件 使用一个向量来表示  
+%  本程序思路是 对于 每一类限制条件 使用一个向量来表示
 function [gap,opt1] = Random_UFL(m,n,mul)  % 返回原UFL的最优值 和 本 LP 计算得到的 gap
-% 给出 Facility 数量 m  Player 数量 n 
+% 给出 Facility 数量 m  Player 数量 n
 
 % mul 为 设施成本倍数
 
 % 对应限制条件数量 为 （2mn+2m+2）个  变量有（5mn+3m+n) 个
 
-fi = round(rand(1,m)*10*mul)';    % 可以调整 fi 与 rik 之间的比例 查看gap变化 
+fi = round(rand(1,m)*10*mul)';    % 可以调整 fi 与 rik 之间的比例 查看gap变化
 rik = round(rand(1,m*n)*10)'; % 注意是列向量  （随机1-10，1-100）  此举相当于改变rik的稀疏度
 %在后面实验中，只要注意 mul 即可，因为已加入了稀疏度的考虑
- 
-[opt1,opt2] = I_UFL(fi,rik);  % V_UFL 为 UFL最优值 
+
+[opt1,opt2] = UFL(fi,rik);  % V_UFL 为 UFL最优值
 V_UFL = opt1;
 
-% fi  = [10; 10; 10; 10];  
-% 随机给出 facility cost 
-
+% fi  = [10; 10; 10; 10];
+% 随机给出 facility cost
 
 % M = 30;    % define M= a bigger integer.
 
@@ -28,13 +27,13 @@ V_UFL = opt1;
 %          M; 2; M; 1;];
 
 
-vi = opt2(1:m); 
+vi = opt2(1:m);
 
 uik = opt2(m+1:end);
 
-    
+
 % 产生一个 长度为 （5mn+3m+n) 的向量，每一个限制条件 产生 一个向量。
-    
+
 
 % Facility location: a company currently ships its product from 5 plants
 % to 4 warehouses. It is considering closing some plants to reduce
@@ -70,16 +69,16 @@ model.modelsense = 'min';
 % Set data for variables
 ncol = 5*m*n + 3*m + n;
 
-% 先试试变量大于零的情况 
+% 先试试变量大于零的情况
 model.lb    = zeros(ncol, 1);
 model.ub    = [inf(ncol, 1)];
 model.obj   = [zeros(n+m+3*m*n,1); ones(2*m + 2*m*n,1); ];
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nWarehouses, 1)];
-% 
+%
 % for p = 1:nPlants
 %     model.varnames{p} = sprintf('Open%d', p);
 % end
-% 
+%
 % for w = 1:nWarehouses
 %     for p = 1:nPlants
 %         v = flowidx(w, p);
@@ -112,7 +111,7 @@ end
 for p = 1:m
     for w = 1:n
         model.A((p-1)*n+w+m+1,[w,m*n+m+p*n+w]) = 1;
-        
+
         model.A((p-1)*n+w+m+1,[p*n+w,2*m*n+m+p*n+w]) = -1;
     end
 end   % 第三类约束
@@ -131,12 +130,12 @@ for p = 1:m
     model.A(m*n+m+2+p,n+m+3*m*n+p) = -1;
     model.A(m*n+m+2+p,[n+m*n+p,n+2*m+3*m*n+p]) = 1;   % 保持右侧约束为正的fi 下同
 end   % 第五个约束
-    
+
 
 for p = 1:m
     for w = 1:n
         model.A((p-1)*n+m*n+2*m+2+w, 3*m+3*m*n+p*n+w) = -1;
-        
+
         model.A((p-1)*n+m*n+2*m+2+w, [m+2*m*n+p*n+w,3*m+4*m*n+p*n+w]) = 1;
     end
 end  % 第六个约束
@@ -180,4 +179,3 @@ gap = res.objval;
 % end
 
 end
-
