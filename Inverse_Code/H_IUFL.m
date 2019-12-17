@@ -1,7 +1,7 @@
 %  本程序思路是 对于 每一类限制条件 使用一个向量来表示
 % 将具体例子抽象化
-function res = L_IUFL(V_UFL,vi,uik,FC,TC)
-
+function res = H_IUFL(V_UFL,vi,uik,FC,TC)
+% This is a heuristic method to calculate the inverse UFL.
 % V_UFL = 28;  % V_UFL 为 给定 目标值
 
 % FC  = [5; 6; 7;];
@@ -25,7 +25,7 @@ m = length(vi);
 n = length(uik)/m;
 
 % Build model
-model.modelname = 'L_IUFL';
+model.modelname = 'H_IUFL';
 model.modelsense = 'min';
 
 % Set data for variables

@@ -1,5 +1,5 @@
 %  本程序思路是 对于 每一类限制条件 使用一个向量来表示
-function L_UFL(m,n)
+function H_UFL(m,n)
 % 给出 Facility 数量 m  Player 数量 n
 
 % 对应限制条件数量 为 （2mn+2m+2）个  变量有（5mn+3m+n) 个
@@ -70,7 +70,7 @@ uik = [ 1; 0 ; 1 ;
 %flowidx = @(w, p)  n* p + w;
 
 % Build model
-model.modelname = 'UFL';
+model.modelname = 'H_UFL';
 model.modelsense = 'min';
 
 % Set data for variables
