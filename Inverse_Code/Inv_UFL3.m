@@ -1,9 +1,7 @@
-function res = Inv_UFL3(fixed,v_i,u_ij,FC,TC)    % Inv_UFL1 中有四重循环，已优化
-% 该函数 功能 给定任意 m,n 可以得到UFL的 逆优化结果
-% 解决了需要 n 重循环的问题
-%  x_0 为给定服务对象以及是否开启 Facility  v_0 为原问题最优值  fixed 为目标值
+function res = Inv_UFL3(fixed,v_i,u_ij,FC,TC)
 
-% fixed = 29;   % 给定最优值  原问题最优值为29，因此 fixed = 29 时，得到最优结果是 0
+% 完全程序化而不是具体例子
+% Notice this method is ergodic
 
 % v_i = [0;0;1;1];
 % 给定一个可行解

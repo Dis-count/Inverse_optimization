@@ -1,5 +1,5 @@
 %  本程序思路是 对于 每一类限制条件 使用一个向量来表示
-
+% 将具体例子抽象化
 function res = L_IUFL(V_UFL,vi,uik,FC,TC)
 
 % V_UFL = 28;  % V_UFL 为 给定 目标值

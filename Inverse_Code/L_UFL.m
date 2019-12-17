@@ -1,14 +1,14 @@
-%  本程序思路是 对于 每一类限制条件 使用一个向量来表示  
+%  本程序思路是 对于 每一类限制条件 使用一个向量来表示
 function L_UFL(m,n)
-% 给出 Facility 数量 m  Player 数量 n 
+% 给出 Facility 数量 m  Player 数量 n
 
 % 对应限制条件数量 为 （2mn+2m+2）个  变量有（5mn+3m+n) 个
 
 V_UFL = 28;  % V_UFL 为 给定 目标值
-
+% 具体例子
 
 %  （fi,rik)为 原向量 C_0
-% fi  = [10; 10; 10; 10];   
+% fi  = [10; 10; 10; 10];
 fi  = [5; 6; 7;];
 
 
@@ -20,27 +20,27 @@ fi  = [5; 6; 7;];
 %          M; 1; 4; M;
 %          3; M; 3; 4;
 %          M; 2; M; 1;];
-rik  = [11; 4; 8; 
-         5; 7; 10; 
+rik  = [11; 4; 8;
+         5; 7; 10;
          19; 6; 3; ];
 
 vi = [1 ; 1 ; 0;];
 
-uik = [ 1; 0 ; 1 ; 
-        0; 1 ; 0 ;  
+uik = [ 1; 0 ; 1 ;
+        0; 1 ; 0 ;
         0; 0 ; 0 ;];
-     
-    
-     
-% vi = [0 ; 0 ; 1 ; 1]; 
-% 
+
+
+
+% vi = [0 ; 0 ; 1 ; 1];
+%
 % uik = [ 0 ; 0 ; 0 ; 0 ;
 %         0 ; 0 ; 0 ; 0 ;
-%         1 ; 0 ; 1 ; 0 ; 
+%         1 ; 0 ; 1 ; 0 ;
 %         0 ; 1 ; 0 ; 1 ;];
 % 这里给出的是原优化问题的最优解 但只要是一个可行解就可以。
 % 产生一个 长度为 （6mn+4m+n) 的向量，每一个限制条件 产生 一个向量。
-    
+
 
 % Facility location: a company currently ships its product from 5 plants
 % to 4 warehouses. It is considering closing some plants to reduce
@@ -76,16 +76,16 @@ model.modelsense = 'min';
 % Set data for variables
 ncol = 5*m*n + 3*m + n;
 
-% 先试试变量大于零的情况 
+% 先试试变量大于零的情况
 model.lb    = zeros(ncol, 1);
 model.ub    = [inf(ncol, 1)];
 model.obj   = [zeros(n+m+3*m*n,1); ones(2*m + 2*m*n,1); ];
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nWarehouses, 1)];
-% 
+%
 % for p = 1:nPlants
 %     model.varnames{p} = sprintf('Open%d', p);
 % end
-% 
+%
 % for w = 1:nWarehouses
 %     for p = 1:nPlants
 %         v = flowidx(w, p);
@@ -116,7 +116,7 @@ end
 for p = 1:m
     for w = 1:n
         model.A((p-1)*n+w+m+1,[w,m*n+m+p*n+w]) = 1;
-        
+
         model.A((p-1)*n+w+m+1,[p*n+w,2*m*n+m+p*n+w]) = -1;
     end
 end   % 第三类约束
@@ -135,12 +135,12 @@ for p = 1:m
     model.A(m*n+m+2+p,n+m+3*m*n+p) = -1;
     model.A(m*n+m+2+p,[n+m*n+p,n+2*m+3*m*n+p]) = 1;   % 保持右侧约束为正的fi 下同
 end   % 第五个约束
-    
+
 
 for p = 1:m
     for w = 1:n
         model.A((p-1)*n+m*n+2*m+2+w, 3*m+3*m*n+p*n+w) = -1;
-        
+
         model.A((p-1)*n+m*n+2*m+2+w, [m+2*m*n+p*n+w,3*m+4*m*n+p*n+w]) = 1;
     end
 end  % 第六个约束
@@ -184,4 +184,3 @@ gurobi(model);
 % end
 
 end
-

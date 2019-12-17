@@ -1,4 +1,4 @@
-function Inv_UFL1()    % 有四重循环，且只针对m=n=4的情况，需要进一步优化 
+function Inv_UFL1()    % 有四重循环，且只针对m=n=4的情况，需要进一步优化
 %  x_0 为给定服务对象以及是否开启 Facility  v_0 为目标值
 fixed = 30;
 
@@ -11,7 +11,7 @@ u_ij = [0;0;0;0;
 
 x_0 = [v_i;u_ij];
 
-x0 =[x_0;x_0*(-1)];   % double the matrix    
+x0 =[x_0;x_0*(-1)];   % double the matrix
 
 % define primitive data
 m = 4;   % Facility
@@ -33,7 +33,7 @@ TC  = [ 3; 3; M; 2;
          M; 2; M; 1;];
 Costs =[FC;TC];    % Cost 为给定
 
-V_0 = x_0'*Costs;    %  原最优解 
+V_0 = x_0'*Costs;    %  原最优解
 
 
 % Index helper function
@@ -47,15 +47,15 @@ model.modelsense = 'min';
 ncol = (m + m * n)*2 ;
 model.lb    = zeros(ncol, 1);
 model.ub    = [inf(ncol, 1)];
-obj = [ones(6,1);0;1;0;1;1;0;1;0;1;1;0;1;0;1];  
+obj = [ones(6,1);0;1;0;1;1;0;1;0;1;1;0;1;0;1];
 
 model.obj = [obj; obj];   % norm-1 c-Costs  均为正
 % model.vtype = [repmat('B', nPlants, 1); repmat('C', nPlants * nplayers, 1)];
- 
+
 % for p = 1:nPlants
 %     model.varnames{p} = sprintf('Open%d', p);
 % end
-% 
+%
 % for w = 1:nplayers
 %     for p = 1:nPlants
 %         v = flowidx(w, p);
@@ -90,19 +90,19 @@ model.A(1,:) = x0;
 model.rhs(1) = fixed-29;
 a = eye(m);
 % f = zeros(m^n,m+m*n);
-s = 2;  
+s = 2;
 for i = 1:m
     for j = 1:m
         for k = 1:m
             for h = 1:m
-                
+
                 b = [a(:,i);a(:,j);a(:,k);a(:,h)];
                 c = reshape(b,m,m);
                 f = reshape(c',m*m,1);
-               
+
                 d = [(i==1)|(j==1)|(k==1)|(h==1);
                      (i==2)|(j==2)|(k==2)|(h==2);
-                     (i==3)|(j==3)|(k==3)|(h==3);   
+                     (i==3)|(j==3)|(k==3)|(h==3);
                      (i==4)|(j==4)|(k==4)|(h==4);];
                 e = [d;f];   % 转为行向量
                 ee = [e;e*(-1)];
@@ -110,7 +110,7 @@ for i = 1:m
                 model.rhs(s) = fixed - e'* Costs;
                 % f(s,:) = e;
                 s = s+1;
-                
+
             end
         end
     end
@@ -119,7 +119,7 @@ end
 
 
 % Save model
-gurobi_write(model,'Inv_UFL.lp');
+% gurobi_write(model,'Inv_UFL.lp');
 
 % Guess at the starting point: close the plant with the highest fixed
 % costs; open all others first open all plants

@@ -1,6 +1,6 @@
 % 这里有四组约��?
 % 第一个约束确保行��? r_ik (��?1的最大�??<��?0 的最小�?? )的大小关��?
-
+% Lowbound of Inverse UFL
 function res = LB_IUFL(V_UFL,vi,uik,FC,TC)
 
 % V_UFL = 28;   % 给定的最优�?�（目标值）
@@ -55,24 +55,24 @@ for i = v1'  % v1 ��?要是行向��? % 循环 每一��?
     b = TCi(i,:);  % 找出TC中对��? ui ��? 1 的部��?
 
 %     [umax,in] = max(b(a1));
-% 
+%
 %     a0 = find(ui(i,:) == 0);
-% 
+%
 %     if length(a0) > 0
-% 
+%
 %     [umin,ni] = min(b(a0));
-% 
+%
 %     else
-% 
+%
 %       umin = 0;
-% 
+%
 %       ni = 1;
-% 
+%
 %       a0(ni) = 1;
-% 
+%
 %     end
 %     % a1(in)  得到筛�?�过��? ��? ��?大�?�坐标索��?
-% 
+%
 %     u11(t,:) = [i, umax, a1(in), umin, a0(ni)];  % 里面存放 vi��? 1��? 坐标 对应行的 ��?小�?�和��?大�??
 
     if length(a1)==1
@@ -93,11 +93,11 @@ for i = v1'  % v1 ��?要是行向��? % 循环 每一��?
     end
 
 %     if umin < v1min
-% 
+%
 %       Loc = [i,a0(ni)];  % 记录  ��? ��? ��?
-% 
+%
 %       v1min = umin;  % 更新全局 uik ��?小�??
-% 
+%
 %     end
 
     t=t+1;
@@ -375,7 +375,7 @@ for i = 1 : sss  % sss行数   % 这里��? (n-s) ��?
 
     mmt = v1;
 
-    % mmt(cell2mat(u1(i,1))) = [];  % 注意要删除元�? 而不是位�?
+    % mmt(cell2mat(u1(i,1))) = [];  % 注意要删除元��? 而不是位��?
 
     mmt(find(mmt==cell2mat(u1(i,1)))) = [];
 
