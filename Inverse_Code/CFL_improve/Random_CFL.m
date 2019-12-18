@@ -1,5 +1,5 @@
 % This function is used to get excel to show the specific data result.
-function Ran_CFL(m,n,k)
+function Random_CFL(m,n,k)
 % (m,n) 问题规模  k 为调用函数次��? 默认 k=50;
 
 theresult=zeros(k,2);
@@ -107,7 +107,7 @@ function [gap,opt1] = Fun1(m,n,mul)
   for p = 1:m
       model.A(m*n+m+2+p,n+m+3*m*n+p) = -1;
       model.A(m*n+m+2+p,[n+m*n+p,n+2*m+3*m*n+p]) = 1;   % 保持右侧约束为正的fi 下同
-  end   % 第五个约束
+  end   % 第五个约�?
 
 
   for p = 1:m
@@ -116,7 +116,7 @@ function [gap,opt1] = Fun1(m,n,mul)
 
           model.A((p-1)*n+m*n+2*m+2+w, [m+2*m*n+p*n+w,3*m+4*m*n+p*n+w]) = 1;
       end
-  end  % 第六个约束
+  end  % 第六个约�?
 
 
   % Save model
@@ -140,6 +140,5 @@ function [gap,opt1] = Fun1(m,n,mul)
   result = gurobi(model,params);
 
   gap = result.objval;
-
 
   end
