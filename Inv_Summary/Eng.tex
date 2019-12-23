@@ -1,0 +1,74 @@
+\documentclass[UTF8]{article}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{setspace}
+% \usepackage{ctex}
+\usepackage{geometry}
+\newtheorem{thm}{Theorem}
+\newtheorem{pf}{Proof}
+\newtheorem{algorithm}{Algorithm}
+
+% \geometry{a4paper,left=2cm,right=2cm,top=1cm,bottom=1cm}
+% \setstretch{1.5}
+\geometry{a4paper,scale=0.8}
+\renewcommand{\baselinestretch}{1.5}
+
+\title{Inverse optimization}
+\author{Dis \cdot count}
+\date{Dec 2019}
+\begin{document}
+\maketitle{}
+
+\begin{equation}
+\begin{align*}
+&\sum_{i=1}^m (e_{ij}-f{ij}+a{ij})y_i & = c_j \\
+&\sum_{j=1}^n (e_{ij}-f{ij}+a{ij})x_j^0 & \geq b_i \\
+&\sum_{i=1}^m b_i y_i & \leq v_0
+% e_{ij}f_{ij} = 0   \\
+% e_{ij} \geq 0   \\
+% f_{ij} \geq 0
+\end{align*}
+\end{equation}
+
+\begin{align}
+  T(e,f,y) &= \min \sum_i\sum_j(e_{ij}+f_{ij}) + \sum_{j=1}^n \lambda_j
+  g_j(e) + \sum_{i=1}^m \mu_i f_i(e) \\
+  g_j(e,f,y) &= \sum_{i=1}^m (e_{ij}-f_{ij}+a_{ij})y_i-c_j = 0 \\
+  f_i(e,f,y) &= b_i - \sum_{j=1}^n (e_{ij}-f_{ij}+a_{ij})x_j^0 \leq 0 \\
+  h(y) &= \sum_{i=1}^m b_i y_i - v_0 \\
+  K(e,f) &= e_{ij}f_{ij}  \\
+  M(e) &= -e_{ij}  \\
+  N(f) &= -f_{ij}
+\end{align}
+
+
+\begin{equation} \begin{aligned}
+  V_j &= v_j                      &
+  X_i &= x_i - q_i x_j            &
+      &= u_j + \sum_{i\ne j} q_i \\
+  V_i &= v_i - q_i v_j            &
+  X_j &= x_j                      &
+  U_i &= u_i
+
+\end{aligned} \end{equation}
+
+
+
+\begin{align}
+  \frac{\partial T(e,f,y)}{\partial e_{ij}} &= 1+ \beta f_{ij} - m_{ij}+\lambda_j y_i + \mu_i(-x_j^0) = 0  \\
+  \frac{\partial T(e,f,y)}{\partial f_{ij}} &= 1+ \beta e_{ij} - n_{ij}-\lambda_j y_i + \mu_i x_j^0 = 0    \\
+  \frac{\partial T(e,f,y)}{\partial y_{i}} &=\sum_{j=1}^n(e_{ij}-f_{ij}+a_{ij})\lambda_j + \alpha b_i = 0 \\
+  g_j(e,f,y) &=0 \\
+  K(e,f) &= e_{ij}f_{ij} =0
+  
+\end{align}
+
+
+
+
+
+
+
+
+\end{document}
