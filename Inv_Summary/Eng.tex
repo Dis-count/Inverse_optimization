@@ -15,60 +15,81 @@
 \renewcommand{\baselinestretch}{1.5}
 
 \title{Inverse optimization}
-\author{Dis \cdot count}
+% \author{Dis \cdot count}
 \date{Dec 2019}
 \begin{document}
 \maketitle{}
 
+\section{The Model}
+
+The original LP model is:
+
+\begin{align*}
+  \min \quad cx \\
+\text{s.t.} \quad A'x \geq b  \\
+\end{align*}
+
+The dual of the LP is:
+\begin{align*}
+  \min \quad by \\
+\text{s.t.} \quad A^{'T}y = c  \\
+\end{align*}
+
+Among this, $y$ is dual variable.
+Thus, the inverse optimization model can be expressed as the following:
+
+\begin{align}
+  \min \vert A'-A \vert \nonumber \\
+\mathrm{s.t.}  \quad A^{'T}y = c  \\
+  cx^0 \geq by  \\
+  \quad A'x^0 \geq b \label{Sol_con}
+\end{align}
+
+We can split this into two situations: given the value or given the solution. If we give the solution, just as the model we showed. If we give the value, we don't need the (\ref{Sol_con}) constraints.
+Expand the matrix to the specific elements. We can obtain the corresponding model:
+
 \begin{equation}
 \begin{align*}
+&\qquad \min \quad \sum_i \sum_j (e_{ij}+f_{ij})\\
 &\sum_{i=1}^m (e_{ij}-f{ij}+a{ij})y_i & = c_j \\
 &\sum_{j=1}^n (e_{ij}-f{ij}+a{ij})x_j^0 & \geq b_i \\
-&\sum_{i=1}^m b_i y_i & \leq v_0
+&\sum_{i=1}^m b_i y_i & \leq v_0 \\
 % e_{ij}f_{ij} = 0   \\
-% e_{ij} \geq 0   \\
-% f_{ij} \geq 0
+&e_{ij} \geq 0 \qquad f_{ij} \geq 0
 \end{align*}
 \end{equation}
 
+Add the lagrangian multiplier:
+
 \begin{align}
   T(e,f,y) &= \min \sum_i\sum_j(e_{ij}+f_{ij}) + \sum_{j=1}^n \lambda_j
-  g_j(e) + \sum_{i=1}^m \mu_i f_i(e) \\
-  g_j(e,f,y) &= \sum_{i=1}^m (e_{ij}-f_{ij}+a_{ij})y_i-c_j = 0 \\
+  g_j(e,f,y) + \sum_{i=1}^m \mu_i f_i(e,f,y)\nonumber\\
+  g_j(e,f,y) &= \sum_{i=1}^m (e_{ij}-f_{ij}+a_{ij})y_i-c_j = 0 \tag{\text{God}} \\
   f_i(e,f,y) &= b_i - \sum_{j=1}^n (e_{ij}-f_{ij}+a_{ij})x_j^0 \leq 0 \\
-  h(y) &= \sum_{i=1}^m b_i y_i - v_0 \\
-  K(e,f) &= e_{ij}f_{ij}  \\
-  M(e) &= -e_{ij}  \\
-  N(f) &= -f_{ij}
+  h(y) &= \sum_{i=1}^m b_i y_i - v_0 \leq 0\\
+  K(e,f) &= e_{ij}f_{ij}=0  \\
+  M(e) &= -e_{ij} \leq 0 \label{M}  \\
+  N(f) &= -f_{ij} \leq 0
 \end{align}
 
+The corresponding multipliers are $\lambda_j, \mu_i, \alpha, \beta_{ij}, m_{ij}, n_{ij}$.
 
-\begin{equation} \begin{aligned}
-  V_j &= v_j                      &
-  X_i &= x_i - q_i x_j            &
-      &= u_j + \sum_{i\ne j} q_i \\
-  V_i &= v_i - q_i v_j            &
-  X_j &= x_j                      &
-  U_i &= u_i
+Using the KKT constraints, we can obtain the following equations.
 
-\end{aligned} \end{equation}
-
-
-
-\begin{align}
-  \frac{\partial T(e,f,y)}{\partial e_{ij}} &= 1+ \beta f_{ij} - m_{ij}+\lambda_j y_i + \mu_i(-x_j^0) = 0  \\
-  \frac{\partial T(e,f,y)}{\partial f_{ij}} &= 1+ \beta e_{ij} - n_{ij}-\lambda_j y_i + \mu_i x_j^0 = 0    \\
+\begin{align*}
+  \frac{\partial T(e,f,y)}{\partial e_{ij}} &= 1+ \beta_{ij} f_{ij} - m_{ij}+\lambda_j y_i + \mu_i(-x_j^0) = 0  \\
+  \frac{\partial T(e,f,y)}{\partial f_{ij}} &= 1+ \beta_{ij} e_{ij} - n_{ij}-\lambda_j y_i + \mu_i x_j^0 = 0   \\
   \frac{\partial T(e,f,y)}{\partial y_{i}} &=\sum_{j=1}^n(e_{ij}-f_{ij}+a_{ij})\lambda_j + \alpha b_i = 0 \\
   g_j(e,f,y) &=0 \\
-  K(e,f) &= e_{ij}f_{ij} =0
-  
-\end{align}
-
-
-
-
-
-
+  \mu_i f_i &= 0 \quad \mu_i \geq 0 \\
+  K(e,f) &= e_{ij}f_{ij} =0 \\
+  \alpha h(y) &=0 \quad \alpha \geq 0\\
+  m_{ij} M(e) &=0 \quad m_{ij} \geq 0 \\
+  n_{ij} N(f) &=0 \quad n_{ij} \geq 0
+\end{align*}
+We can solve these equations to obtain the solution $(e_{ij}^*, f_{ij}^*, y_i^*)$. And the $e_{ij}^*, f_{ij}^*$ corresponds the optimal adjustment, the $y_i^*$ corresponds the optimal lagrangian multipiers. \\
+Consider the particularity of this problem.
+One possible method to solve the systems of nonlinear equations is
 
 
 \end{document}
