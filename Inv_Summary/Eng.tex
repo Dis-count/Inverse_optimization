@@ -39,7 +39,7 @@ Among this, $y$ is dual variable.
 Thus, the inverse optimization model can be expressed as the following:
 
 \begin{align}
-  \min \vert A'-A \vert \nonumber \\
+  \min \Vert A'-A \Vert_1 \nonumber \\
 \mathrm{s.t.}  \quad A^{'T}y = c  \\
   cx^0 \geq by  \\
   \quad A'x^0 \geq b \label{Sol_con}
@@ -51,7 +51,7 @@ Expand the matrix to the specific elements. We can obtain the corresponding mode
 \begin{equation}
 \begin{align*}
 &\qquad \min \quad \sum_i \sum_j (e_{ij}+f_{ij})\\
-&\sum_{i=1}^m (e_{ij}-f{ij}+a{ij})y_i & = c_j \\
+\mathrm{s.t.} \quad &\sum_{i=1}^m (e_{ij}-f{ij}+a{ij})y_i & = c_j \\
 &\sum_{j=1}^n (e_{ij}-f{ij}+a{ij})x_j^0 & \geq b_i \\
 &\sum_{i=1}^m b_i y_i & \leq v_0 \\
 % e_{ij}f_{ij} = 0   \\
@@ -59,12 +59,15 @@ Expand the matrix to the specific elements. We can obtain the corresponding mode
 \end{align*}
 \end{equation}
 
+Notice that there are $(2mn+m)$ variables but only $(m+n+1)$ constraints.
+
+The theoretical method is to use the KKT conditions which is usually used to solve the constrained nonlinear programming.
 Add the lagrangian multiplier:
 
 \begin{align}
   T(e,f,y) &= \min \sum_i\sum_j(e_{ij}+f_{ij}) + \sum_{j=1}^n \lambda_j
   g_j(e,f,y) + \sum_{i=1}^m \mu_i f_i(e,f,y)\nonumber\\
-  g_j(e,f,y) &= \sum_{i=1}^m (e_{ij}-f_{ij}+a_{ij})y_i-c_j = 0 \tag{\text{God}} \\
+\mathrm{s.t.}  \quad   g_j(e,f,y) &= \sum_{i=1}^m (e_{ij}-f_{ij}+a_{ij})y_i-c_j = 0 \tag{\text{God}} \\
   f_i(e,f,y) &= b_i - \sum_{j=1}^n (e_{ij}-f_{ij}+a_{ij})x_j^0 \leq 0 \\
   h(y) &= \sum_{i=1}^m b_i y_i - v_0 \leq 0\\
   K(e,f) &= e_{ij}f_{ij}=0  \\
@@ -87,9 +90,72 @@ Using the KKT constraints, we can obtain the following equations.
   m_{ij} M(e) &=0 \quad m_{ij} \geq 0 \\
   n_{ij} N(f) &=0 \quad n_{ij} \geq 0
 \end{align*}
-We can solve these equations to obtain the solution $(e_{ij}^*, f_{ij}^*, y_i^*)$. And the $e_{ij}^*, f_{ij}^*$ corresponds the optimal adjustment, the $y_i^*$ corresponds the optimal lagrangian multipiers. \\
+
+If we can solve these equations, we can obtain the solution $(e_{ij}^*, f_{ij}^*, y_i^*)$. And the $e_{ij}^*, f_{ij}^*$ corresponds the optimal adjustment, the $y_i^*$ corresponds the optimal lagrangian multipiers.
+However, the system of nonlinear equations doesnot seem to be solved in this case.
+
 Consider the particularity of this problem.
-One possible method to solve the systems of nonlinear equations is
+
+
+% 跟师兄聊天的一点启发
+% 一是文章的套路问题
+
+% 二是对于这个问题可以有下面几个方面改进
+
+% min 可以不用KKT嘛   还是根据性质进行优化 但如果还是 非线性约束优化问题还是要用KKT
+
+% min 通过 KKT 得到 一组非线性方程组 没有理论解  但可以先根据性质分析不同情形 再不行就找到不等式放缩 找到解的大致位置 再退而求其次  利用性质结合已有的方法 进行优化 得到迭代解
+
+% 可能存在的几种情况
+% 最优 f_i = 0 , h(y) = 0
+% 其中 若令所有 f_i = 0 则会得到一个上界 而满足 f_i 的所有不等式 均为改变后的 active 不等式
+
+Case 1. All the $f_{ij} = 0, e_{ij} > 0$
+
+The original model is transformed as:
+
+\begin{equation}
+\begin{align*}
+&G =  \min \quad \sum_i \sum_j e_{ij} \\
+\mathrm{s.t.}  \quad &\sum_{i=1}^m (e_{ij} + a{ij})y_i & = c_j \\
+&\sum_{j=1}^n (e_{ij} + a{ij})x_j^0 & \geq b_i \\
+&\sum_{i=1}^m b_i y_i & \leq v_0 \\
+% e_{ij}f_{ij} = 0   \\
+&e_{ij} \geq 0
+\end{align*}
+\end{equation}
+
+If all $a_{ij} > 0$, we can further transform this model as a geometric programming(GP), because the functions are all posynomialfunction.
+Let $z_i = \ln x_i \Rightarrow x_i = e^{z_i}$, and $e_{ij} = x_k,~ k=1,\ldots,i\times j$, $y_i = x_k, k=i\times j+1,\ldots,i\times j+m$
+Then, the model can be written as:
+
+\begin{equation}
+\begin{align*}
+&\min \quad \sum_k^{i\times j} e^{z_k} \\
+\mathrm{s.t.} \quad &\sum_{}  
+\end{align*}
+\end{equation}
+
+Because the optimal solution satisfies the
+
+And the system is changed as: $h(y)=0$ and
+
+\begin{align*}
+  1 - m_{ij}+\lambda_j y_i + \mu_i(-x_j^0) = 0  \\
+  1+ \beta_{ij} e_{ij} - n_{ij}-\lambda_j y_i + \mu_i x_j^0 = 0   \\
+  \sum_{j=1}^n(e_{ij}+a_{ij})\lambda_j + \alpha b_i = 0 \\
+  \sum_{i=1}^m (e_{ij}+a_{ij})y_i-c_j = 0 \\
+  b_i - \sum_{j=1}^n (e_{ij}+a_{ij})x_j^0 \leq 0 \\
+  \mu_i f_i = 0 \quad \mu_i \geq 0 \\
+  \sum_{i=1}^m b_i y_i = v_0 \quad \alpha \geq 0 \\
+  m_{ij} e_{ij} =0 \quad m_{ij} \geq 0 \\
+  n_{ij} \geq 0
+\end{align*}
+
+Let all $m_{ij} = 0$
+
+Another information is that if $x_j^0$ satisfies some equation
+$f_i = 0, i \in I$. For other $i \in \{1,\dots,n\}\backslash I, f_i\leq 0 ~\text{and}~ \mu_i = 0$.
 
 
 \end{document}
