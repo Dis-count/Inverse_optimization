@@ -8,7 +8,7 @@
 \newtheorem{thm}{Theorem}
 \newtheorem{pf}{Proof}
 \newtheorem{algorithm}{Algorithm}
-
+\numberwithin{equation}{section}
 % \geometry{a4paper,left=2cm,right=2cm,top=1cm,bottom=1cm}
 % \setstretch{1.5}
 \geometry{a4paper,scale=0.8}
@@ -110,6 +110,8 @@ Consider the particularity of this problem.
 % 最优 f_i = 0 , h(y) = 0
 % 其中 若令所有 f_i = 0 则会得到一个上界 而满足 f_i 的所有不等式 均为改变后的 active 不等式
 
+% 还有一种思路是 能不能把一部分非线性解决 而另一部分线性不管它
+
 Case 1. All the $f_{ij} = 0, e_{ij} > 0$
 
 The original model is transformed as:
@@ -127,12 +129,18 @@ The original model is transformed as:
 
 If all $a_{ij} > 0$, we can further transform this model as a geometric programming(GP), because the functions are all posynomialfunction.
 Let $z_i = \ln x_i \Rightarrow x_i = e^{z_i}$, and $e_{ij} = x_k,~ k=1,\ldots,i\times j$, $y_i = x_k, k=i\times j+1,\ldots,i\times j+m$
-Then, the model can be written as:
 
+$f(x)=\sum_{k=1}^{K} c_{k} x_{1}^{a_{1 k}} x_{2}^{a_{2 k}} \cdots x_{n}^{a_{n k}}=\sum_{k=1}^{K} e^{a_{k}^{T} y+b_{k}}$
+
+% 第二个等式不是 一般形式 如何求解 需要更改
+
+Then, the model can be written as:
+% 有2m项加和 n项 等式
 \begin{equation}
 \begin{align*}
 &\min \quad \sum_k^{i\times j} e^{z_k} \\
-\mathrm{s.t.} \quad &\sum_{}  
+\mathrm{s.t.} \quad &\sum_{k=1}^{2m} e^{a_{ik}^{T} y+b_{ik} = 1, i =1,\ldots,n\\
+&\sum_{k=1}^{2m} e^{a_{ik}^{T} y+b_{ik} \leq 1, i =1,\ldots,n
 \end{align*}
 \end{equation}
 
