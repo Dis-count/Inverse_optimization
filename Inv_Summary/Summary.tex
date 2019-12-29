@@ -40,12 +40,18 @@
 逆优化问题最初
 已经有很多人进行了研究
 同时设施选址
+由于设施选址问题本身是NP难问题，它的逆问题就变得更为复杂。若是
 
 \section{设施选址逆优化}
 
 \section{无容量限制}
 
+设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$c_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$u_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
 
+则无容量限制设施选址问题定义如下：
+
+
+它的逆优化问题定义如下：
 
 
 \subsection{列生成算法得到最优解}
@@ -60,10 +66,37 @@
 
 在2010文章中，定义了关于设施选址问题的
 
+\[
+\mathbb{C}_{\mathrm{UFL}}^{x}=\left\{(v, u) \in \mathbb{R}^{m+m v}: \sum_{i \in M} u_{i k}=1, \forall k \in V, v_{i}-u_{i k} \geq 0, \forall i \in M, \forall k \in V, u_{i k} \geq 0, \forall i \in M, \forall k \in V\right\}
+\]
 
-这部分gap很小
 
-考虑在原问题上改进得到更好上界
+\begin{equation}
+\begin{aligned}
+&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{k \in V} \left(\tau_{i k}^r+\eta_{i k}^{r}\right) \\
+\text{s.t.} \quad &\sum_{k \in V} \pi_{k} \geq \nu_{\mathrm{UFL}}, \\
+&\sum_{k \in V} \varrho_{i k}=\bar{f}_{i}, \forall i \in M, \\
+&\pi_{k}-\varrho_{i k}+\zeta_{i k}=\bar{r}_{i k}, \quad \forall i \in M, \forall k \in V, \\
+&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{k \in V} \bar{r}_{i k} u_{i k}^{0}=\nu_{\mathrm{UFL}}, \\
+& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}, \forall i \in M \quad \tau_{i k}^{r}-\eta_{i k}^{r}=\bar{r}_{i k}-r_{i k}, \forall i \in M, \forall k \in V, \\
+&\nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2}, \varrho_{i k} \geq 0, \zeta_{i k} \geq 0, \forall i \in M, \forall k \in V. \\
+\end{aligned}
+\end{equation}
+
+其中$\bar{f}_{i}$和$\bar{r}_{ik}$ 为改变后的开启设施成本和运输成本。相对应的，$f_{i}$和$r_{ik}$ 为改变前的成本。
+$\pi_{k},\varrho_{i k},\zeta_{i k}$分别为原UFL约束
+\begin{equation*}
+\sum_{i \in M} u_{ik} = 1,
+v_i - u_{ik} \geq 0,
+u_{ik} \geq 0
+\end{equation*}
+对应的对偶变量。 \par
+$v_{i}^{0},u_{i k}^{0}$ 则对应于给定的可行解使之成为改变成本后的最优解。
+$\nu_{\mathrm{UFL}}$ 是原UFL的最优值，需要在一定的范围内取值使得问题可行。
+
+$\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数一下引入的变量。 \par
+
+这部分gap很小，考虑在原问题上改进得到更好的上界
 
 \section{有容量限制}
 
