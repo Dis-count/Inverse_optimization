@@ -24,24 +24,30 @@
 
 The original LP model is:
 
+\begin{equation}
 \begin{align*}
-  \min \quad cx \\
+  \min \quad c^Tx \\
 \text{s.t.} \quad A'x \geq b  \\
+x \geq 0
 \end{align*}
+\end{equation}
 
 The dual of the LP is:
+\begin{equation}
 \begin{align*}
-  \min \quad by \\
-\text{s.t.} \quad A^{'T}y = c  \\
+  \max \quad b^Ty \\
+\text{s.t.} \quad A^{'T}y \leq c  \\
+y \geq 0
 \end{align*}
+\end{equation}
 
 Among this, $y$ is dual variable.
 Thus, the inverse optimization model can be expressed as the following:
 
 \begin{align}
   \min \Vert A'-A \Vert_1 \nonumber \\
-\mathrm{s.t.}  \quad A^{'T}y = c  \\
-  cx^0 \geq by  \\
+\mathrm{s.t.}  \quad A^{'T}y \leq c  \\
+  b^Ty \leq c^Tx^0  \\
   \quad A'x^0 \geq b \label{Sol_con}
 \end{align}
 
@@ -50,16 +56,17 @@ Expand the matrix to the specific elements. We can obtain the corresponding mode
 
 \begin{equation}
 \begin{align*}
-&\qquad \min \quad \sum_i \sum_j (e_{ij}+f_{ij})\\
-\mathrm{s.t.} \quad &\sum_{i=1}^m (e_{ij}-f{ij}+a{ij})y_i & = c_j \\
-&\sum_{j=1}^n (e_{ij}-f{ij}+a{ij})x_j^0 & \geq b_i \\
-&\sum_{i=1}^m b_i y_i & \leq v_0 \\
+& \min \quad \sum_i \sum_j (e_{ij}+f_{ij})\\
+\mathrm{s.t.} \quad &\sum_{i=1}^m a^{'}_{ij} y_i \leq c_j \\
+&\sum_{j=1}^n a^{'}_{ij} x_j^0 \geq b_i \\
+&\sum_{i=1}^m b_i y_i \leq v_0 \\
 % e_{ij}f_{ij} = 0   \\
+&a^{'}_{ij} = e_{ij}-f{ij}+a_{ij} \\
 &e_{ij} \geq 0 \qquad f_{ij} \geq 0
 \end{align*}
 \end{equation}
 
-Notice that there are $(2mn+m)$ variables but only $(m+n+1)$ constraints.
+Notice that there are $(3mn+m)$ variables but only $(mn+m+n+1)$ constraints.
 
 The theoretical method is to use the KKT conditions which is usually used to solve the constrained nonlinear programming.
 Add the lagrangian multiplier:
@@ -93,6 +100,8 @@ Using the KKT constraints, we can obtain the following equations.
 
 If we can solve these equations, we can obtain the solution $(e_{ij}^*, f_{ij}^*, y_i^*)$. And the $e_{ij}^*, f_{ij}^*$ corresponds the optimal adjustment, the $y_i^*$ corresponds the optimal lagrangian multipiers.
 However, the system of nonlinear equations doesnot seem to be solved in this case.
+
+\section{Analysis}
 
 Consider the particularity of this problem.
 
@@ -137,11 +146,11 @@ $f(x)=\sum_{k=1}^{K} c_{k} x_{1}^{a_{1 k}} x_{2}^{a_{2 k}} \cdots x_{n}^{a_{n k}
 Then, the model can be written as:
 % 有2m项加和 n项 等式
 \begin{equation}
-\begin{align*}
-&\min \quad \sum_k^{i\times j} e^{z_k} \\
-\mathrm{s.t.} \quad &\sum_{k=1}^{2m} e^{a_{ik}^{T} y+b_{ik} = 1, i =1,\ldots,n\\
-&\sum_{k=1}^{2m} e^{a_{ik}^{T} y+b_{ik} \leq 1, i =1,\ldots,n
-\end{align*}
+\begin{align}
+&\min \quad \sum_k^{i\times j} e^{y_k} \\
+\mathrm{s.t.}& \quad \sum_{k=1}^{2m} e^{a_{ik}^{T} y+b_{ik}} = 1, i =1,\ldots,n \\
+&\sum_{k=1}^{2m} e^{a_{ik}^{T} y+b_{ik}} \leq 1, i =1,\ldots,n \\
+\end{align}
 \end{equation}
 
 Because the optimal solution satisfies the
