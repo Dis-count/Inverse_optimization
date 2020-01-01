@@ -42,19 +42,71 @@
 同时设施选址
 由于设施选址问题本身是NP难问题，它的逆问题就变得更为复杂。若是
 
-\section{设施选址逆优化}
+设施选址逆优化
 
 \section{无容量限制}
 
-设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$c_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$u_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
+设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$c_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$k_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
 
 则无容量限制设施选址问题定义如下：
-
+\begin{align*}
+&\min \sum_{i=1}^n \sum_{j=1}^m c_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
+\text{s.t.}& \sum_{i=1}^n u_{ij} =1, \forall j \in \{1,\ldots,m\}  \\
+&\sum_{j=1}^m u_{ij}  \leq Mv_i, \forall i \in \{1,\ldots,n\} \\
+& u_{ij} \in \{0,1\}, \quad v_{i} \in \{0,1\}
+\end{align*}
 
 它的逆优化问题定义如下：
 
 
+
+类似的，有容量限制的设施选址问题定义如下:
+\begin{align*}
+&\min \sum_{i=1}^n \sum_{j=1}^m c_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
+\text{s.t.}& \sum_{i=1}^n u_{ij} =1, \forall j \in \{1,\ldots,m\}  \\
+&\sum_{j=1}^m d_j u_{ij}  \leq k_iv_i, \forall i \in \{1,\ldots,n\} \\
+& 0 \leq u_{ij} \leq 1,\forall j \in \{1,\ldots,m\}, \forall i \in \{1,\ldots,n\} \\
+& v_{i} \in \{0,1\}, \forall i \in \{1,\ldots,n\}
+\end{align*}
+
+
 \subsection{列生成算法得到最优解}
+列生成算法作为一种有效求解规模较大的线性规划问题。
+原逆优化模型为
+\begin{align*}
+&\min |c-c_0|  \\
+\text{s.t.}\quad & V_0 = cx_0 \leq cx^{'}, x^{'} \in all feasible
+\end{align*}
+
+将列生成算法应用于逆UFL问题，将上式对应的设施和运输部分写开可以得到该逆问题UFL的主问题
+
+\begin{align*}
+&\min \quad \sum_{i=1}^m(a_i+b_i)+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}+d_{ij})\\
+\text{s.t.}\quad & (a_i-b_i+f_i^0)v_i^{'} + (c_{ij}-d_{ij}+r_{ij}^0)u_{ij}^{'} - cx_0 \geq 0
+\end{align*}
+
+其中$(v_i^{'},u_{ij}^{'})$属于一个限制集，集合中的元素由子问题不断生成。
+主问题得到的$(a^*,b^*,c^*,d^*)$带入到子问题中求解。
+
+子问题如下：
+
+\begin{align}
+&\min \quad \sum_{i=1}^m(a_i^*-b_i^*+f_i^0)v_i^{'}+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}^*-d_{ij}^*+r_{ij}^0)u_{ij}^{'}-cx_0\\
+\text{s.t.}\quad & \sum_{i=1}^m u_{ij}^{'} =1 \quad \forall j\in L \\
+& u_{ij}^{'} \leq v_{i}^{'} \quad \forall i \in F, \forall j \in L \\
+& u_{ij}^{'} \geq 0 \quad \forall i \in F, \forall j \in L \\
+&u_{ij}^{'} \in \{0,1\} ,\quad v_{i}^{'} \in \{0,1\}
+\end{align}
+
+子问题求出得到$(v^{'*},u^{'*})$, 如果目标函数值小于0，将得到的$(v^{'*},u^{'*})$加入到主问题的限制集中。如果目标函数值大于0，程序结束。
+
+注意到子问题实际上是UFL原问题，由于UFL问题是NP-难问题，因此UFL逆问题也是NP-难问题。
+
+可以对子问题进行如下的处理方法：\\
+1. 精确求解子问题UFL，则可以得到UFL逆问题的最优解。\\
+2. 近似求解子问题UFL，设定循环次数，提前结束子问题的求解可以得到UFL逆问题的下界。\\
+3. 将子问题松弛得到分数解，则可以得到UFL逆问题的上界。
+
 
 
 
@@ -96,7 +148,8 @@ $\nu_{\mathrm{UFL}}$ 是原UFL的最优值，需要在一定的范围内取值�
 
 $\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数一下引入的变量。 \par
 
-这部分gap很小，考虑在原问题上改进得到更好的上界
+
+这部分gap很小，实际上对应到(integrality gap)
 
 \section{求解low bound 的一些方法}
 
@@ -112,10 +165,29 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数
 
 \subsection{列生成算法得到最优解}
 
-\subsection{减少约束得到下界}
-
-
 \subsection{启发式得到上界}
+对于有容量限制的设施选址逆优化问题，多了一个约束
+\begin{eqation}
+  \sum_k d_k u_{ik} \leq k_i v_i,i\in M
+\end{eqation}。
+同样利用锥优化的方法，添加对应上述约束的对偶变量$t$，我们可以得到有容量限制的设施选址问题的启发式算法
+
+\begin{equation}
+\begin{aligned}
+&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{k \in V} \left(\tau_{i k}^r+\eta_{i k}^{r}\right) \\
+\text{s.t.} \quad &\sum_{k \in V} \pi_{k} \geq \nu_{\mathrm{UFL}}, \\
+&k_it_i+\sum_{k \in V} \varrho_{i k}=\bar{f}_{i}, \forall i \in M, \\
+&\pi_{k}-\varrho_{i k}+\zeta_{i k}-d_kt_i=\bar{r}_{i k}, \quad \forall i \in M, \forall k \in V, \\
+&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{k \in V} \bar{r}_{i k} u_{i k}^{0}=\nu_{\mathrm{UFL}}, \\
+& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}, \forall i \in M \quad \tau_{i k}^{r}-\eta_{i k}^{r}=\bar{r}_{i k}-r_{i k}, \forall i \in M, \forall k \in V, \\
+&\nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2}, \varrho_{i k} \geq 0, \zeta_{i k} \geq 0, \forall i \in M, \forall k \in V. \\
+\end{aligned}
+\end{equation}
+
+
+
+
+
 
 注意这部分 可以通过改变 需求和供给 的大小来退化得到 无容量限制
 
