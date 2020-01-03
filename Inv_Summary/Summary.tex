@@ -1,7 +1,7 @@
 \documentclass[UTF8]{article}
 \author {Dis\cdot count}
 
-\title {设施选址逆优化问题的计算}
+\title {一范数下的设施选址逆优化问题的计算}
 \date{}
 \usepackage{ctex}
 \usepackage{amsmath}
@@ -30,12 +30,17 @@
 
 我们使用了经典的列生成算法对UFL的逆优化问题进行了计算，其子问题就是求解原问题UFL，这样求解得到的就是UFL的逆优化最优值。当对子问题进行优化时，例如对子问题进行松弛得到非整数解这样可以得到与启发式方法一样的上界，而对子问题得到的非整数解取临近整数可以得逆问题的下界
 
-
+% 5. 文章均应附中英文摘要。摘要内容应重点包括4个要素：
+% a. 目的-研究的目的和任务，涉及的主题范围；
+% b. 方法-研究中使用的方法、理论、手段、条件、材料等；
+% c. 结果-研究的结果，数据，被确定的关系，得到的效果、性能等；
+% d. 结论-结果的分析、比较、评价、应用，提出的问题，今后的课题，启发，建议，预测等。
 \end{abstract}
 
 \qquad \textbf{关键词: 逆优化、列生成算法、启发式算法 、设施选址问题}
 
-\section{逆优化综述}  % Introduction
+\section{引言}  % Introduction
+逆优化综述
 
 逆优化问题最初
 已经有很多人进行了研究
@@ -46,31 +51,49 @@
 
 \section{无容量限制}
 
-设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$c_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$k_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
+设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$r_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$k_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
 
 则无容量限制设施选址问题定义如下：
 \begin{align*}
-&\min \sum_{i=1}^n \sum_{j=1}^m c_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
-\text{s.t.}& \sum_{i=1}^n u_{ij} =1, \forall j \in \{1,\ldots,m\}  \\
-&\sum_{j=1}^m u_{ij}  \leq Mv_i, \forall i \in \{1,\ldots,n\} \\
+&\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
+\text{s.t.}\quad & \sum_{i=1}^n u_{ij} =1, \forall j \in N  \\
+&\sum_{j=1}^m u_{ij}  \leq Tv_i, \forall i \in M \\
 & u_{ij} \in \{0,1\}, \quad v_{i} \in \{0,1\}
 \end{align*}
+用$c=(f,r)$表示成本，并且用另一种方式改写包含足够大的$T$的上式，得到更简洁的表达形式：
 
-它的逆优化问题定义如下：
-
-
+\begin{align*}
+F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
+\text{s.t.}\quad & \sum_{i=1}^n u_{ij} =1,\forall i \in M, \forall j \in N  \\
+& u_{ij}  \leq v_i, \forall i \in M ,\forall j \in N\\
+& u_{ij} \in \{0,1\}, \quad v_{i} \in \{0,1\}
+\end{align*}
 
 类似的，有容量限制的设施选址问题定义如下:
 \begin{align*}
 &\min \sum_{i=1}^n \sum_{j=1}^m c_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
-\text{s.t.}& \sum_{i=1}^n u_{ij} =1, \forall j \in \{1,\ldots,m\}  \\
-&\sum_{j=1}^m d_j u_{ij}  \leq k_iv_i, \forall i \in \{1,\ldots,n\} \\
-& 0 \leq u_{ij} \leq 1,\forall j \in \{1,\ldots,m\}, \forall i \in \{1,\ldots,n\} \\
-& v_{i} \in \{0,1\}, \forall i \in \{1,\ldots,n\}
+\text{s.t.}& \sum_{i=1}^n u_{ij} =1, \forall j \in N  \\
+&\sum_{j=1}^m d_j u_{ij}  \leq k_iv_i, \forall i \in M \\
+& 0 \leq u_{ij} \leq 1,\forall j \in N, \forall i \in M \\
+& v_{i} \in \{0,1\}, \forall i \in M
 \end{align*}
 
+逆优化问题分为最优值和最优解问题，为方便显示我们的结果，我们主要考虑最优解问题，而最优值问题也可用相同思路求解。
+给定原问题的一个可行解$x^0$，通过调整原问题的成本$c \to d$，使得$x^0$成为调整后问题的最优解。而逆优化则是求解在某个范数下使得这个调整量最小的问题，为方便起见，我们以一范数为例。
 
-\subsection{列生成算法得到最优解}
+设施选址的逆优化问题定义如下：
+\begin{align*}
+&\min_{d} \left\|d-c\right\|_1 \\
+\text{s.t.}\quad & dx^0 = F(d)   \\
+& d \in \mathbb{R}^{m+n}
+\end{align*}
+
+由约束式可以看出，$x^0$需要满足$dx^0 \leq dx^{'}, x^{'} \in \Upsilon$。 其中$\Upsilon$是满足原问题的所有可行解$x^{'}$的集合。由此可以看出设施选址的逆优化问题比原问题更加复杂，是NP-难问题。
+
+
+\section{列生成算法求解}
+从设施选址逆优化问题的定义过程中，我们可以看出
+
 列生成算法作为一种有效求解规模较大的线性规划问题。
 原逆优化模型为
 \begin{align*}
