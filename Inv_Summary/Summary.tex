@@ -88,32 +88,31 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 & d \in \mathbb{R}^{m+n}
 \end{align*}
 
-由约束式可以看出，$x^0$需要满足$dx^0 \leq dx^{'}, x^{'} \in \Upsilon$。 其中$\Upsilon$是满足原问题的所有可行解$x^{'}$的集合。由此可以看出设施选址的逆优化问题比原问题更加复杂，是NP-难问题。
+由约束式可以看出，$x^0$需要满足$dx^0 \leq dx^{'}, x^{'} \in \Upsilon$。 其中$\Upsilon$是满足原问题的所有可行解$x^{'}$的集合。若从逆优化的定义出发建立求解模型，上述集合中包含可行解有指数个。由此可以看出设施选址的逆优化问题比原问题更加复杂，是NP-难问题。
 
 \section{列生成算法求解}
-从设施选址逆优化问题的定义过程中，我们可以看出原优化问题和逆优化问题有着一定的联系，即逆优化中的给定解对应的成本需要小于所有满足原问题约束条件的解对应的成本。我们自然想到列生成算法中子问题即是求解满足原问题约束的，因而列生成算法可以用来求解设施选址的逆优化问题。
+从设施选址逆优化问题的定义过程中，我们可以看出原优化问题和逆优化问题有着一定的联系，即逆优化中的给定解对应的成本需要小于所有满足原问题约束条件的解对应的成本。列生成算法作为一种有效求解规模较大线性规划问题的方法。我们自然想到列生成算法中子问题即是求解满足原问题约束的，因而列生成算法可以用来求解设施选址的逆优化问题。
 
-列生成算法作为一种有效求解规模较大的线性规划问题。
 原逆优化模型为
 \begin{align*}
 &\min |c-c_0|  \\
-\text{s.t.}\quad & V_0 = cx_0 \leq cx^{'}, x^{'} \in all feasible
+\text{s.t.}\quad & V_0 = cx^0 \leq cx^{'}, x^{'} \in \Upsilon
 \end{align*}
 
 将列生成算法应用于逆UFL问题，将上式对应的设施和运输部分写开可以得到该逆问题UFL的主问题
 
 \begin{align*}
 &\min \quad \sum_{i=1}^m(a_i+b_i)+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}+d_{ij})\\
-\text{s.t.}\quad & (a_i-b_i+f_i^0)v_i^{'} + (c_{ij}-d_{ij}+r_{ij}^0)u_{ij}^{'} - cx_0 \geq 0
+\text{s.t.}\quad & (a_i-b_i+f_i^0)(v_i^{'}-v_i^{0}) + (c_{ij}-d_{ij}+r_{ij}^0)(u_{ij}^{'}-u_{ij}^{0})  \geq 0 \\
+& (v_i^{'},u_{ij}^{'}) \in \mathbb{I}
 \end{align*}
 
-其中$(v_i^{'},u_{ij}^{'})$属于一个限制集，集合中的元素由子问题不断生成。
-主问题得到的$(a^*,b^*,c^*,d^*)$带入到子问题中求解。
+其中$(v_i^{'},u_{ij}^{'})$属于一个限制集$\mathbb{I}$，集合中的元素由子问题不断生成加入其中。而主问题得到的$(a^*,b^*,c^*,d^*)$带入到子问题中求解。
 
 子问题如下：
 
 \begin{align}
-&\min \quad \sum_{i=1}^m(a_i^*-b_i^*+f_i^0)v_i^{'}+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}^*-d_{ij}^*+r_{ij}^0)u_{ij}^{'}-cx_0\\
+&\min \quad \sum_{i=1}^m(a_i^*-b_i^*+f_i^0)(v_i^{'}-v_i^{0})+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}^*-d_{ij}^*+r_{ij}^0)(u_{ij}^{'}-u_{ij}^{0}) \\
 \text{s.t.}\quad & \sum_{i=1}^m u_{ij}^{'} =1 \quad \forall j\in L \\
 & u_{ij}^{'} \leq v_{i}^{'} \quad \forall i \in F, \forall j \in L \\
 & u_{ij}^{'} \geq 0 \quad \forall i \in F, \forall j \in L \\
@@ -132,7 +131,7 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 
 \subsection{减少约束得到下界}
 
-注意这部分得到的gap较大
+注意这部分得到的 gap 较大
 
 \subsection{启发式得到上界}
 
@@ -171,7 +170,7 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数
 
 这部分gap很小，实际上对应到(integrality gap)
 
-\section{求解low bound 的一些方法}
+\section{求解lower bound 的一些方法}
 
 \subsection{利用邻域的想法}
 
@@ -183,12 +182,13 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数
 
 \section{计算结果}
 
+\subsection{简单的例子}
+为说明逆优化的效果
+
+\subsection{不同结果比较}
+
 计算结果表明，稀疏度并不影响gap
 以及设施开设成本和运输成本的大小关系不影响gap
-
-\subsection{简单的例子}
-
-
 
 \section{有容量限制}
 
