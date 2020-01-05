@@ -1,24 +1,27 @@
 function x = Cutting(vi0,uij0,fi,rij)
-% vi0, uij0 表示给定可行��? [0,1]  行向��?
+% vi0, uij0 表示给定 feasible solution [0,1]  row vector
 % x 表示主问题给出的 (a,c,b,d)  2mn+2m
-% c0 = (fi;rij) 为原设施成本  列向��?
-s = 0; % 计数��?
+% c0 = (fi;rij) 为原设施成本  column vector
+
+%  You must notice that the row and column vectors!!!!
+
+s = 0; % 计数
 opt2 = -0.5;
 % 初始化限制集
-I = [vi0;uij0];
+I = [vi0;uij0]';
 
 c0 = [fi;rij];
 
-while opt2 < -0.0001
+while opt2 < -0.00001
   x = Main(vi0,uij0,c0,I);
 
   [opt1,opt2] = Sub(x,fi,rij,vi0,uij0);
 
-  I = [I;opt1];
+  I = [I;opt1'];
 
   s = s + 1;
 
-  if s > 10
+  if s > 80
     break
   end
 
@@ -29,9 +32,9 @@ end
 
 
 function opt = Main(vi0,uij0,c0,I)
-% I 表示限制��? 每一行是给定可行��?  行数即可行解个数
-% c0 为原设施成本  列向��?
-% vi0, uij0 表示给定可行��? [0,1]  行向��?
+% I 表示 restricted set 每一行是给定 feasible solution  行数即可行解个数
+% c0 为原设施成本  column vector
+% vi0, uij0 表示给定feasible solution [0,1]  Row Vector
 
 m = length(vi0) ;
 
@@ -43,11 +46,11 @@ model.modelsense = 'min';
 
 ncol = 2*m*n + 2*m ;
 
-model.vtype = 'C';
+model.vtype = 'B';
 
 model.obj   = ones(2*m + 2*m*n,1);
 
-nrow = length(I);
+nrow = length(I(:,1));
 
 delta = zeros(nrow,ncol/2);
 
@@ -55,7 +58,7 @@ model.A     = sparse(nrow, ncol);
 
 for p = 1:nrow
 
-    delta(p,:) = I(p,:) - [vi0;uij0];
+    delta(p,:) = I(p,:) - [vi0;uij0]';
 
     model.A(p,:) = [delta(p,:), -delta(p,:)];
 
@@ -67,7 +70,7 @@ model.sense = repmat('>', nrow , 1);
 
 
 % Save model
-% gurobi_write(model,'UFL.lp');
+% gurobi_write(model,'Main.lp');
 
 % Set parameters
 % params.method = 2;
@@ -127,7 +130,7 @@ for p = 1:n
 
 end
 % Save model
-% gurobi_write(model,'UFL.lp');
+% gurobi_write(model,'Sub.lp');
 
 % Set parameters
 % params.method = 2;
@@ -142,4 +145,5 @@ res = gurobi(model,params);
 opt1 = res.x;   %  给出 (v*,u*)
 
 opt2 = res.objval - dot(c,[vi0;uij0]);
+
 end

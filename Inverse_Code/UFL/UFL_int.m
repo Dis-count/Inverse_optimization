@@ -1,15 +1,18 @@
 
-function [opt1,opt2] = UFL(fi,rik)   % fi rik 为列向量  求出给定 costs 时  UFL的最优值
-% 给出 Facility 数量 m  Player 数量 n
+function [opt1,opt2] = UFL_int   % fi rik 为锟斤拷锟斤拷锟斤拷  锟斤拷锟斤拷锟斤拷锟斤拷 costs 时  UFL锟斤拷锟斤拷锟斤拷值
+% 锟斤拷锟斤拷 Facility 锟斤拷锟斤拷 m  Player 锟斤拷锟斤拷 n
 
 % The basic UFL solution.
 
-% 对应限制条件数量 为 （mn+m）个  变量有（mn+m) 个
+% 锟斤拷应锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 为 锟斤拷mn+m锟斤拷锟斤拷  锟斤拷锟斤拷锟叫ｏ拷mn+m) 锟斤拷
+
+fi = randi([100 200],100,1);
+
+rik = randi([1000 2000],10000,1);
 
 m = length(fi) ;
 
 n = length(rik)/m ;
-
 % disp(fi');
 
 %fprintf('Facility Costs: %g\n', fi);
@@ -22,14 +25,14 @@ n = length(rik)/m ;
 
 % M = 100;    % define M= a bigger integer.
 
-% 注意这里应该使用循环生成向量； 但这里为了计算简单的例子（n=4)，我们直接手动添加变量。
+% 注锟斤拷锟斤拷锟斤拷应锟斤拷使锟斤拷循锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 锟斤拷锟斤拷锟斤拷为锟剿硷拷锟斤拷锟津单碉拷锟斤拷锟接ｏ拷n=4)锟斤拷锟斤拷锟斤拷直锟斤拷锟街讹拷锟斤拷锟接憋拷锟斤拷锟斤拷
 
 % rik  = [ 3; 3; M; 2;
 %          M; 1; 4; M;
 %          3; M; 3; 4;
 %          M; 2; M; 1;];
 
-% 产生一个 长度为 （mn+m) 的向量，每一个限制条件 产生 一个向量。
+% 锟斤拷锟斤拷一锟斤拷 锟斤拷锟斤拷为 锟斤拷mn+m) 锟斤拷锟斤拷锟斤拷锟斤拷每一锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 锟斤拷锟斤拷 一锟斤拷锟斤拷锟斤拷锟斤拷
 
 
 % Facility location: a company currently ships its product from 5 plants
@@ -51,7 +54,7 @@ model.modelsense = 'min';
 % Set data for variables
 ncol = m*n + m ;
 
-model.vtype = 'B';
+model.vtype = 'C';
 
 model.obj   = [fi; rik];
 
@@ -80,14 +83,14 @@ model.sense = [repmat('>', m*n , 1); repmat('=', n , 1)];
 
 for w =1:m
     for p =1:n
-        model.A(p+n*(w-1),w) = 1;         % 第一组约束
+        model.A(p+n*(w-1),w) = 1;         % 锟斤拷一锟斤拷约锟斤拷
 
-        model.A(p+n*(w-1),m+p+(w-1)*n) = -1;  %一定要注意这里是 m+m*n列  注意循环顺序
+        model.A(p+n*(w-1),m+p+(w-1)*n) = -1;  %一锟斤拷要注锟斤拷锟斤拷锟斤拷锟斤拷 m+m*n锟斤拷  注锟斤拷循锟斤拷顺锟斤拷
     end
 end
 
 for p = 1:n
-    model.A(p+m*n, n*(0:(m-1))+m+p) = 1; % 第二组约束
+    model.A(p+m*n, n*(0:(m-1))+m+p) = 1; % 锟节讹拷锟斤拷约锟斤拷
 end
 
 % Save model
@@ -108,7 +111,7 @@ end
 
 res = gurobi(model);
 
-opt1 = res.objval;
+opt1 = res.objval
 
 opt2 = res.x;
 
@@ -130,5 +133,7 @@ opt2 = res.x;
 % else
 %     fprintf('\n No solution\n');
 % end
+
+% date_start=datestr(now)
 
 end
