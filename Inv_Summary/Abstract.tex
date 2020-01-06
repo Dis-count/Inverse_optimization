@@ -21,9 +21,7 @@
 \maketitle{}
 
 \section{Abstract}
-The former most inverse optimization models focus on adjusting the parameters of the objective function to make the given feasible solution optimal for the adjusted problem. In this paper, we propose a new method to adjust the left-hand-side matrix of the linear optimization problem by using the lagrangian  to realize the same result in some cases. One is 
-
-
+The former inverse optimization models mainly focus on adjusting the parameters of the objective function to make the given feasible solution optimal for the adjusted problem. In this paper, we propose a new method to adjust the left-hand-side matrix of the linear optimization problem by using the lagrangian relaxation to realize the same result in some cases. In this method, we can relax the constraints which we want to modify to the objective function with the corresponding lagrange multipliers. Due to the great quality of zero duality gap on linear optimization problem with lagrangian relaxation, we can obtain the precise adjustment as long as we obtain the optimal lagrange multipliers. In this way, we can adjust the parameters of objective function by the common inverse optimization techniques to achieve the adjustment of the corresponding constraint parameters. Although the model will become the nonlinear optimization problem which is hard to solve after being introduced the lagrange multiplier, we have the following methods to overcome this difficulty. One is that we can transform this model to the convex optimization problem in some cases. Another one is that we can improve the existing subgradient method to obtain the approximate parameters' adjustment of the constraints by iteration.
 
 % 已有的文章提到了
 % 我们希望将部分
