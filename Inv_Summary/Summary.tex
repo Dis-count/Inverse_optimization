@@ -88,7 +88,7 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 设施选址的逆优化问题定义如下：
 \begin{align*}
 &\min_{d} \left\|d-c\right\|_1 \\
-\text{s.t.}\quad & dx^0 = F(d)   \\
+\text{s.t.}\quad & dx^0 = F(d) \\
 & d \in \mathbb{R}^{m+n}
 \end{align*}
 
@@ -254,6 +254,11 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数
 
 \section{进一步改进的想法}
 对于列生成的方法，实际上是限制集的选取的问题，限制集越接近
+
+\begin{array}{l}
+ M = M.*Y{A^T}./MA{A^T}, \\
+ A = A.*{M^T}Y./{M^T}MA.
+\end{array}
 
 
 \end{document}

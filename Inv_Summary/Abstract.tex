@@ -21,26 +21,7 @@
 \maketitle{}
 
 \section{Abstract}
-The former inverse optimization models mainly focus on adjusting the parameters of the objective function to make the given feasible solution optimal for the adjusted problem. In this paper, we propose a new method to adjust the left-hand-side matrix of the linear optimization problem by using the lagrangian relaxation to realize the same result in some cases. In this method, we can relax the constraints which we want to modify to the objective function with the corresponding lagrange multipliers. Due to the great quality of zero duality gap on linear optimization problem with lagrangian relaxation, we can obtain the precise adjustment as long as we obtain the optimal lagrange multipliers. In this way, we can adjust the parameters of objective function by the common inverse optimization techniques to achieve the adjustment of the corresponding constraint parameters. Although the model will become the nonlinear optimization problem which is hard to solve after being introduced the lagrange multiplier, we have the following methods to overcome this difficulty. One is that we can transform this model to the convex optimization problem in some cases. Another one is that we can improve the existing subgradient method to obtain the approximate parameters' adjustment of the constraints by iteration.
-
-% 已有的文章提到了
-% 我们希望将部分
-% 在这篇文章中，对于一般的线性规划问题
-% 我们修改左手矩阵的参数 将需要修改的constraint 松弛到目标函数中，如果我们能够得到精确的拉格朗日乘子
-% 我们提出两种方法
-% 困难在于我们需要求解非线性
-%
-
-
-% min 可以不用KKT嘛   还是根据性质进行优化 但如果还是 非线性约束优化问题还是要用KKT
-
-% min 通过 KKT 得到 一组非线性方程组 没有理论解  但可以先根据性质分析不同情形 再不行就找到不等式放缩 找到解的大致位置 再退而求其次  利用性质结合已有的方法 进行优化 得到迭代解
-
-% 可能存在的几种情况
-% 最优 f_i = 0 , h(y) = 0
-% 其中 若令所有 f_i = 0 则会得到一个上界 而满足 f_i 的所有不等式 均为改变后的 active 不等式
-
-% 还有一种思路是 能不能把一部分非线性解决 而另一部分线性不管它
+\quad The former inverse optimization models mainly focus on adjusting the parameters of the objective function to make the given feasible solution optimal for the adjusted problem. In this paper, we propose a new method to adjust the left-hand-side matrix of the linear optimization problem by using the lagrangian relaxation to realize the same result in some cases. In this method, we can relax the constraints which we want to modify to the objective function with the corresponding lagrange multipliers. Due to the great quality of zero duality gap on linear optimization problem with lagrangian relaxation, we can obtain the precise adjustment as long as we obtain the optimal lagrange multipliers. In this way, we can adjust the parameters of objective function by the common inverse optimization techniques to achieve the adjustment of the corresponding constraint parameters. Although the model will become the nonlinear optimization problem which is hard to solve after being introduced the lagrange multiplier, we have the following methods to overcome this difficulty. One is that we can transform this model to the convex optimization problem in some cases. Another one is that we can improve the existing subgradient method to obtain the approximate parameters' adjustment of the constraints by iteration.
 
 
 
