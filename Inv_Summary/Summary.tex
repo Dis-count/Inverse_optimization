@@ -38,7 +38,7 @@
 % d. 结论-结果的分析、比较、评价、应用，提出的问题，今后的课题，启发，建议，预测等。
 \end{abstract}
 
-\qquad \textbf{关键词: 设施选址问题、逆优化、列生成算法、启发式算法}
+\qquad \textbf{关键词: 设施选址问题、逆优化、行生成算法、启发式算法}
 
 \section{引言}  % Introduction
 逆优化综述
@@ -53,7 +53,7 @@
 
 而设施选址的逆优化的问题很少有人研究
 
-\section{无容量限制}
+\section{无容量限制设施选址逆优化问题的模型}
 
 设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$r_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$k_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
 
@@ -83,19 +83,21 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 \end{align*}
 
 逆优化问题通常分为最优值和最优解问题，当给定原问题的一个可行解$x^0$，通过调整原问题的成本$c$为$d$，使得$x^0$成为调整后问题的最优解。而逆优化最优解问题则是求解在某个范数下使得这个调整量最小的问题。当给定原问题的一个可行值$V_0$，称此时对应的问题为逆优化最优值问题。
-为方便以及更贴近现实，我们以一范数为例，即表示调整量之和最小。往往对于设施成本和运输成本的调整权重并不一样，可以分别设为$w_$
+为方便以及更贴近现实，我们以一范数为例，即表示调整量之和最小。往往对于设施成本和运输成本调整量的权重并不一样，可以分别设为$w_i^f$ 和$w_{ij}^r$。
+
+
 
 设施选址的逆优化问题定义如下：
 \begin{align*}
 &\min_{d} \left\|d-c\right\|_1 \\
 \text{s.t.}\quad & dx^0 = F(d) \\
-& d \in \mathbb{R}^{m+n}
+& d \in \mathbb{R}^{mn+m}
 \end{align*}
 
 由约束式可以看出，$x^0$需要满足$dx^0 \leq dx^{'}, x^{'} \in \Upsilon$。 其中$\Upsilon$是满足原问题的所有可行解$x^{'}$的集合。若从逆优化的定义出发建立求解模型，上述集合中包含可行解有指数个。由此可以看出设施选址的逆优化问题比原问题更加复杂，是NP-难问题。
 
-\section{列生成算法求解}
-从设施选址逆优化问题的定义过程中，我们可以看出原优化问题和逆优化问题有着一定的联系，即逆优化中的给定解对应的成本需要小于所有满足原问题约束条件的解对应的成本。列生成算法作为一种有效求解规模较大线性规划问题的方法。我们自然想到列生成算法中子问题即是求解满足原问题约束的，因而列生成算法可以用来求解设施选址的逆优化问题。
+\section{行生成算法求解}
+从设施选址逆优化问题的定义过程中，我们可以看出原优化问题和逆优化问题有着一定的联系，即逆优化中的给定解对应的成本需要小于所有满足原问题约束条件的解对应的成本。行生成算法作为一种有效求解规模较大线性规划问题的方法。我们自然想到行生成算法中子问题即是求解满足原问题约束的，因而行生成算法可以用来求解设施选址的逆优化问题。
 
 原逆优化模型为
 \begin{align*}
@@ -105,54 +107,52 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 
 为方便显示我们的结果，我们主要考虑最优解问题，而最优值问题也可用相同思路求解。
 
-将列生成算法应用于逆UFL问题，将上式对应的设施和运输部分写开可以得到该逆问题UFL的主问题
+将行生成算法应用于逆UFL问题，将上式对应的设施和运输部分写开可以得到该逆问题UFL的主问题
 
 \begin{align*}
-&\min \quad \sum_{i=1}^m(a_i+b_i)+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}+d_{ij})\\
+&\min \quad \sum_{i=1}^m w_i^f(a_i+b_i)+\sum_{i=1}^m\sum_{j=1}^n w_{ij}^r(c_{ij}+d_{ij})\\
 \text{s.t.}\quad & (a_i-b_i+f_i^0)(v_i^{'}-v_i^{0}) + (c_{ij}-d_{ij}+r_{ij}^0)(u_{ij}^{'}-u_{ij}^{0})  \geq 0 \\
+& a_i \geq 0 ,\quad b_i \geq 0,\quad \forall i \in M \\
+& c_{ij} \geq 0, \quad d_{ij} \geq 0, \quad \forall i \in M, \forall j \in N\\
 & (v_i^{'},u_{ij}^{'}) \in \mathbb{I}
 \end{align*}
 
-其中$(v_i^{'},u_{ij}^{'})$属于一个限制集$\mathbb{I}$，集合中的元素由子问题不断生成加入其中。而主问题得到的$(a^*,b^*,c^*,d^*)$带入到子问题中求解。
+其中$(v_i^{'},u_{ij}^{'})$属于一个限制集$\mathbb{I}$，集合中的元素由子问题不断生成加入其中。而主问题得到的$(a^{'},b^{'},c^{'},d^{'})$带入到子问题中求解。
 
 子问题如下：
 
-\begin{align}
-&\min \quad \sum_{i=1}^m(a_i^*-b_i^*+f_i^0)(v_i^{'}-v_i^{0})+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}^*-d_{ij}^*+r_{ij}^0)(u_{ij}^{'}-u_{ij}^{0}) \\
-\text{s.t.}\quad & \sum_{i=1}^m u_{ij}^{'} =1 \quad \forall j\in L \\
-& u_{ij}^{'} \leq v_{i}^{'} \quad \forall i \in F, \forall j \in L \\
-& u_{ij}^{'} \geq 0 \quad \forall i \in F, \forall j \in L \\
+\begin{align*}
+T = &\min \quad \sum_{i=1}^m(a_i^{'}-b_i^{'}+f_i^0)(v_i^{'}-v_i^{0})+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}^{'}-d_{ij}^{'}+r_{ij}^0)(u_{ij}^{'}-u_{ij}^{0}) \\
+\text{s.t.}\quad & \sum_{i=1}^m u_{ij}^{'} =1, \quad \forall j\in N \\
+& u_{ij}^{'} \leq v_{i}^{'}, \quad \forall i \in M, \forall j \in N \\
+& u_{ij}^{'} \geq 0, \quad \forall i \in M, \forall j \in N \\
 &u_{ij}^{'} \in \{0,1\} ,\quad v_{i}^{'} \in \{0,1\}
-\end{align}
+\end{align*}
 
-子问题求出得到$(v^{'*},u^{'*})$, 如果目标函数值小于0，将得到的$(v^{'*},u^{'*})$加入到主问题的限制集中。如果目标函数值不小于0，程序结束。
+子问题求出得到 $(v^{'*},u^{'*})$, 如果目标函数值小于0，将得到的 $(v^{'*},u^{'*})$ 加入到主问题的限制集中。如果目标函数值不小于0，程序结束。
 注意到子问题实际上是无容量限制设施选址的原问题，因此该设施选址的逆问题复杂度要大于原问题，也是NP-难问题。
 
-\begin{algorithm}[h]
-\caption{求解设施选址问题的列生成算法}
-\label{CG}
-\begin{algorithmic}[1]
-输入：
-$x_0$: 可行解;
-$c_0$: 原设施成本;
-输出：
-最优 $(a^{*},b^{*},c^{*},d^{*})$
-\State initial $g_0=0$ and $d_0=0$;
-\Repeat
-\State compute gradient directions $g_k=\bigtriangledown f(x_k)$;
-\State compute Polak-Ribiere parameter $\beta_k=\frac{g_k^{T}(g_k-g_{k-1})}{\parallel g_{k-1} \parallel^{2}}$;
-\State compute the conjugate directions $d_k=-g_k+\beta_k d_{k-1}$;
-\State compute the step size $\alpha_k=s/\parallel d_k \parallel_{2}$;
-\Until{($f(x_k)>f(x_{k-1})$)}
-\end{algorithmic}
-\end{algorithm}
+求解设施选址问题的行生成算法详细步骤如下：
+
+输入：1） 可行解：$x^0=(v_i^0,u_{ij}^0)$； 2）原设施成本：$c^0=(f_i^0,r_{ij}^0)$;
+
+输出：1）最优解 $(a^{*},b^{*},c^{*},d^{*})$；
+2） 最小的总成本改变量为
+$\sum_{i=1}^m(a^{*}_i+b^{*}_i)+\sum_{i=1}^m\sum_{j=1}^n(c^{*}_{ij}+d^{*}_{ij})$ ;
+3） 对应原成本的改变量为 $f_i-f_i^0 = a^{*}_i-b^{*}_i,r_{ij}-r_{ij}^0=c^{*}_{ij}-d^{*}_{ij}$.
+
+初始化：初始限制集包含对于原问题的可行解即可。为方便且不再重新生成可行解，可取初始限制集为给定的可行解即 $\mathbb{I} = \{(v_i^0,u_{ij}^0)\} $。
+
+步骤 1：求解此时的主问题得到最优解 $(a^{'},b^{'},c^{'},d^{'})$.
+
+步骤 2：将步骤 1得到的最优解 $(a^{'},b^{'},c^{'},d^{'})$带入到子问题中，求解子问题这一整数规划得到最优解 $x^{'*}=(v^{'*},u^{'*})$，和目标函数值$T$.
+
+步骤 3：如果目标函数值$T< 0$, 将得到的 $x^{'*}$ 加入到限制集中$\mathbb{I} = \{x^0,x^{'*}\}$，回到步骤 1，重新求解主问题;  如果目标函数值$T\geq 0$,则结束算法。此时得到最优解$(a^{*},b^{*},c^{*},d^{*})$。
 
 
+由上述的行生成方法，我们可以知道要求得逆优化的最优解就需要得到尽可能精确的主问题的限制集，即主问题中的限制条件。由于主问题的限制集是由子问题不断生成得到的，可以看出行生成方法的核心是子问题的效率，即子问题求解越精确，逆优化的最优解越精确。但由于子问题是设施选址的原问题，因而可以通过对子问题进行松弛，牺牲一定求解精度的情况下简化求解过程。
 
-
-由上述的列生成方法，我们可以知道要求得逆优化的最优解就需要得到尽可能精确的主问题的限制集，即主问题中的限制条件。由于主问题的限制集是由子问题不断生成得到的，可以看出列生成方法的核心是子问题的效率，即子问题求解越精确，逆优化的最优解越精确。但由于子问题是设施选址的原问题，因而可以通过对子问题进行松弛，牺牲一定求解精度的情况下简化求解过程。
-
-当对子问题进行如下几种处理方法时，我们可以得到列生成方法的几点推论：
+当对子问题进行如下几种处理方法时，我们可以得到行生成方法的几点推论：
 
 推论 1. 当严格求解无容量限制设施选址的子问题时，此时得到对应逆优化问题的最优解。
 
@@ -160,64 +160,71 @@ $c_0$: 原设施成本;
 
 推论 2. 求解无容量限制设施选址的子问题时，设定一定的循环次数，此时求解得到对应逆优化问题的下界。
 
-说明：当循环一定次数时，此时子问题得到的限制集较最优时少，因而主问题的约束条件较最优时少。此时主问题求解得到的目标函数值小于最优值，因而得到逆优化问题的下界。
+说明：当循环一定次数时，此时子问题得到的限制集较最优时少，因而主问题的约束条件较最优时少。实际上减少了一些所必须的约束，此时主问题求解得到的目标函数值小于最优值，因而得到逆优化问题的下界。
 
 推论 3. 将无容量限制设施选址的子问题松弛得到分数解，则可以得到对应逆优化问题的上界。
 
 说明：当对子问题的整数规划问题进行线性松弛得到可以是分数解时，会得到子问题的下界，主问题会得到约束更为严格的限制集。主问题对应的可行域变小，使得最终得到的结果大于最优解，此时得到逆优化问题的上界。
 
-\subsection{减少约束得到下界}
-
-注意这部分得到的 gap 较大
-
 \subsection{启发式得到上界}
+有学者利用合作博弈的思想和锥优化的方法得到了一种无容量限制设施选址逆优化的启发式算法，我们将主要阐述他的方法并且显示了我们得到上界的启发式算法与之等价，从而可以得到我们的启发式算法在多项式时间内得到较为优异的结果。
 
-在2010文章中，定义了关于设施选址问题的
-
+在2010文章中，Letchford 定义了关于设施选址问题的最小整数(Interger Minimization)博弈，并且给出了无容量限制设施选址问题的锥可行域在$x$上的投影。
 \[
-\mathbb{C}_{\mathrm{UFL}}^{x}=\left\{(v, u) \in \mathbb{R}^{m+m v}: \sum_{i \in M} u_{i k}=1, \forall k \in V, v_{i}-u_{i k} \geq 0, \forall i \in M, \forall k \in V, u_{i k} \geq 0, \forall i \in M, \forall k \in V\right\}
+\mathbb{C}_{\mathrm{UFL}}^{x}=\left\{(v, u) \in \mathbb{R}^{m+m v}: \sum_{i \in M} u_{i j}=1, \forall j \in V, v_{i}-u_{i j} \geq 0, \forall i \in M, \forall j \in V, u_{i j} \geq 0, \forall i \in M, \forall j \in V\right\}
 \]
+事实上上述可行域只是将原 UFL 整数条件进行了松弛
 
-
+Liu 利用该可行域和锥优化的方法对UFL的逆优化问题得到了如下的启发式算法
 \begin{equation}
 \begin{aligned}
-&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{k \in V} \left(\tau_{i k}^r+\eta_{i k}^{r}\right) \\
-\text{s.t.} \quad &\sum_{k \in V} \pi_{k} \geq \nu_{\mathrm{UFL}}, \\
-&\sum_{k \in V} \varrho_{i k}=\bar{f}_{i}, \forall i \in M, \\
-&\pi_{k}-\varrho_{i k}+\zeta_{i k}=\bar{r}_{i k}, \quad \forall i \in M, \forall k \in V, \\
-&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{k \in V} \bar{r}_{i k} u_{i k}^{0}=\nu_{\mathrm{UFL}}, \\
-& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}, \forall i \in M \quad \tau_{i k}^{r}-\eta_{i k}^{r}=\bar{r}_{i k}-r_{i k}, \forall i \in M, \forall k \in V, \\
-&\nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2}, \varrho_{i k} \geq 0, \zeta_{i k} \geq 0, \forall i \in M, \forall k \in V. \\
+&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{j \in V} \left(\tau_{i j}^r+\eta_{i j}^{r}\right) \\
+\text{s.t.} \quad &\sum_{j \in V} \pi_{j} \geq \nu_{\mathrm{UFL}}, \\
+&\sum_{j \in V} \varrho_{i j}=\bar{f}_{i}, \forall i \in M, \\
+&\pi_{j}-\varrho_{i j}+\zeta_{i j}=\bar{r}_{i j}, \quad \forall i \in M, \forall j \in V, \\
+&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{j \in V} \bar{r}_{i j} u_{i j}^{0}=\nu_{\mathrm{UFL}}, \\
+& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}^{*}, \forall i \in M \quad \tau_{i j}^{r}-\eta_{i j}^{r}=\bar{r}_{i j}-r_{i j}, \forall i \in M, \forall j \in V, \\
+& \varrho_{i j} \geq 0, \zeta_{i j} \geq 0, \forall i \in M, \forall j \in V. \\
 \end{aligned}
 \end{equation}
-
-其中$\bar{f}_{i}$和$\bar{r}_{ik}$ 为改变后的开启设施成本和运输成本。相对应的，$f_{i}$和$r_{ik}$ 为改变前的成本。
-$\pi_{k},\varrho_{i k},\zeta_{i k}$分别为原UFL约束
+% \nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2},
+其中$\bar{f}_{i}$和$\bar{r}_{ij}$ 为改变后的开启设施成本和运输成本。相对应的，$f_{i}$和$r_{ij}$ 为改变前的成本。
+$\pi_{j},\varrho_{i j},\zeta_{i j}$分别为原UFL约束
 \begin{equation*}
-\sum_{i \in M} u_{ik} = 1,
-v_i - u_{ik} \geq 0,
-u_{ik} \geq 0
+\sum_{i \in M} u_{ij} = 1,
+v_i - u_{ij} \geq 0,
+u_{ij} \geq 0
 \end{equation*}
 对应的对偶变量。 \par
-$v_{i}^{0},u_{i k}^{0}$ 则对应于给定的可行解使之成为改变成本后的最优解。
-$\nu_{\mathrm{UFL}}$ 是原UFL的最优值，需要在一定的范围内取值使得问题可行。
+$v_{i}^{0},u_{i j}^{0}$ 则对应于给定的可行解使之成为改变成本后的最优解。
+$\nu_{\mathrm{UFL}}$ 是原UFL的最优值。
 
-$\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数一下引入的变量。 \par
+$\tau_{i}^{f},\eta_{i}^{f},\tau_{i j}^r,\eta_{i j}^{r}$ 则对应于求解范数一下引入的变量。 \par
 
 
 这部分gap很小，实际上对应到(integrality gap)
 
-\section{求解lower bound 的一些方法}
-
-\subsection{利用邻域的想法}
-
-有如下约束限制可以帮助给定的可行解在一定范围内是最优的 \\
-约束一(横向移动)：对于给定的可行解（0-1）  对应的 $r_{ik}=1$ 需要小于其他所有 $r_{ik} = 0$ \\
-约束二(0-1纵向移动)：f 中为0 的部分 需要确保  $f_i +\min_i r_{ij} \geq \min r_{ik}$ \\
-约束三(纵向移动)：对于仅有一个 $r_ik=1$ 的行，考虑$r_{ik}+f_i \leq \min_j r_{jk}$ \\
-约束四：考虑$f_i = 1$中 $r_{ik} =1$ 个数大于1的行 则有$\max f_i+ \sum r_{ik} \leq \min \text{对应列的} r_{ik}$
+% \section{求解lower bound 的一些方法}
+%
+% \subsection{利用邻域的想法}
+%
+% 有如下约束限制可以帮助给定的可行解在一定范围内是最优的 \\
+% 约束一(横向移动)：对于给定的可行解（0-1）  对应的 $r_{ij}=1$ 需要小于其他所有 $r_{ij} = 0$ \\
+% 约束二(0-1纵向移动)：f 中为0 的部分 需要确保  $f_i +\min_i r_{ij} \geq \min r_{ij}$ \\
+% 约束三(纵向移动)：对于仅有一个 $r_ij=1$ 的行，考虑$r_{ij}+f_i \leq \min_j r_{jj}$ \\
+% 约束四：考虑$f_i = 1$中 $r_{ij} =1$ 个数大于1的行 则有$\max f_i+ \sum r_{ij} \leq \min \text{对应列的} r_{ij}$
 
 \section{计算结果}
+
+我们使用 Windows 10 操作系统，内存 8 GB 处理器为 Intel Core i7-8700 的 PC 电脑上进行了所有的数值实验。所有算法均通过 Matlab R2019a 调用 Gurobi 求解器去实现。
+
+通过对
+按照 规模 $(m,n)$ 大小  m和n 之间比例关系 稀疏矩阵 还有  设施成本与运输成本之间关系
+
+为方便起见，在接下来的计算中取 $w^f=1,w^r=1$。在实际不能改变设施成本时，可以设置相应的权重$w^f=\infty$.
+对于每一种规模随机生成50种可能的情况
+% 这里写表格
+(m,n)= (20,20) (30,30) (40,40) (50,50)
 
 \subsection{简单的例子}
 为说明逆优化的效果
@@ -229,33 +236,38 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i k}^r,\eta_{i k}^{r}$ 则对应于求解范数
 
 \section{有容量限制}
 
-\subsection{列生成算法得到最优解}
+\subsection{行生成算法得到最优解}
 
 \subsection{启发式得到上界}
-对于有容量限制的设施选址逆优化问题，多了一个约束
+尽管原文章中并未提到有容量限制的设施选址逆优化问题的启发式算法，但我们依然沿用2010中定义以及2019中提到的锥优化方法。
+
+对于有容量限制的设施选址逆优化问题，需要添加一个约束，此时尽管
 \begin{eqation}
-  \sum_k d_k u_{ik} \leq k_i v_i,i\in M
+  \sum_j d_j u_{ij} \leq k_i v_i,i\in M
 \end{eqation}。
 同样利用锥优化的方法，添加对应上述约束的对偶变量$t$，我们可以得到有容量限制的设施选址问题的启发式算法
 
 \begin{equation}
 \begin{aligned}
-&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{k \in V} \left(\tau_{i k}^r+\eta_{i k}^{r}\right) \\
-\text{s.t.} \quad &\sum_{k \in V} \pi_{k} \geq \nu_{\mathrm{UFL}}, \\
-&k_it_i+\sum_{k \in V} \varrho_{i k}=\bar{f}_{i}, \forall i \in M, \\
-&\pi_{k}-\varrho_{i k}+\zeta_{i k}-d_kt_i=\bar{r}_{i k}, \quad \forall i \in M, \forall k \in V, \\
-&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{k \in V} \bar{r}_{i k} u_{i k}^{0}=\nu_{\mathrm{UFL}}, \\
-& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}, \forall i \in M \quad \tau_{i k}^{r}-\eta_{i k}^{r}=\bar{r}_{i k}-r_{i k}, \forall i \in M, \forall k \in V, \\
-&\nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2}, \varrho_{i k} \geq 0, \zeta_{i k} \geq 0, \forall i \in M, \forall k \in V. \\
+&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{j \in V} \left(\tau_{i j}^r+\eta_{i j}^{r}\right) \\
+\text{s.t.} \quad &\sum_{j \in V} \pi_{j} \geq \nu_{\mathrm{UFL}}, \\
+&k_it_i+\sum_{j \in V} \varrho_{i j}=\bar{f}_{i}, \forall i \in M, \\
+&\pi_{j}-\varrho_{i j}+\zeta_{i j}-d_jt_i=\bar{r}_{i j}, \quad \forall i \in M, \forall j \in V, \\
+&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{j \in V} \bar{r}_{i j} u_{i j}^{0}=\nu_{\mathrm{UFL}}, \\
+& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}, \forall i \in M \quad \tau_{i j}^{r}-\eta_{i j}^{r}=\bar{r}_{i j}-r_{i j}, \forall i \in M, \forall j \in V, \\
+&\nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2}, \varrho_{i j} \geq 0, \zeta_{i j} \geq 0, \forall i \in M, \forall j \in V. \\
 \end{aligned}
 \end{equation}
 
 注意这部分 可以通过改变 需求和供给 的大小来退化得到 无容量限制
 
-\section{进一步改进的想法}
 对于行生成的方法，实际上是限制集的选取的问题，限制集越接近
 
 因此可以采用
+
+\section{结论与展望}
+本文针对无容量限制和有容量限制的设施选址逆优化问题进行了建模分析，提出了使用行生成算法得到最优解以及通过对整数规划进行线性松弛而得到启发式方法。分析表明对于行生成算法中的子问题采取不同的计算方法可以分别得到逆优化问题的最优解以及解的上下界。同时我们借助已有的一个启发式算法说明了两者的等价关系，从而说明了启发式算法的计算复杂度。数值实验结果说明了得到的启发式算法在上界上的优异表现，而在牺牲一定计算资源的情况下，下界也可以得到较为不错的结果。这些结果充分说明了该启发式算法的有效性。
+实际上，尽管上界非常接近最优值，但下界的结果可以进一步优化改进。由于子问题是设施选址的原问题，可以将求解设施选址更为高效的近似算法用于其中，从而提高下界解的质量。同时，有容量限制的设施选址问题中需求和供给值的选取以及之间的关系会对逆优化问题解产生的影响也是值得思考的问题。
 
 
 
