@@ -1,7 +1,7 @@
 \documentclass[UTF8]{article}
 \author {Dis\cdot count}
 
-\title {一范数下设施选址逆优化问题的求解方法}
+\title {无容量限制设施选址逆优化问题的求解方法}
 \date{}
 \usepackage{ctex}
 \usepackage{amsmath}
@@ -21,15 +21,14 @@
 \usepackage{float}
 \usepackage{color}%,soul}f
 \usepackage{booktabs}
-\usepackage{multirow
+\usepackage{multirow}
 \usepackage{xr}
 
 \begin{document}
     \maketitle
 
 \begin{abstract}
-
-我们使用了经典的行生成算法对无容量和有容量设施选址的逆优化问题进行了计算，其子问题就是求解原问题，这样求解得到的就是对应设施选址的逆优化最优值。对子问题进行松弛得到非整数解计算可以得到逆优化问题的上界，而对子问题松弛得到的非整数解取临近整数可以得逆优化问题的下界。最后我们将一种启发式算法推广至有容量设施选址的逆优化问题，并将其结果与最优值和行生成子问题松弛解进行了比较。
+逆优化问题是给定一个可行解(值)通过最小化目标函数中参数的改变量使得该可行解(值)成为改变后问题的最优解(值)的问题。对于本是NP-难问题的设施选址问题，其逆优化问题变得更为复杂。研究了使用经典的行生成算法对无容量设施选址的逆优化问题进行计算，并给出了得到逆优化问题上下界的启发式方法。该方法基于对子问题的线性松弛求解给出上界和利用邻域搜索的方式给出下界。数值结果表明可行上界得到的结果与最优值差距极小，极大地提高了求解该逆优化问题的效率。所提到的启发式算法还可以推广至有容量设施选址逆优化问题的计算。
 
 % 5. 文章均应附中英文摘要。摘要内容应重点包括4个要素：
 % a. 目的-研究的目的和任务，涉及的主题范围；
@@ -39,6 +38,12 @@
 \end{abstract}
 
 \qquad \textbf{关键词: 设施选址问题、逆优化、行生成算法、启发式算法}
+
+Abstract
+
+The inverse optimization problem is to give a feasible solution (value) by minimizing the change of parameters in the objective function so that the feasible solution (value) becomes optimal after the change. For the facility location problem which is NP-hard, its inverse optimization problem becomes more complex. In this paper, the classical row generation algorithm is used to calculate the inverse optimization problem of uncapacitated facility location, and two heuristic methods are given to get the upper and lower bounds of the inverse optimization problem. One gives the upper bound based on the linear relaxation of the subproblem and the lower bound is given by the way of local search. The numerical results show that the difference between the feasible upper bound and the optimal value is very small, which greatly improves the efficiency of solving the inverse optimization problem. The proposed heuristic algorithm can also be extended to the calculation of the inverse optimization of the capacitated facility location problem.
+
+Keywords: uncapacitated facility location problem, inverse optimization problem, row generation method, heuristc
 
 \section{引言}  % Introduction
 逆优化综述
@@ -53,9 +58,13 @@
 
 而设施选址的逆优化的问题很少有人研究
 
-\section{无容量限制设施选址逆优化问题的模型}
+本文研究了
 
-设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$r_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$k_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
+本文安排如下：第一节
+
+\section{ UFL 逆优化问题的模型}
+
+设施选址问题通常被提出如下：假设有$m$个设施和$n$个客户。我们希望选择（1）哪些设施要打开，以及（2）哪些打开的设施要用于向哪些客户提供，以便以最低的成本满足某些固定需求。引入以下记号，令$f_i$ 表示开启设施$i$的固定成本，$i \in M, M=\{1,\ldots,m\}$。$r_{ij}$ 表示运输商品从设施$i$到客户$j$的成本，$j \in N, N=\{1,\ldots,n\}$。
 
 则无容量限制设施选址问题定义如下：
 \begin{align*}
@@ -64,28 +73,17 @@
 &\sum_{j=1}^m u_{ij}  \leq Tv_i, \forall i \in M \\
 & u_{ij} \in \{0,1\}, \quad v_{i} \in \{0,1\}
 \end{align*}
-用$c=(f,r)$表示成本，并且用另一种方式改写包含足够大的$T$的上式，得到更简洁的表达形式：
+用$c=(f,r)$表示成本，并且用更为简洁的方式改写包含足够大容量$T$的上式，得到下式：
 
 \begin{align*}
 F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
-\text{s.t.}\quad & \sum_{i=1}^n u_{ij} =1,\forall i \in M, \forall j \in N  \\
+\text{s.t.}\quad & \sum_{i=1}^n u_{ij} =1, \forall j \in N  \\
 & u_{ij}  \leq v_i, \forall i \in M ,\forall j \in N\\
 & u_{ij} \in \{0,1\}, \quad v_{i} \in \{0,1\}
 \end{align*}
 
-类似的，有容量限制的设施选址问题定义如下:
-\begin{align*}
-&\min \sum_{i=1}^n \sum_{j=1}^m c_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
-\text{s.t.}& \sum_{i=1}^n u_{ij} =1, \forall j \in N  \\
-&\sum_{j=1}^m d_j u_{ij}  \leq k_iv_i, \forall i \in M \\
-& 0 \leq u_{ij} \leq 1,\forall j \in N, \forall i \in M \\
-& v_{i} \in \{0,1\}, \forall i \in M
-\end{align*}
-
 逆优化问题通常分为最优值和最优解问题，当给定原问题的一个可行解$x^0$，通过调整原问题的成本$c$为$d$，使得$x^0$成为调整后问题的最优解。而逆优化最优解问题则是求解在某个范数下使得这个调整量最小的问题。当给定原问题的一个可行值$V_0$，称此时对应的问题为逆优化最优值问题。
 为方便以及更贴近现实，我们以一范数为例，即表示调整量之和最小。往往对于设施成本和运输成本调整量的权重并不一样，可以分别设为$w_i^f$ 和$w_{ij}^r$。
-
-
 
 设施选址的逆优化问题定义如下：
 \begin{align*}
@@ -94,7 +92,9 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 & d \in \mathbb{R}^{mn+m}
 \end{align*}
 
-由约束式可以看出，$x^0$需要满足$dx^0 \leq dx^{'}, x^{'} \in \Upsilon$。 其中$\Upsilon$是满足原问题的所有可行解$x^{'}$的集合。若从逆优化的定义出发建立求解模型，上述集合中包含可行解有指数个。由此可以看出设施选址的逆优化问题比原问题更加复杂，是NP-难问题。
+由约束式可以看出，$x^0$需要满足$dx^0 \leq dx^{'}, x^{'} \in \Upsilon$。 其中$\Upsilon$是满足原问题的所有可行解$x^{'}$的集合。对于每一个客户$j \in N$可以被任一设施服务，共有$|M|=m$种选择。因而对于所有客户而言一共会有$m^n$种不同情况。即满足原问题约束条件的可行解有$m^n$个。因此从逆优化的定义出发建立求解模型，上述集合中包含可行解的个数是指数个。由此可以看出设施选址的逆优化问题是NP-难问题。
+事实上，设施选址逆优化问题是NP-难问题。
+
 
 \section{行生成算法求解}
 从设施选址逆优化问题的定义过程中，我们可以看出原优化问题和逆优化问题有着一定的联系，即逆优化中的给定解对应的成本需要小于所有满足原问题约束条件的解对应的成本。行生成算法作为一种有效求解规模较大线性规划问题的方法。我们自然想到行生成算法中子问题即是求解满足原问题约束的，因而行生成算法可以用来求解设施选址的逆优化问题。
@@ -102,15 +102,14 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 原逆优化模型为
 \begin{align*}
 &\min |c-c_0|  \\
-\text{s.t.}\quad & V_0 = cx^0 \leq cx^{'}, x^{'} \in \Upsilon
+\text{s.t.}\quad & V^0 = cx^0 \leq cx^{'}, x^{'} \in \Upsilon
 \end{align*}
 
-由2001年文献 可以将模型写出来
 
-为方便显示我们的结果，我们主要考虑最优解问题，而最优值问题也可用相同思路求解。
+为方便显示我们的结果，我们主要考虑最优解问题，而对于最优值问题，给定 $V^0$ 而不是 $x^0$，根据该式 $V^0 = cx^0$ 也可用相同思路求解。
 
-将行生成算法应用于逆UFL问题，将上式对应的设施和运输部分写开可以得到该逆问题UFL的主问题
-
+将行生成算法应用于UFL的逆优化问题，将上式对应的设施和运输部分用 $(f,c)$ 分别表示。
+根据2001年文献 Ahuja 在一范数下可以得到UFL逆优化问题的主问题为
 \begin{align*}
 &\min \quad \sum_{i=1}^m w_i^f(a_i+b_i)+\sum_{i=1}^m\sum_{j=1}^n w_{ij}^r(c_{ij}+d_{ij})\\
 \text{s.t.}\quad & (a_i-b_i+f_i^0)(v_i^{'}-v_i^{0}) + (c_{ij}-d_{ij}+r_{ij}^0)(u_{ij}^{'}-u_{ij}^{0})  \geq 0 \\
@@ -149,33 +148,50 @@ $\sum_{i=1}^m(a^{*}_i+b^{*}_i)+\sum_{i=1}^m\sum_{j=1}^n(c^{*}_{ij}+d^{*}_{ij})$ 
 
 步骤 2：将步骤 1得到的最优解 $(a^{'},b^{'},c^{'},d^{'})$带入到子问题中，求解子问题这一整数规划得到最优解 $x^{'*}=(v^{'*},u^{'*})$，和目标函数值$T$.
 
-步骤 3：如果目标函数值$T< 0$, 将得到的 $x^{'*}$ 加入到限制集中$\mathbb{I} = \{x^0,x^{'*}\}$，回到步骤 1，重新求解主问题;  如果目标函数值$T\geq 0$,则结束算法。此时得到最优解$(a^{*},b^{*},c^{*},d^{*})$。
+步骤 3：如果目标函数值$T< 0$, 将得到的 $x^{'*}$ 加入到限制集中$\mathbb{I} = \mathbb{I} \cup x^{'*}$，回到步骤 1，重新求解主问题;  如果目标函数值$T\geq 0$,则结束算法。此时得到最优解$(a^{*},b^{*},c^{*},d^{*})$。
 
 
 由上述的行生成方法，我们可以知道要求得逆优化的最优解就需要得到尽可能精确的主问题的限制集，即主问题中的限制条件。由于主问题的限制集是由子问题不断生成得到的，可以看出行生成方法的核心是子问题的效率，即子问题求解越精确，逆优化的最优解越精确。但由于子问题是设施选址的原问题，因而可以通过对子问题进行松弛，牺牲一定求解精度的情况下简化求解过程。
 
-当对子问题进行如下几种处理方法时，我们可以得到行生成方法的几点推论：
+当对子问题进行如下几种处理方法时，我们可以相应得到行生成方法的几点推论：
 
-推论 1. 当严格求解无容量限制设施选址的子问题时，此时得到对应逆优化问题的最优解。
+处理方法 1：严格求解子问题
 
-说明：严格求解子问题直到循环结束，由于此时子问题得到的最优解对应的成本小于所有的可行解对应的成本，因而此时得到的解满足逆优化的约束条件且是最小值，因而得到的是逆优化问题的最优解。
+推论 1. 当严格求解子问题时，循环结束时此时得到UFL逆优化问题的最优解。
 
-推论 2. 求解无容量限制设施选址的子问题时，设定一定的循环次数，此时求解得到对应逆优化问题的下界。
+说明：由于子问题是不断从 UFL 问题的约束中筛选出满足条件的解 $(v^{'*},u^{'*})$, 严格求解子问题直到循环结束，筛选出来的解集 $\mathbb{I}$ 满足UFL所有的约束条件，根据逆优化问题的定义，根据此时的解集求解主问题得到的即是逆优化问题的最优解。
+
+处理方法 2：严格求解子问题但设定一定的循环次数
+
+推论 2. 严格求解子问题时，设定一定的循环次数，此时求解得到 UFL 逆优化问题的下界。
 
 说明：当循环一定次数时，此时子问题得到的限制集较最优时少，因而主问题的约束条件较最优时少。实际上减少了一些所必须的约束，此时主问题求解得到的目标函数值小于最优值，因而得到逆优化问题的下界。
 
-推论 3. 将无容量限制设施选址的子问题松弛得到分数解，则可以得到对应逆优化问题的上界。
+处理方法 3: 对子问题中得到的松弛解 再利用邻域搜索得到
 
-说明：当对子问题的整数规划问题进行线性松弛得到可以是分数解时，会得到子问题的下界，主问题会得到约束更为严格的限制集。主问题对应的可行域变小，使得最终得到的结果大于最优解，此时得到逆优化问题的上界。
+推论 3. 对子问题的约束条件进行线性松弛求解得到非整数解，将该非整数解四舍五入为整数解，再利用邻域搜索的方法得到较好
+
+对于子问题
+
+对于邻域搜索采用增加，交换和减少的方式得到整数
+
+说明：
+
+处理方法 4：直接对子问题进行线性松弛求解
+
+推论 4. 将无容量限制设施选址的子问题松弛得到分数解，则可以得到对应逆优化问题的上界。
+
+说明：当对子问题的整数规划问题进行线性松弛时，可以得到非整数解。此时会得到子问题的下界，对应的主问题会得到约束更为严格的限制集。主问题对应的可行域变小，使得最终得到的结果大于最优解，此时得到逆优化问题的上界。
 
 \subsection{启发式得到上界}
+
 有学者利用合作博弈的思想和锥优化的方法得到了一种无容量限制设施选址逆优化的启发式算法，我们将主要阐述他的方法并且显示了我们得到上界的启发式算法与之等价，从而可以得到我们的启发式算法在多项式时间内得到较为优异的结果。
 
 在2010文章中，Letchford 定义了关于设施选址问题的最小整数(Interger Minimization)博弈，并且给出了无容量限制设施选址问题的锥可行域在$x$上的投影。
 \[
 \mathbb{C}_{\mathrm{UFL}}^{x}=\left\{(v, u) \in \mathbb{R}^{m+m v}: \sum_{i \in M} u_{i j}=1, \forall j \in V, v_{i}-u_{i j} \geq 0, \forall i \in M, \forall j \in V, u_{i j} \geq 0, \forall i \in M, \forall j \in V\right\}
 \]
-事实上上述可行域只是将原 UFL 整数条件进行了松弛
+事实上上述可行域只是将原 UFL 的整数条件进行了松弛
 
 Liu 利用该可行域和锥优化的方法对UFL的逆优化问题得到了如下的启发式算法
 \begin{equation}
@@ -218,20 +234,54 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i j}^r,\eta_{i j}^{r}$ 则对应于求解范数
 
 \section{计算结果}
 
-我们使用 Windows 10 操作系统，内存 8 GB 处理器为 Intel Core i7-8700 的 PC 电脑上进行了所有的数值实验。所有算法均通过 Matlab R2019a 调用 Gurobi 求解器去实现。
+本文使用 Windows 10 操作系统，内存 8 GB 处理器为 Intel Core i7-8700 的 PC 电脑上进行了所有的数值实验。所有算法均通过 Matlab R2019a 调用 Gurobi 求解器去实现。
 
 通过对
 按照 规模 $(m,n)$ 大小  m和n 之间比例关系 稀疏矩阵 还有  设施成本与运输成本之间关系
 
 为方便起见，在接下来的计算中取 $w^f=1,w^r=1$。在实际不能改变设施成本时，可以设置相应的权重$w^f=\infty$.
-对于每一种规模随机生成50种可能的情况
+
+在数值实验中，我们对于5种不同规模随机生成了对应规模下50种可能的实例。
 % 这里写表格
+
 (m,n)= (20,20) (30,30) (40,40) (50,50)
+
+fi =[100,200] rij = [1,100] [100,200]
+
+分别 (20,40) (30,60) (40,80) (50,100)
+
+(20,60) (30,30) (40,40) (50,50)
+
+我们采用当最优改变量不为 0 时，（上界改变量-最优改变量）/最优改变量（$\%$）的方式
+来比较 gap 的大小
+同时 当给定可行解刚好是最优解时，此时最优改变量为 0，可以利用总的改变量来衡量 gap 或者利用总成本改变量除以总的成本
+
+{\small\begin{table}[h!]
+
+\centerline{\small{\heiti\bf表1}  离散随机变量$\xi$ 的分布}
+\vskip 2mm
+\centering
+\begin{tabular}{ccccccc}
+    \shline
+情景&1&2&3&4&5&6\\
+    \hline
+$\xi_1^i$ & 0 & 0.5 & 0.6  & 0.8  & 1 & 2\\
+$\xi_2^i$ & 1 & 2   & 0.7  & 0.5 & 0 & 0.4\\
+
+$p_i$ &1/6&1/6&1/6&1/6&1/6&1/6\\
+   \shline
+ \end{tabular}
+ \end{table}}
+
+在表中，(m,n)表示 P 的问题规模。例如
+LB1 表示使用 P 的下界。OS表示严格求解子问题时得到的逆优化问题的最优值
 
 
 
 \subsection{简单的例子}
+
 为说明逆优化的效果
+% 在Matlab中将图像imshow()一下，然后对figure用另存为eps，这个也能凑活用。
 
 \subsection{不同结果比较}
 
@@ -240,8 +290,19 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i j}^r,\eta_{i j}^{r}$ 则对应于求解范数
 
 \section{有容量限制}
 
-\subsection{行生成算法得到最优解}
+更进一步，令$d_j$ 表示客户$j$的需求，并且假设每一个设施有一个最大输出限制，令$k_i$表示设施$i$能够生产出的最大商品量，即表示设施$i$的容量。
 
+类似的，有容量限制的设施选址问题定义如下:
+\begin{align*}
+&\min \sum_{i=1}^n \sum_{j=1}^m c_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
+\text{s.t.}& \sum_{i=1}^n u_{ij} =1, \forall j \in N  \\
+&\sum_{j=1}^m d_j u_{ij}  \leq k_iv_i, \forall i \in M \\
+& 0 \leq u_{ij} \leq 1,\forall j \in N, \forall i \in M \\
+& v_{i} \in \{0,1\}, \forall i \in M
+\end{align*}
+
+我们同样可以使用行生成算法得到最优解
+}
 \subsection{启发式得到上界}
 尽管原文章中并未提到有容量限制的设施选址逆优化问题的启发式算法，但我们依然沿用2010中定义以及2019中提到的锥优化方法。
 
@@ -275,7 +336,7 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i j}^r,\eta_{i j}^{r}$ 则对应于求解范数
 
 子问题是最具有优化空间的地方，可以结合启发式算法一次找出多个目标函数小于0的解，并一次性全部加入主问题中进行求解。
 
-优秀的人总是要比别人多努力一点
+% 优秀的人总是要比别人多努力一点
 
-gap 的比较方法
+
 \end{document}
