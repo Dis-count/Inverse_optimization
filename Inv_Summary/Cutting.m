@@ -1,11 +1,12 @@
 function x = Cutting(vi0,uij0,fi,rij)
+% This one is used to calculate the result precisely.
+
 % vi0, uij0 表示给定 feasible solution [0,1]  row vector
 % x 表示主问题给出的 (a,c,b,d)  2mn+2m
-% c0 = (fi;rij) 为原设施成本  列向�?
-
+% c0 = (fi;rij) 为原设施成本  column vector
 %  You must notice that the row and column vectors!!!!
 
-s = 0; % 计数�?
+s = 0; % 计数
 opt2 = -0.5;
 % 初始化限制集
 I = [vi0;uij0]';
@@ -32,9 +33,9 @@ end
 
 
 function opt = Main(vi0,uij0,c0,I)
-% I 表示限制��? 每一行是给定可行��?  行数即可行解个数
-% c0 为原设施成本  列向��?
-% vi0, uij0 表示给定可行��? [0,1]  行向��?
+% I 表示 restricted set 每一行是给定 feasible solution  行数即可行解个数
+% c0 为原设施成本  column vector
+% vi0, uij0 表示给定feasible solution [0,1]  Row Vector
 
 m = length(vi0) ;
 
@@ -64,7 +65,7 @@ for p = 1:nrow
 
 end
 
-model.rhs   = -delta * c0;  % 这里矩阵相乘
+model.rhs   = -delta * c0;  % Matrix Multiply
 
 model.sense = repmat('>', nrow , 1);
 
@@ -87,9 +88,10 @@ end
 
 
 function [opt1,opt2] = Sub(x,fi,rij,vi0,uij0)
-% I 表示限制��? 每一行是给定可行��?  行数即可行解个数
+% I expresses restrict set. Every row is a feasible solution
 % x 表示主问题给出的 (a,c,b,d)  2mn+2m
-% c0 = (fi;rij) 为原设施成本  列向��?
+% c0 = (fi;rij) 为原设施成本  Column vector
+
 
 m = length(fi) ;
 

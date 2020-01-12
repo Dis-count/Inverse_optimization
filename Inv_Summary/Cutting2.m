@@ -1,5 +1,5 @@
 function x = Cutting(vi0,uij0,fi,rij)
-% This one is used to obtain the upper bound by changing the variable Binary to continuous.
+% This one is used to obtain the lower bound by local search.
 
 % vi0, uij0 表示给定 feasible solution [0,1]  row vector
 % x 表示主问题给出的 (a,c,b,d)  2mn+2m
@@ -17,6 +17,10 @@ while opt2 < -0.00001
   x = Main(vi0,uij0,c0,I);
 
   [opt1,opt2] = Sub(x,fi,rij,vi0,uij0);
+
+  opt1 = round(opt1);  % Rounding the fraction to integer.
+
+
 
   I = [I;opt1'];
 
