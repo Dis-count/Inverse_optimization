@@ -1,5 +1,22 @@
+% m = 4;
+% n = 4;
+% x =zeros(40,1);
+% fi = [10; 10; 10; 10;];
+% M = 20;
+% rij = [ 3; 3; M; 2;
+%        M; 1; 4; M;
+%        3; M; 3; 4;
+%        M; 2; M; 1;];
+%
+% c = (x(1:m*n+m)-x(m*n+m+1:end)+[fi;rij]);
+% vi0 = [0;1;1;0;];
+% uij0 = [0; 0; 0; 0; 1; 0; 1; 0; 0; 1; 0; 1; 0; 0; 0; 0;];
+% opt2 = dot(c,[vi0;uij0]);
+%
+% opt1 = [vi0;uij0];
+
 function [mycost,opt_sol] = Local(opt1,opt2,c,m,n)
-% opt1 is a suboptimal solution
+% opt1 is a suboptimal solution   not necessary the feasible solution
 % c0 = (fi;rij) 为原设施成本  Column vector
 % opt is a local optimal solution
 % c is the objective parameters
@@ -66,8 +83,8 @@ end
 
 mycost = optcost - opt2;
 
+opt_sol
 end
-
 
 % opt1=[
 %       0

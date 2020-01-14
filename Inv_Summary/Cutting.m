@@ -1,10 +1,20 @@
-function x = Cutting(vi0,uij0,fi,rij)
+function [opt_change,s] = Cutting(fi,rij,ini_sol)
 % This one is used to calculate the result precisely.
 
 % vi0, uij0 表示给定 feasible solution [0,1]  row vector
 % x 表示主问题给出的 (a,c,b,d)  2mn+2m
 % c0 = (fi;rij) 为原设施成本  column vector
 %  You must notice that the row and column vectors!!!!
+% fi = round(rand(1,m)*10)';
+% rij = round(rand(1,m*n)*10)';
+%
+% opt2 = feasible_v(m,n);  % [opt1,opt2] = UFL(fi,rij);
+%
+m = length(fi);
+n = length(rij)/m;
+
+vi0 = ini_sol(1:m);
+uij0 = ini_sol(m+1:end);
 
 s = 0; % 计数
 opt2 = -0.5;
@@ -22,12 +32,14 @@ while opt2 < -0.00001
 
   s = s + 1;
 
-  if s > 80
+  if s > 100
+
     break
+
   end
 
 end
-s
+opt_change  = sum(x);
 % function end: 'myFunction'
 end
 

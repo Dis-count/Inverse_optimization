@@ -60,7 +60,8 @@ Keywords: uncapacitated facility location problem, inverse optimization problem,
 
 本文研究了
 
-本文安排如下：第一节
+本文安排如下：第一节给出了 UFL 的定义以及 UFL 逆优化问题模型建立的过程.第二节给出了 UFL 逆优化问题的列生成求解方法。第三节给出了对列生成算法进行改进，得到逆优化问题上下界的启发式算法。第四节给出了UFL 逆优化问题的简单示例以及计算结果。第五节给出了对于该逆优化问题延拓以及算法改进的展望。
+
 
 \section{ UFL 逆优化问题的模型}
 
@@ -97,7 +98,6 @@ F(c) = &\min \sum_{i=1}^n \sum_{j=1}^m r_{ij}u_{ij} + \sum_{i=1}^n f_i v_i \\
 反证法证明
 
 假设无容量约束的设施选址问题不是NP-难问题，则可以在多项式时间内得到得到
-
 
 
 \section{行生成算法求解}
@@ -137,7 +137,7 @@ T = &\min \quad \sum_{i=1}^m(a_i^{'}-b_i^{'}+f_i^0)(v_i^{'}-v_i^{0})+\sum_{i=1}^
 子问题求出得到 $(v^{'*},u^{'*})$, 如果目标函数值小于0，将得到的 $(v^{'*},u^{'*})$ 加入到主问题的限制集中。如果目标函数值不小于0，程序结束。
 注意到子问题实际上是无容量限制设施选址的原问题，因此该设施选址的逆问题复杂度要大于原问题，也是NP-难问题。
 
-求解设施选址问题的行生成算法详细步骤如下：
+求解 UFL 逆优化问题的行生成算法详细步骤如下：
 
 输入：1） 可行解：$x^0=(v_i^0,u_{ij}^0)$； 2）原设施成本：$c^0=(f_i^0,r_{ij}^0)$;
 
@@ -155,6 +155,8 @@ $\sum_{i=1}^m(a^{*}_i+b^{*}_i)+\sum_{i=1}^m\sum_{j=1}^n(c^{*}_{ij}+d^{*}_{ij})$ 
 步骤 3：如果目标函数值$T< 0$, 将得到的 $x^{'*}$ 加入到限制集中$\mathbb{I} = \mathbb{I} \cup x^{'*}$，回到步骤 1，重新求解主问题;  如果目标函数值$T\geq 0$,则结束算法。此时得到最优解$(a^{*},b^{*},c^{*},d^{*})$。
 
 
+\section{启发式算法得到上下界}
+
 由上述的行生成方法，我们可以知道要求得逆优化的最优解就需要得到尽可能精确的主问题的限制集，即主问题中的限制条件。由于主问题的限制集是由子问题不断生成得到的，可以看出行生成方法的核心是子问题的效率，即子问题求解越精确，逆优化的最优解越精确。但由于子问题是设施选址的原问题，因而可以通过对子问题进行松弛，牺牲一定求解精度的情况下简化求解过程。
 
 当对子问题进行如下几种处理方法时，我们可以相应得到行生成方法的几点推论：
@@ -171,21 +173,45 @@ $\sum_{i=1}^m(a^{*}_i+b^{*}_i)+\sum_{i=1}^m\sum_{j=1}^n(c^{*}_{ij}+d^{*}_{ij})$ 
 
 说明：当循环一定次数时，此时子问题得到的限制集较最优时少，因而主问题的约束条件较最优时少。实际上减少了一些所必须的约束，此时主问题求解得到的目标函数值小于最优值，因而得到逆优化问题的下界。
 
-处理方法 3: 对子问题中得到的松弛解 再利用邻域搜索得到
+处理方法 3: 对子问题利用邻域搜索得到启发式整数解。
 
-推论 3. 对子问题的约束条件进行线性松弛求解得到非整数解，将该非整数解四舍五入为整数解，再利用邻域搜索的方法得到较优的整数解作为返回值
+推论 3. 对子问题利用邻域搜索方法求解，此时求解得到 UFL 逆优化问题的下界。
+
+说明：对于子问题给定一个可行解，利用邻域搜索的方法得到较优的整数解作为返回值。邻域搜索采用基本的本地搜索方法，即对于当前给定解采用增加，交换和减少的方式得到局部最优整数解。
 
 cutting plane结束是比较 给定解 和 原问题求解出的 min_IP的值的大小
 min_IP求出来的是上界，所以当min_IP求得效果不好，就会导致提前结束
 
-对于子问题
+下面对三种方式进行说明。设此时未开启设施的数量为 $p$， 开启设施的数量为$m-p$。
 
-对于邻域搜索采用增加，交换和减少的方式得到整数解
+增加，即对于当前未开启的设施中开启一个设施，作为一个增加邻域，共有$p$个邻域。
 
-具体步骤可以列一下
+交换，即对于当前未开启的设施中开启一个设施，在开启的设施中关闭一个设施，作为一个交换邻域，共有$p(m-p)$个邻域。
+
+减少，即对于当前开启的设施中关闭一个设施，作为一个减少邻域，共有$(m-p)$个邻域。
+在一次求解过程中，对于三种方式得到的邻域解对应的成本进行比较，取最小值得到求得的局部最优解。将当前给定解转移到得到的局部最优解，返回该局部最优解到主问题，进行下一次求解。
 
 
-说明：
+参考文献 Neighborhood search heuristics for the uncapacitated
+facility location problem
+
+求解 UFL 下界的启发式算法详细步骤如下：
+
+输入：1） 可行解：$x^0=(v_i^0,u_{ij}^0)$； 2）原设施成本：$c^0=(f_i^0,r_{ij}^0)$;
+
+输出：1）最优解 $(a^{*},b^{*},c^{*},d^{*})$；
+2） 最小的总成本改变量为
+$\sum_{i=1}^m(a^{*}_i+b^{*}_i)+\sum_{i=1}^m\sum_{j=1}^n(c^{*}_{ij}+d^{*}_{ij})$ ;
+3） 对应原成本的改变量为 $f_i-f_i^0 = a^{*}_i-b^{*}_i,r_{ij}-r_{ij}^0=c^{*}_{ij}-d^{*}_{ij}$.
+
+初始化：初始限制集包含对于原问题的可行解即可。为方便且不再重新生成可行解，可取初始限制集为给定的可行解即 $\mathbb{I} = \{(v_i^0,u_{ij}^0)\} $。
+
+步骤 1：求解此时的主问题得到最优解 $(a^{'},b^{'},c^{'},d^{'})$.
+
+步骤 2：将步骤 1得到的最优解 $(a^{'},b^{'},c^{'},d^{'})$带入到子问题中，给定子问题初始解为$ $, 这一整数规划得到最优解 $x^{'*}=(v^{'*},u^{'*})$，和目标函数值$T$.
+
+步骤 3：如果目标函数值$T< 0$, 将得到的 $x^{'*}$ 加入到限制集中$\mathbb{I} = \mathbb{I} \cup x^{'*}$，回到步骤 1，重新求解主问题;  如果目标函数值$T\geq 0$,则结束算法。此时得到最优解$(a^{*},b^{*},c^{*},d^{*})$。
+
 
 处理方法 4：直接对子问题进行线性松弛求解
 
@@ -193,44 +219,54 @@ min_IP求出来的是上界，所以当min_IP求得效果不好，就会导致�
 
 说明：当对子问题的整数规划问题进行线性松弛时，可以得到非整数解。此时会得到子问题的下界，对应的主问题会得到约束更为严格的限制集。主问题对应的可行域变小，使得最终得到的结果大于最优解，此时得到逆优化问题的上界。
 
-\subsection{启发式得到上界}
+此时对应的子问题模型变为：
 
-有学者利用合作博弈的思想和锥优化的方法得到了一种无容量限制设施选址逆优化的启发式算法，我们将主要阐述他的方法并且显示了我们得到上界的启发式算法与之等价，从而可以得到我们的启发式算法在多项式时间内得到较为优异的结果。
-
-在2010文章中，Letchford 定义了关于设施选址问题的最小整数(Interger Minimization)博弈，并且给出了无容量限制设施选址问题的锥可行域在$x$上的投影。
-\[
-\mathbb{C}_{\mathrm{UFL}}^{x}=\left\{(v, u) \in \mathbb{R}^{m+m v}: \sum_{i \in M} u_{i j}=1, \forall j \in V, v_{i}-u_{i j} \geq 0, \forall i \in M, \forall j \in V, u_{i j} \geq 0, \forall i \in M, \forall j \in V\right\}
-\]
-事实上上述可行域只是将原 UFL 的整数条件进行了松弛
-
-Liu 利用该可行域和锥优化的方法对UFL的逆优化问题得到了如下的启发式算法
-\begin{equation}
-\begin{aligned}
-&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{j \in V} \left(\tau_{i j}^r+\eta_{i j}^{r}\right) \\
-\text{s.t.} \quad &\sum_{j \in V} \pi_{j} \geq \nu_{\mathrm{UFL}}, \\
-&\sum_{j \in V} \varrho_{i j}=\bar{f}_{i}, \forall i \in M, \\
-&\pi_{j}-\varrho_{i j}+\zeta_{i j}=\bar{r}_{i j}, \quad \forall i \in M, \forall j \in V, \\
-&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{j \in V} \bar{r}_{i j} u_{i j}^{0}=\nu_{\mathrm{UFL}}, \\
-& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}^{*}, \forall i \in M \quad \tau_{i j}^{r}-\eta_{i j}^{r}=\bar{r}_{i j}-r_{i j}, \forall i \in M, \forall j \in V, \\
-& \varrho_{i j} \geq 0, \zeta_{i j} \geq 0, \forall i \in M, \forall j \in V. \\
-\end{aligned}
-\end{equation}
-% \nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2},
-其中$\bar{f}_{i}$和$\bar{r}_{ij}$ 为改变后的开启设施成本和运输成本。相对应的，$f_{i}$和$r_{ij}$ 为改变前的成本。
-$\pi_{j},\varrho_{i j},\zeta_{i j}$分别为原UFL约束
-\begin{equation*}
-\sum_{i \in M} u_{ij} = 1,
-v_i - u_{ij} \geq 0,
-u_{ij} \geq 0
-\end{equation*}
-对应的对偶变量。 \par
-$v_{i}^{0},u_{i j}^{0}$ 则对应于给定的可行解使之成为改变成本后的最优解。
-$\nu_{\mathrm{UFL}}$ 是原UFL的最优值。
-
-$\tau_{i}^{f},\eta_{i}^{f},\tau_{i j}^r,\eta_{i j}^{r}$ 则对应于求解范数一下引入的变量。 \par
+\begin{align*}
+T = &\min \quad \sum_{i=1}^m(a_i^{'}-b_i^{'}+f_i^0)(v_i^{'}-v_i^{0})+\sum_{i=1}^m\sum_{j=1}^n(c_{ij}^{'}-d_{ij}^{'}+r_{ij}^0)(u_{ij}^{'}-u_{ij}^{0}) \\
+\text{s.t.}\quad & \sum_{i=1}^m u_{ij}^{'} =1, \quad \forall j\in N \\
+& u_{ij}^{'} \leq v_{i}^{'}, \quad \forall i \in M, \forall j \in N \\
+& u_{ij}^{'} \geq 0, \quad \forall i \in M, \forall j \in N \\
+& 0 \leq u_{ij}^{'} \leq 1 ,\quad 0 \leq v_{i}^{'} \leq 1
+\end{align*}
 
 
-这部分gap很小，实际上对应到(integrality gap)
+% \subsection{启发式得到上界}
+% 有学者利用合作博弈的思想和锥优化的方法得到了一种无容量限制设施选址逆优化的启发式算法，我们将主要阐述他的方法并且显示了我们得到上界的启发式算法与之等价，从而可以得到我们的启发式算法在多项式时间内得到较为优异的结果。
+%
+% 在2010文章中，Letchford 定义了关于设施选址问题的最小整数(Interger Minimization)博弈，并且给出了无容量限制设施选址问题的锥可行域在$x$上的投影。
+% \[
+% \mathbb{C}_{\mathrm{UFL}}^{x}=\left\{(v, u) \in \mathbb{R}^{m+m v}: \sum_{i \in M} u_{i j}=1, \forall j \in V, v_{i}-u_{i j} \geq 0, \forall i \in M, \forall j \in V, u_{i j} \geq 0, \forall i \in M, \forall j \in V\right\}
+% \]
+% 事实上上述可行域只是将原 UFL 的整数条件进行了松弛
+%
+% Liu 利用该可行域和锥优化的方法对UFL的逆优化问题得到了如下的启发式算法
+% \begin{equation}
+% \begin{aligned}
+% &\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{j \in V} \left(\tau_{i j}^r+\eta_{i j}^{r}\right) \\
+% \text{s.t.} \quad &\sum_{j \in V} \pi_{j} \geq \nu_{\mathrm{UFL}}, \\
+% &\sum_{j \in V} \varrho_{i j}=\bar{f}_{i}, \forall i \in M, \\
+% &\pi_{j}-\varrho_{i j}+\zeta_{i j}=\bar{r}_{i j}, \quad \forall i \in M, \forall j \in V, \\
+% &\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{j \in V} \bar{r}_{i j} u_{i j}^{0}=\nu_{\mathrm{UFL}}, \\
+% & \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}^{*}, \forall i \in M \quad \tau_{i j}^{r}-\eta_{i j}^{r}=\bar{r}_{i j}-r_{i j}, \forall i \in M, \forall j \in V, \\
+% & \varrho_{i j} \geq 0, \zeta_{i j} \geq 0, \forall i \in M, \forall j \in V. \\
+% \end{aligned}
+% \end{equation}
+% % \nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2},
+% 其中$\bar{f}_{i}$和$\bar{r}_{ij}$ 为改变后的开启设施成本和运输成本。相对应的，$f_{i}$和$r_{ij}$ 为改变前的成本。
+% $\pi_{j},\varrho_{i j},\zeta_{i j}$分别为原UFL约束
+% \begin{equation*}
+% \sum_{i \in M} u_{ij} = 1,
+% v_i - u_{ij} \geq 0,
+% u_{ij} \geq 0
+% \end{equation*}
+% 对应的对偶变量。 \par
+% $v_{i}^{0},u_{i j}^{0}$ 则对应于给定的可行解使之成为改变成本后的最优解。
+% $\nu_{\mathrm{UFL}}$ 是原UFL的最优值。
+%
+% $\tau_{i}^{f},\eta_{i}^{f},\tau_{i j}^r,\eta_{i j}^{r}$ 则对应于求解范数一下引入的变量。 \par
+%
+%
+% 这部分gap很小，实际上对应到(integrality gap)
 
 % \section{求解lower bound 的一些方法}
 %
@@ -251,21 +287,22 @@ $\tau_{i}^{f},\eta_{i}^{f},\tau_{i j}^r,\eta_{i j}^{r}$ 则对应于求解范数
 
 为方便起见，在接下来的计算中取 $w^f=1,w^r=1$。在实际不能改变设施成本时，可以设置相应的权重$w^f=\infty$.
 
-在数值实验中，我们对于5种不同规模随机生成了对应规模下50种可能的实例。
+在数值实验中，我们对于12种不同规模随机生成了对应规模下50种可能的实例。
 % 这里写表格
 
 (m,n)= (20,20) (30,30) (40,40) (50,50)
 
-fi =[100,200] rij = [1,100] [100,200]
+       (20,40) (30,60) (40,80) (50,100)
 
-分别 (20,40) (30,60) (40,80) (50,100)
+       (20,60) (30,90) (40,120) (50,150)
+其中设施的启动成本取值范围如下：   整数解   fi =[100,200]
+    运输成本取值范围如下：      rij = [1,100] [100,200]
 
-(20,60) (30,30) (40,40) (50,50)
 
-我们采用当最优改变量不为 0 时，（上界改变量-最优改变量）/最优改变量（$\%$）的方式
-来比较 gap 的大小
-同时 当给定可行解刚好是最优解时，此时最优改变量为 0，可以利用总的改变量来衡量 gap 或者利用总成本改变量除以总的成本
+我们采用当最优改变量不为 0 时，（上界改变量-最优改变量）/最优改变量（$\%$）的方式来比较 gap 的大小（利用相对值）
+同时，当给定可行解刚好是最优解时，此时最优改变量为 0，可以利用总的改变量来衡量 gap 或者利用总成本改变量除以总的成本 （利用绝对值）
 
+结果如下：
 {\small\begin{table}[h!]
 
 \centerline{\small{\heiti\bf表1}  离散随机变量$\xi$ 的分布}
@@ -283,8 +320,15 @@ $p_i$ &1/6&1/6&1/6&1/6&1/6&1/6\\
  \end{tabular}
  \end{table}}
 
-在表中，(m,n)表示 P 的问题规模。例如
-LB1 表示使用 P 的下界。OS表示严格求解子问题时得到的逆优化问题的最优值
+在表中，(m,n)表示 P 的问题规模。例如 (20，30) 表示20个设施和 30个客户
+
+LB1 表示使用迭代次数得到的 P 的下界。
+
+LB2 表示使用邻域搜索得到的 P 的下界。
+
+UB  表示使用线性松弛的方法得到的 P 的上界。
+
+OS表示严格求解子问题时得到的逆优化问题的最优值。
 
 表中所有的结果是一个规模中产生的50个实例的平均值
 
@@ -292,6 +336,12 @@ LB1 表示使用 P 的下界。OS表示严格求解子问题时得到的逆优�
 
 为说明逆优化的效果
 % 在Matlab中将图像imshow()一下，然后对figure用另存为eps，这个也能凑活用。
+
+如上图所示，$\uppercase\expandafter{\romannumeral1},\uppercase\expandafter{\romannumeral2},\uppercase\expandafter{\romannumeral3},\uppercase\expandafter{\romannumeral4}$ 为设施编号，每个设施开启成本为$10$。
+$a,b,c,d$ 为顾客编号，
+相应的设施开启成本为 $f_i^0=(10,10,10,10), r_{ij}^0 = $
+粗线表示服务方向 细线表示
+
 
 \subsection{不同结果比较}
 
@@ -311,42 +361,44 @@ LB1 表示使用 P 的下界。OS表示严格求解子问题时得到的逆优�
 & v_{i} \in \{0,1\}, \forall i \in M
 \end{align*}
 
-我们同样可以使用行生成算法得到最优解
-}
-\subsection{启发式得到上界}
-尽管原文章中并未提到有容量限制的设施选址逆优化问题的启发式算法，但我们依然沿用2010中定义以及2019中提到的锥优化方法。
+我们同样可以使用上述提到的行生成算法和启发式方法得到最优解。
 
-对于有容量限制的设施选址逆优化问题，需要添加一个约束，此时尽管
-\begin{eqation}
-  \sum_j d_j u_{ij} \leq k_i v_i,i\in M
-\end{eqation}。
-同样利用锥优化的方法，添加对应上述约束的对偶变量$t$，我们可以得到有容量限制的设施选址问题的启发式算法
-
-\begin{equation}
-\begin{aligned}
-&\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{j \in V} \left(\tau_{i j}^r+\eta_{i j}^{r}\right) \\
-\text{s.t.} \quad &\sum_{j \in V} \pi_{j} \geq \nu_{\mathrm{UFL}}, \\
-&k_it_i+\sum_{j \in V} \varrho_{i j}=\bar{f}_{i}, \forall i \in M, \\
-&\pi_{j}-\varrho_{i j}+\zeta_{i j}-d_jt_i=\bar{r}_{i j}, \quad \forall i \in M, \forall j \in V, \\
-&\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{j \in V} \bar{r}_{i j} u_{i j}^{0}=\nu_{\mathrm{UFL}}, \\
-& \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}, \forall i \in M \quad \tau_{i j}^{r}-\eta_{i j}^{r}=\bar{r}_{i j}-r_{i j}, \forall i \in M, \forall j \in V, \\
-&\nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2}, \varrho_{i j} \geq 0, \zeta_{i j} \geq 0, \forall i \in M, \forall j \in V. \\
-\end{aligned}
-\end{equation}
-
-注意这部分 可以通过改变 需求和供给 的大小来退化得到 无容量限制
+% \subsection{启发式得到上界}
+% 尽管原文章中并未提到有容量限制的设施选址逆优化问题的启发式算法，但我们依然沿用2010中定义以及2019中提到的锥优化方法。
+%
+% 对于有容量限制的设施选址逆优化问题，需要添加一个约束，此时尽管
+% \begin{eqation}
+%   \sum_j d_j u_{ij} \leq k_i v_i,i\in M
+% \end{eqation}。
+% 同样利用锥优化的方法，添加对应上述约束的对偶变量$t$，我们可以得到有容量限制的设施选址问题的启发式算法
+%
+% \begin{equation}
+% \begin{aligned}
+% &\min \sum_{i \in M} \left(\tau_{i}^{f}+\eta_{i}^{f}\right)+\sum_{i \in M} \sum_{j \in V} \left(\tau_{i j}^r+\eta_{i j}^{r}\right) \\
+% \text{s.t.} \quad &\sum_{j \in V} \pi_{j} \geq \nu_{\mathrm{UFL}}, \\
+% &k_it_i+\sum_{j \in V} \varrho_{i j}=\bar{f}_{i}, \forall i \in M, \\
+% &\pi_{j}-\varrho_{i j}+\zeta_{i j}-d_jt_i=\bar{r}_{i j}, \quad \forall i \in M, \forall j \in V, \\
+% &\sum_{i \in M} \bar{f}_{i} v_{i}^{0}+\sum_{i \in M} \sum_{j \in V} \bar{r}_{i j} u_{i j}^{0}=\nu_{\mathrm{UFL}}, \\
+% & \tau_{i}^{f}-\eta_{i}^{f}=\bar{f}_{i}-f_{i}, \forall i \in M \quad \tau_{i j}^{r}-\eta_{i j}^{r}=\bar{r}_{i j}-r_{i j}, \forall i \in M, \forall j \in V, \\
+% &\nu_{\mathrm{UFL} 1} \leq \nu_{\mathrm{UFL}} \leq \nu_{\mathrm{UFL} 2}, \varrho_{i j} \geq 0, \zeta_{i j} \geq 0, \forall i \in M, \forall j \in V. \\
+% \end{aligned}
+% \end{equation}
+% 注意这部分 可以通过改变 需求和供给 的大小来退化得到 无容量限制
 
 对于行生成的方法，实际上是限制集的选取的问题，限制集越接近
 
 因此可以采用
 
 \section{结论与展望}
-本文针对无容量限制和有容量限制的设施选址逆优化问题进行了建模分析，提出了使用行生成算法得到最优解以及通过对整数规划进行线性松弛而得到启发式方法。分析表明对于行生成算法中的子问题采取不同的计算方法可以分别得到逆优化问题的最优解以及解的上下界。同时我们借助已有的一个启发式算法说明了两者的等价关系，从而说明了启发式算法的计算复杂度。数值实验结果说明了得到的启发式算法在上界上的优异表现，而在牺牲一定计算资源的情况下，下界也可以得到较为不错的结果。这些结果充分说明了该启发式算法的有效性。
-实际上，尽管上界非常接近最优值，但下界的结果可以进一步优化改进。由于子问题是设施选址的原问题，可以将求解设施选址更为高效的近似算法用于其中，从而提高下界解的质量。同时，有容量限制的设施选址问题中需求和供给值的选取以及之间的关系会对逆优化问题解产生的影响也是值得思考的问题。
+本文针对无容量限制的设施选址逆优化问题进行了建模分析，提出了使用行生成算法得到最优解以及通过对整数规划进行线性松弛而得到启发式方法。分析表明对于行生成算法中的子问题采取不同的计算方法可以分别得到逆优化问题的最优解以及解的上下界。数值实验结果说明了得到的启发式算法在上界上的优异表现，而在牺牲一定计算资源的情况下，下界也可以得到较为不错的结果。这些结果充分说明了该启发式算法的有效性。
+实际上，尽管上界非常接近最优值，但下界的结果可以进一步优化改进。由于子问题是设施选址的原问题，可以将求解设施选址更为高效的近似算法用于其中，从而提高下界解的质量。
+同时，尽管本文只提到了无容量限制的设施选址逆优化问题，但提出的算法也可以用在有容量限制的设施选址逆优化问题中。
 
 子问题是最具有优化空间的地方，可以结合启发式算法一次找出多个目标函数小于0的解，并一次性全部加入主问题中进行求解。
 
 % 优秀的人总是要比别人多努力一点
+
+Ghosh D. Neighborhood search heuristics for the uncapacitated facility location problem[J]. European Journal of Operational Research, 2003, 150(1): 150-162.
 
 
 \end{document}
