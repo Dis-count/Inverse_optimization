@@ -54,7 +54,7 @@ while mycost < -0.00001
 
   s = s + 1;
 
-  if s > 100
+  if s > 1000
     break
   end
 

@@ -15,7 +15,7 @@ model.obj = [5 4];
 
 model.rhs = [7;8];
 
-model.sense = '=';
+model.sense = '<';
 
 model.vtype = 'C';
 

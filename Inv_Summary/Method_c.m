@@ -22,7 +22,7 @@ function Method_c(m,n,k)
 
 result(k+1,:) = [mean(result(1:k,1)),mean(result(1:k,2)),mean(result(1:k,3)),mean(result(1:k,4)),mean(result(1:k,5)),mean(result(1:k,6)),mean(result(1:k,7)),mean(result(1:k,8))];
 
-filename = ['E:\Files\Matlab\Inv_All\',num2str(m),'by',num2str(n),'.xlsx'];
+filename = ['F:\Program Files\Matlab files\',num2str(m),'by',num2str(n),'.xlsx'];
 
 xlswrite(filename,result);
 

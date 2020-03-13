@@ -22,7 +22,7 @@ function  Lang(min_step_size, max_iter)
   relax_con = [-1,1,2 ;
                 3,2,18;];
 
-   con = [1,2,8;];
+  con = [1,2,8;];
 
   sum_relax = length(relax_con(:,1));
 
