@@ -37,8 +37,17 @@ vi_my = vi0;
 
 uij_my = uij0;
 
+threshold = 2000;
+
+I0 = zeros(threshold,m+m*n);
+
+I0(1,:) = I;
+
 while mycost < -0.00001
-  x = Main(vi0,uij0,c0,I);
+
+  s = s + 1;
+
+  x = Main(vi0,uij0,c0,I0(1:s,:));
 
   c = (x(1:m*n+m)-x(m*n+m+1:end)+[fi;rij]);
 
@@ -50,11 +59,9 @@ while mycost < -0.00001
   vi_my = opt_sol(1:m);
   uij_my = opt_sol(m+1:end);
 
-  I = [I;opt_sol'];
+  I0(s+1,:) = opt_sol';
 
-  s = s + 1;
-
-  if s > 1000
+  if s > threshold
     break
   end
 

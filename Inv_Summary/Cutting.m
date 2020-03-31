@@ -23,16 +23,23 @@ I = [vi0;uij0]';
 
 c0 = [fi;rij];
 
+threshold = 2000;
+
+I0 = zeros(threshold,m+m*n);
+
+I0(1,:) = I;
+
 while opt2 < -0.00001
-  x = Main(vi0,uij0,c0,I);
+  
+  s = s + 1;
+  
+  x = Main(vi0,uij0,c0,I0(1:s,:));
 
   [opt1,opt2] = Sub(x,fi,rij,vi0,uij0);
+  
+  I0(s+1,:) = opt1';
 
-  I = [I;opt1'];
-
-  s = s + 1;
-
-  if s > 1000
+  if s > threshold
 
     break
 
