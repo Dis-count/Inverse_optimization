@@ -1,13 +1,16 @@
 function  Model(min_step_size, max_iter)
 %   次梯度方法求解拉格朗日对偶
-  best_ub = 1e6;
+  best_ub = 1e4;
 
   best_lb = -1;
 
 %   max_iter = 100;
 %   min_step_size = 0.01;
+  x0 = [2;3];  % The given solution
 
-  obj = [5;4];
+  c = [5;4];
+
+  n_row = length(c); % dimension of variable
 
   iter = 1;
 
@@ -16,15 +19,19 @@ function  Model(min_step_size, max_iter)
   max_non_improve = 3;
 
   % 松弛约束条件   A x_0 < b
-  relax_con = [-1,1,1;
-                6,4,24;];
+  A = [-1,1;
+        6,4;];
+
+  b = [1;24];
+
+  relax_con = [A,b];
 
   % relax_con = [-1,1,2 ;
   %               3,2,18;];
 
-  con = [1,2,8;]; %  A'\lambda > c
+  % con = [1,2,8;]; %  A'\lambda > c
 
-  sum_relax = length(relax_con(:,1));
+  sum_relax = length(relax_con(:,1)); % the length of column
 
 %  lambda = ones(sum_relax,1);
   lambda = 0.5;   % 步长
@@ -33,24 +40,23 @@ function  Model(min_step_size, max_iter)
 
   step_size = 1;
 
-  mu = zeros(sum_relax,1);   % 初始化拉格朗日乘子
+  mu = ones(sum_relax+1,1);   % 初始化拉格朗日乘子 plus one
 
 while iter < max_iter
 
-  [opt_x,opt_cost] = Model_sub(obj,relax_con,con,mu);
-
+  [opt_x,A0,adjustment] = Model_sub(x0,A,b,c,mu);
   % if  sp.solve() == false
   %
   %   disp('solve wrong!');
   %
   % end
 
-opt_x
+  A0 = reshape(A0,sum_relax,n_row)';
 
-% 更新上界
-  if opt_cost < best_ub
+% 更新下界
+  if adjustment > best_lb
 
-    best_ub = opt_cost;
+    best_lb = adjustment;
 
     non_improve = 0;
 
@@ -61,23 +67,20 @@ opt_x
   end
 
 % Notice here that the subgradient is a vector.
-  for i = 1 : sum_relax
 
-    subgradient(i) = dot(opt_x,relax_con(i,1:(end-1))) - relax_con(i,end);
+    subgradient = [b-A0*x0;(mu(1:end-1)'*b-c'*x0)];
 
-    mu(i) = max(0, (mu(i) + step_size * subgradient(i)));
+    mu = max(1, (mu + step_size * subgradient));
 
-  end
+% 满足原问题约束的可行解可以作为原问题的lower bound
 
-% 满足原问题约束的可行解可以作为原问题的下��?
+  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原问题 all constraints
 
-  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原问题约��?
+    current_ub = sum(opt_x);
 
-    current_lb = dot(opt_x,obj);
+    if current_ub < best_ub
 
-    if current_lb > best_lb
-
-      best_lb = current_lb;
+      best_ub = current_ub;
 
     end
 
@@ -104,15 +107,15 @@ opt_x
 
   mydist = norm(subgradient);    % Obtain the norm of subgradient
 
-  % 迭代停止条件2��?3
+  % 迭代停止条件2,3
 
-  if (any(mydist) <= 0)||(best_lb >= best_ub-0.00001)
+  if (any(mydist) <= 0.00001)||(best_lb >= best_ub-0.00001)
 
     break;
 
   end
 
-  step_size = lambda * (opt_cost - best_lb)/mydist;
+  step_size = lambda * (best_ub - best_lb)/mydist;
 
   % 迭代停止条件4
 
@@ -126,49 +129,50 @@ iter = iter + 1;
 
 end
 
+end
 
+function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
+  % min (ei+fi) + \mu *(b-Ax) + s(\mu)
+  % c = [5;4];
+  % relax_con = [-1,1,1 ;
+  %               6,4,24;];
 
+    model.modelname = 'Model_sub';
 
-function [opt_x,cost] = Model_sub(obj,relax_con,con,mu)
+    model.modelsense = 'min';
 
-  % obj = [5;4];
-  % relax_con = [6,4,24;
-  %             -1,1,1 ;];
+    nrow = length(A(:,1));
 
-    model.modelname = 'Sub';
-
-    model.modelsense = 'max';
-
-    nrow = length(con(:,1));
-
-    ncol = length(obj);
+    ncol = length(A(1,:))*4;
 
     model.lb = zeros(ncol,1);
 
-    model.ub = inf(ncol,1);
+    model.ub = ones(ncol,1)*10;
 
-  for i =1 : length(relax_con(:,1))
+    coff = kron(mu(1:end-1),x0);  %(mu1x1,mu1x2,mu2x1,mu2x2);
 
-    model.obj = obj - relax_con(i,1:ncol)' * mu(i);
-  %            [5 - 6*mu + nu  ; 4 - 4*mu - nu  ;];
-
-  end
+    model.obj = ones(ncol,1) - [coff;-coff];
 
     model.vtype = repmat('C',ncol,1);
 
+    AA = kron(mu(1:end-1)',eye(nrow));
+
+    AA = [AA,-AA];
+
+% model.A = AA;
     model.A = sparse(nrow,ncol);
 
-  for i = 1: nrow
+    for i = 1: nrow
 
-    model.A(i,:) = con(i,1:ncol);
+      model.A(i,:) = AA(i,:);
 
-  end
+    end
 
-    model.rhs = con(:,end);
+    model.rhs = b - A'*mu(1:end-1);
 
-    model.sense = repmat('<', nrow, 1);
+    model.sense = repmat('>', nrow, 1);
 
-    gurobi_write(model,'Inv.lp');
+    gurobi_write(model,'model.lp');
 
     params.outputflag = 0;
 
@@ -176,8 +180,10 @@ function [opt_x,cost] = Model_sub(obj,relax_con,con,mu)
 
   %  result = gurobi(model)
 
-    opt_x = result.x;
+    opt_x = result.x;  % adjustment
 
-    cost = result.objval + dot(relax_con(:,end),mu) ;
+    A0 = opt_x(1:end/2) - opt_x(end/2+1:end) + reshape(A',ncol/2,1);
+
+    obj = result.objval + (mu(1:end-1)'*(b-A*x0) + mu(end)*(mu(1:end-1)'*b-c'*x0)) ;
 
 end
