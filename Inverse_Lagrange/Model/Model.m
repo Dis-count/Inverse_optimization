@@ -1,5 +1,5 @@
 function  Model(min_step_size, max_iter)
-%   次梯度方法求解拉格朗日对偶
+%   次梯度方法求解拉格朗日对�?
   best_ub = 1e4;
 
   best_lb = -1;
@@ -40,7 +40,11 @@ function  Model(min_step_size, max_iter)
 
   step_size = 1;
 
-  mu = ones(sum_relax+1,1);   % 初始化拉格朗日乘子 plus one
+  mu = zeros(sum_relax+1,1);   % 初始化拉格朗日乘�? plus one
+
+  mu0 = Min_sub(A,b,c);
+
+  mu(1:sum_relax) = mu0;
 
 while iter < max_iter
 
@@ -53,10 +57,10 @@ while iter < max_iter
 
   A0 = reshape(A0,sum_relax,n_row)';
 
-% 更新下界
-  if adjustment > best_lb
+    % 更新上界
+  if adjustment < best_ub
 
-    best_lb = adjustment;
+    best_ub = adjustment;
 
     non_improve = 0;
 
@@ -68,19 +72,24 @@ while iter < max_iter
 
 % Notice here that the subgradient is a vector.
 
-    subgradient = [b-A0*x0;(mu(1:end-1)'*b-c'*x0)];
+%    subgradient = [b-A0*x0;(mu(1:end-1)'*b-c'*x0)];
+    subgradient = (mu(1:end-1)'*b-c'*x0);
 
-    mu = max(1, (mu + step_size * subgradient));
+    mu0 = Min_sub(A0,b,c);
+
+    mu(1:sum_relax) = mu0;
+
+    mu(end) = max(0, (mu(end) + step_size * subgradient));
 
 % 满足原问题约束的可行解可以作为原问题的lower bound
 
-  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原问题 all constraints
+  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原问�? all constraints
 
-    current_ub = sum(opt_x);
+    current_lb = sum(opt_x);
 
-    if current_ub < best_ub
+    if current_lb > best_lb
 
-      best_ub = current_ub;
+      best_lb = current_lb;
 
     end
 
@@ -147,7 +156,7 @@ function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
 
     model.lb = zeros(ncol,1);
 
-    model.ub = ones(ncol,1)*10;
+    model.ub = ones(ncol,1)*1000;
 
     coff = kron(mu(1:end-1),x0);  %(mu1x1,mu1x2,mu2x1,mu2x2);
 
@@ -168,7 +177,7 @@ function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
 
     end
 
-    model.rhs = b - A'*mu(1:end-1);
+    model.rhs = c - A'*mu(1:end-1);
 
     model.sense = repmat('>', nrow, 1);
 
@@ -185,5 +194,52 @@ function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
     A0 = opt_x(1:end/2) - opt_x(end/2+1:end) + reshape(A',ncol/2,1);
 
     obj = result.objval + (mu(1:end-1)'*(b-A*x0) + mu(end)*(mu(1:end-1)'*b-c'*x0)) ;
+
+end
+
+function mu = Min_sub(A,b,c)
+  % min bTy
+  % c = [5;4];
+  %  y > 0
+  %  ATy > c
+  % Obtain the dual
+
+    model.modelname = 'Min_sub';
+
+    model.modelsense = 'min';
+
+    nrow = length(A(1,:));
+
+    ncol = length(A(:,1));
+
+    model.lb = zeros(ncol,1);
+
+    model.ub = ones(ncol,1);
+
+    model.obj = b;
+
+    model.vtype = repmat('C',ncol,1);
+
+    model.A = sparse(nrow,ncol);
+
+    for i = 1: nrow
+
+      model.A(i,:) = A(:,i);
+
+    end
+
+    model.rhs = c;
+
+    model.sense = repmat('>', nrow, 1);
+
+    gurobi_write(model,'min.lp');
+
+    params.outputflag = 0;
+
+    result = gurobi(model, params);
+
+  %  result = gurobi(model)
+
+    mu = result.x;
 
 end
