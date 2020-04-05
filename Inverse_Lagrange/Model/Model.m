@@ -1,5 +1,5 @@
 function  Model(min_step_size, max_iter)
-%   次梯度方法求解拉格朗日对�?
+%   次梯度方法求解拉格朗日对��?
   best_ub = 1e4;
 
   best_lb = -1;
@@ -40,7 +40,7 @@ function  Model(min_step_size, max_iter)
 
   step_size = 1;
 
-  mu = zeros(sum_relax+1,1);   % 初始化拉格朗日乘�? plus one
+  mu = zeros(sum_relax+1,1);   % 初始化拉格朗日乘��? plus one
 
   mu0 = Min_sub(A,b,c);
 
@@ -57,10 +57,10 @@ while iter < max_iter
 
   A0 = reshape(A0,sum_relax,n_row)';
 
-    % 更新上界
-  if adjustment < best_ub
+    % 更新下界
+  if adjustment > best_lb
 
-    best_ub = adjustment;
+    best_lb = adjustment;
 
     non_improve = 0;
 
@@ -83,13 +83,13 @@ while iter < max_iter
 
 % 满足原问题约束的可行解可以作为原问题的lower bound
 
-  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原问�? all constraints
+  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原问��? all constraints
 
-    current_lb = sum(opt_x);
+    current_ub = sum(opt_x);
 
-    if current_lb > best_lb
+    if current_ub < best_ub
 
-      best_lb = current_lb;
+      best_ub = current_ub;
 
     end
 
@@ -196,6 +196,7 @@ function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
     obj = result.objval + (mu(1:end-1)'*(b-A*x0) + mu(end)*(mu(1:end-1)'*b-c'*x0)) ;
 
 end
+
 
 function mu = Min_sub(A,b,c)
   % min bTy
