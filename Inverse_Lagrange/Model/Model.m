@@ -1,12 +1,12 @@
 function  Model(min_step_size, max_iter)
-%   次梯度方法求解拉格朗日对��?
+%   次梯度方法求解拉格朗日dual
   best_ub = 1e4;
 
-  best_lb = -1;
+  best_lb = -2;
 
 %   max_iter = 100;
 %   min_step_size = 0.01;
-  x0 = [2;3];  % The given solution
+  x0 = [2;2.5];  % The given solution
 
   c = [5;4];
 
@@ -36,15 +36,15 @@ function  Model(min_step_size, max_iter)
 %  lambda = ones(sum_relax,1);
   lambda = 0.5;   % 步长
 
-  subgradient = zeros(sum_relax,1);
+%  subgradient = zeros(sum_relax,1);
 
   step_size = 1;
 
-  mu = zeros(sum_relax+1,1);   % 初始化拉格朗日乘��? plus one
+%  mu = zeros(sum_relax,1);   % 初始化拉格朗日multiplier plus one
 
-  mu0 = Min_sub(A,b,c);
+   mu = Min_sub(A,b,c);
 
-  mu(1:sum_relax) = mu0;
+%  mu(1:sum_relax) = mu0;
 
 while iter < max_iter
 
@@ -72,18 +72,21 @@ while iter < max_iter
 
 % Notice here that the subgradient is a vector.
 
-%    subgradient = [b-A0*x0;(mu(1:end-1)'*b-c'*x0)];
-    subgradient = (mu(1:end-1)'*b-c'*x0);
+    subgradient = [A0*x0-b];
+%    subgradient = (mu(1:end-1)'*b-c'*x0);
 
-    mu0 = Min_sub(A0,b,c);
+%    mu = Min_sub(A0,b,c);
 
-    mu(1:sum_relax) = mu0;
+    mu = max(0, mu - step_size * subgradient);
 
-    mu(end) = max(0, (mu(end) + step_size * subgradient));
+%    mu(1:end-1) = max(0.1, (mu(1:end-1) + step_size * subgradient(1:end-1)));
 
 % 满足原问题约束的可行解可以作为原问题的lower bound
+opt_x
+A0
+% (mu'*b-c'*x0)
 
-  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原问��? all constraints
+  if all(subgradient <= 0)   % 如果 subgradient <0 说明满足原problem satisfy all constraints
 
     current_ub = sum(opt_x);
 
@@ -141,7 +144,7 @@ end
 end
 
 function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
-  % min (ei+fi) + \mu *(b-Ax) + s(\mu)
+  % min (ei+fi) + \mu *(Ax-b)
   % c = [5;4];
   % relax_con = [-1,1,1 ;
   %               6,4,24;];
@@ -156,30 +159,46 @@ function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
 
     model.lb = zeros(ncol,1);
 
-    model.ub = ones(ncol,1)*1000;
+   model.ub = ones(ncol,1)*10;
 
-    coff = kron(mu(1:end-1),x0);  %(mu1x1,mu1x2,mu2x1,mu2x2);
+    coff = kron(mu(1:end),x0);  %(mu1x1,mu1x2,mu2x1,mu2x2);
 
-    model.obj = ones(ncol,1) - [coff;-coff];
+
+    model.obj = ones(ncol,1) + [coff;-coff];
 
     model.vtype = repmat('C',ncol,1);
 
-    AA = kron(mu(1:end-1)',eye(nrow));
+    AA = kron(mu(1:end)',eye(length(A(:,1))));
 
     AA = [AA,-AA];
 
+  %  AA1 = kron(eye(length(A(1,:))),x0');
+
+  %  AA1 = [-AA1,AA1];
 % model.A = AA;
-    model.A = sparse(nrow,ncol);
 
-    for i = 1: nrow
+   model.A = sparse(nrow,ncol);
 
-      model.A(i,:) = AA(i,:);
+    % for i = 1: length(A(:,1))
+    %
+    %   model.A(i,:) = AA(i,:);
+    %
+    % end
 
-    end
+    % for i = 1: length(A(1,:))
+    %
+    %   model.A(length(A(:,1))+i,:) = AA1(i,:);
+    %
+    % end
 
-    model.rhs = c - A'*mu(1:end-1);
 
-    model.sense = repmat('>', nrow, 1);
+%    rhs1 = c - A'*mu(1:end);
+
+  %  rhs2 = -(b-A*x0);
+
+%    model.rhs = rhs1;
+
+%    model.sense = repmat('>', nrow, 1);
 
     gurobi_write(model,'model.lp');
 
@@ -193,8 +212,9 @@ function [opt_x,A0,obj] = Model_sub(x0,A,b,c,mu)
 
     A0 = opt_x(1:end/2) - opt_x(end/2+1:end) + reshape(A',ncol/2,1);
 
-    obj = result.objval + (mu(1:end-1)'*(b-A*x0) + mu(end)*(mu(1:end-1)'*b-c'*x0)) ;
+    obj = result.objval + mu'*(A*x0-b);
 
+% mu(end)*(mu(1:end-1)'*b-c'*x0)
 end
 
 
