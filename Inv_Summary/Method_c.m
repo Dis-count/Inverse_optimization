@@ -10,13 +10,19 @@ function Method_c(m,n,k)
     ini_sol = feasible_v(m,n);  % Random a feasible solution
 %   [opt1,ini_sol] = UFL(fi,rij);  % give the optimal solution
 %  s1 s2 s3 are the number of iteration.
+    tic
     [a,s1] = Cutting(fi,rij,ini_sol);   % The optimal solution
-
-    [b,s2] = Cutting1(fi,rij,ini_sol);  % The UB
-
-    [c,s3] = Cutting2(fi,rij,ini_sol);  % The LB
-
-    result(i,:) = [a,b,c,s1,s2,s3,(b-a)/a,(c-a)/a];
+    t1 = toc;
+    
+    tic
+    b = Cutting1(fi,rij,ini_sol);  % The UB
+    t2 = toc;
+    
+    tic
+    c = Cutting2(fi,rij,ini_sol);  % The LB
+    t3 = toc;
+    
+    result(i,:) = [a,b,c,t1,t2,t3,(b-a)/a,(c-a)/a];
 
   end
 

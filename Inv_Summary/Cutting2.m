@@ -1,4 +1,4 @@
-function [opt_change,s] = Cutting2(fi,rij,ini_sol)
+function opt_change = Cutting2(fi,rij,ini_sol)
 % This one is used to obtain the lower bound by local search.
 % vi0 = [0;1;1;0;];
 % uij0 = [0; 0; 0; 0; 1; 0; 1; 0; 0; 1; 0; 1; 0; 0; 0; 0;];
@@ -37,7 +37,7 @@ vi_my = vi0;
 
 uij_my = uij0;
 
-threshold = 2000;
+threshold = 1000;
 
 I0 = zeros(threshold,m+m*n);
 
@@ -89,7 +89,13 @@ ncol = 2*m*n + 2*m ;
 
 model.vtype = 'C';
 
-model.obj   = ones(2*m + 2*m*n,1);
+M = 500;
+
+obj_s = [M * ones(m,1); ones(m*n,1)]; 
+
+model.obj  = [obj_s;obj_s];
+
+% model.obj   = ones(2*m + 2*m*n,1);
 
 nrow = length(I(:,1));
 
@@ -153,14 +159,14 @@ optcost = opt0;
 
 opt_sol = opt1;
 
-for i = 1:2*(m+n)  % Control the number of iteration.
+% for i = 1:2*(m+n)  % Control the number of iteration.
 
   if unopen > 0
     % Define the add-move   p kinds of local search
     [opt_sol1,cost1] = add0(fi,trans,ind_open,ind_unopen);
   else
     opt_sol1 = zeros(m*n+m,1);
-    cost1 = 1e7;
+    cost1 = 1e6;
   end
   % Define the swap-move   p(m-p) kinds of local search
   if unopen > 0
@@ -168,7 +174,7 @@ for i = 1:2*(m+n)  % Control the number of iteration.
     [opt_sol2,cost2] = swap(fi,trans,ind_open,ind_unopen);
   else
     opt_sol2 = zeros(m*n+m,1);
-    cost2 = 1e7;
+    cost2 = 1e6;
   end
 
 % Define the remove   m-p  kinds of local search
@@ -177,8 +183,9 @@ for i = 1:2*(m+n)  % Control the number of iteration.
     [opt_sol3,cost3] = remove0(fi,trans,ind_open);
 
   else
+      
     opt_sol3 = zeros(m*n+m,1);
-    cost3 = 1e7;
+    cost3 = 1e6;
   end
 
   [opt_cost,opt_ind] = min([cost1,cost2,cost3]);
@@ -191,19 +198,19 @@ for i = 1:2*(m+n)  % Control the number of iteration.
 
     opt_sol = optsol(:,opt_ind);
 
-    opt_fac = opt_sol(1:m);
-
-    ind_open = find(opt_fac==1); % The index of opening
-
-    open1  = sum(opt_fac);
-
-    unopen = m - open1;
-
-    ind_unopen = setdiff(1:m,ind_open)';
+%     opt_fac = opt_sol(1:m);
+% 
+%     ind_open = find(opt_fac==1); % The index of opening
+% 
+%     open1  = sum(opt_fac);
+% 
+%     unopen = m - open1;
+% 
+%     ind_unopen = setdiff(1:m,ind_open)';
 
   end
 
-end
+
 
 mycost = optcost - opt2;
 

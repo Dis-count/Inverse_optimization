@@ -68,13 +68,17 @@ ncol = 2*m*n + 2*m ;
 
 model.vtype = 'C';
 
-model.obj   = ones(2*m + 2*m*n,1);
+M = 500;
+
+obj_s = [M * ones(m,1); ones(m*n,1)]; 
+
+model.obj  = [obj_s;obj_s];   % Set the facility coefficient as M=500.
 
 nrow = length(I(:,1));
 
 delta = zeros(nrow,ncol/2);
 
-model.A     = sparse(nrow, ncol);
+model.A   = sparse(nrow, ncol);
 
 for p = 1:nrow
 

@@ -1,4 +1,4 @@
-function [opt_change,s] = Cutting1(fi,rij,ini_sol)
+function opt_change = Cutting1(fi,rij,ini_sol)
 % This one is used to obtain the upper bound by changing the variable Binary to continuous.
 
 % vi0, uij0 表示给定 feasible solution [0,1]  row vector
@@ -27,7 +27,7 @@ I = [vi0;uij0]';
 
 c0 = [fi;rij];
 
-threshold = 2000;
+threshold = 1000;
 
 I0 = zeros(threshold,m+m*n);
 
@@ -71,7 +71,13 @@ ncol = 2*m*n + 2*m ;
 
 model.vtype = 'C';
 
-model.obj   = ones(2*m + 2*m*n,1);
+M = 500;
+
+obj_s = [M * ones(m,1); ones(m*n,1)]; 
+
+model.obj  = [obj_s;obj_s];
+
+% model.obj   = ones(2*m + 2*m*n,1);
 
 nrow = length(I(:,1));
 
